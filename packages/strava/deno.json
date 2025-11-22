@@ -1,7 +1,7 @@
 {
   "name": "@jpravetz/strava",
   "description": "A command line application to generate KML files suitable for import into Google Earth",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
@@ -12,6 +12,7 @@
     "test": "deno test -A",
     "lint": "deno lint",
     "check": "deno check src test main.ts",
+    "install": "deno eval \"const os = Deno.build.os; const task = os === 'darwin' ? 'install:mac' : 'install:debian'; console.log('Detected OS:', os); console.log('Running:', task); const cmd = new Deno.Command('deno', { args: ['task', task], stdout: 'inherit', stderr: 'inherit' }); await cmd.output();\"",
     "install:debian": "deno cache --lock=deno.lock ./main.ts && /root/.deno/bin/deno install -f --global --config deno.json --name strava --lock=deno.lock --allow-net --allow-env --allow-sys --allow-read=/root/ --allow-write=/root/ ./main.ts",
     "install:mac": "deno cache --lock=deno.lock ./main.ts && deno install -f --global -A --config deno.json --name strava --lock=deno.lock ./main.ts"
   },

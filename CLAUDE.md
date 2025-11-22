@@ -196,28 +196,108 @@ When updating packages in `@epdoc/std`:
 - Business logic is in the app layer, not in command handlers
 - File operations use `@epdoc/fs` abstractions, not raw Deno APIs
 
-## Current State (as of 2025-11-08)
+## Package Structure and Key Files
 
-### Recently Completed
+### packages/strava-api/ - Strava API Client Library
 
-- **Lap Marker Support**: Added `--laps` flag to KML generation for displaying lap button press locations
-- **Bikelog Improvements**: Description/private_note parsing, weight extraction, improved formatting
-- **PDF Generation**: Now fetches detailed activity data for description and private_note fields
-- **KML Generation**: Fully functional with activities, segments structure, and lap markers
-- **Authentication**: Complete OAuth2 flow with token refresh
-- **Custom Logging**: StravaMsgBuilder with file path and date range formatting
+```
+strava-api/
+├── deno.json                    # Package config, exports src/mod.ts
+├── src/
+│   ├── mod.ts                   # Main exports: Api, Activity, Schema types
+│   ├── api.ts                   # Main API class: authentication, activity/segment/stream endpoints
+│   ├── activity.ts              # Activity class: activity data wrapper with methods
+│   ├── context.ts               # Context types for logging
+│   ├── types.ts                 # Core types: TrackPoint, SegmentData, StarredSegmentDict, etc.
+│   ├── auth/
+│   │   ├── mod.ts               # Auth exports
+│   │   ├── auth.ts              # OAuth2Handler class: token management, refresh
+│   │   └── types.ts             # Auth-related types
+│   └── schema/
+│       ├── mod.ts               # Schema exports
+│       ├── activity.ts          # SummaryActivity, DetailedActivity schemas
+│       ├── athlete.ts           # Athlete schemas
+│       ├── segment.ts           # Segment schemas
+│       ├── stream.ts            # Stream data schemas
+│       └── types.ts             # Common schema types
+└── test/                        # Tests
+```
 
-### Current Branch
+**Key Classes**:
+- `Api` (api.ts): Main API client - `getActivities()`, `getAthlete()`, `getStreamCoords()`, etc.
+- `Activity` (activity.ts): Activity wrapper - `attachStarredSegments()`, `getDetailed()`, `getTrackPoints()`
+- `OAuth2Handler` (auth/auth.ts): Token management and refresh
 
-- Working on: `feature/lapmarker` (merged into develop when testing complete)
-- Main development branch: `develop`
-- Stable branch: `master`
+### packages/strava/ - Main CLI Application
 
-### Known Issues
+```
+strava/
+├── main.ts                      # Application entry point
+├── deno.json                    # Package config, imports, tasks
+├── src/
+│   ├── config.json              # App config: paths to ~/.strava/ files
+│   ├── context.ts               # Context type definition
+│   ├── dep.ts                   # External dependencies (@epdoc/*, strava-api)
+│   ├── fmt.ts                   # Formatting utilities
+│   │
+│   ├── app/
+│   │   ├── mod.ts               # App exports
+│   │   ├── app.ts               # Main business logic class
+│   │   └── types.ts             # App types: UserSettings, ConfigFile, etc.
+│   │
+│   ├── cmd/                     # CLI command definitions
+│   │   ├── root/
+│   │   │   └── cmd.ts           # Root command: global options (--imperial, --id, --offline)
+│   │   ├── athlete/
+│   │   │   └── cmd.ts           # Athlete command: display athlete info and bikes
+│   │   ├── kml/
+│   │   │   └── cmd.ts           # KML command: generate KML files
+│   │   ├── gpx/
+│   │   │   └── cmd.ts           # GPX command: generate GPX files
+│   │   ├── pdf/
+│   │   │   └── cmd.ts           # PDF command: generate Acroforms XML for PDF forms
+│   │   ├── segments/
+│   │   │   └── cmd.ts           # Segments command: manage segment cache
+│   │   ├── options/
+│   │   │   ├── mod.ts           # Options exports
+│   │   │   ├── definitions.ts   # All CLI option definitions
+│   │   │   └── base-cmd.ts      # BaseSubCmd class
+│   │   └── types.ts             # Command types
+│   │
+│   ├── bikelog/                 # PDF/XML generation (Adobe Acroforms)
+│   │   ├── mod.ts               # Bikelog exports
+│   │   ├── bikelog.ts           # Bikelog class: combineActivities(), parseActivityText()
+│   │   └── types.ts             # Bikelog types
+│   │
+│   ├── track/                   # KML/GPX stream generation
+│   │   ├── mod.ts               # Track exports
+│   │   ├── handler.ts           # Handler class: coordinates KML/GPX generation
+│   │   ├── kml.ts               # KmlWriter class: KML file generation
+│   │   ├── gpx.ts               # GpxWriter class: GPX file generation
+│   │   └── types.ts             # Stream types and options
+│   │
+│   └── segment/                 # Segment management
+│       ├── mod.ts               # Segment exports
+│       ├── base.ts              # Segment.Base class
+│       ├── data.ts              # Segment.Data class
+│       ├── file.ts              # Segment.File class: cache management
+│       └── types.ts             # Segment types: CacheEntry, CacheMap
+│
+└── test/                        # Tests
+```
 
-- Segment retrieval logic not yet implemented (TODO in app.ts line 177-181)
-- Type errors in segment module (not blocking current functionality)
-- Lap markers need testing with real activities in Google Earth
+**Key Files for Quick Navigation**:
+
+| Task | File Path |
+|------|-----------|
+| **Business Logic** | `src/app/app.ts` - Main.getTrack(), Main.getPdf(), Main.getSegments() |
+| **KML Generation** | `src/track/kml.ts` - KmlWriter class |
+| **GPX Generation** | `src/track/gpx.ts` - GpxWriter class |
+| **PDF/XML Generation** | `src/bikelog/bikelog.ts` - Bikelog class |
+| **API Calls** | `../strava-api/src/api.ts` - Api class |
+| **Activity Data** | `../strava-api/src/activity.ts` - Activity class |
+| **CLI Options** | `src/cmd/options/definitions.ts` - All option definitions |
+| **User Settings** | `~/.strava/user.settings.json` - Line styles, aliases, blackout zones |
 
 ## Questions?
 

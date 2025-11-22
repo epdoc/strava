@@ -208,8 +208,24 @@ export class Bikelog {
   private combineActivities(activities: Activity[]): Record<string, BikelogEntry> {
     const result: Record<string, BikelogEntry> = {};
     activities.forEach((activity) => {
-      // We are getting the JulianDay based on the local timezone, and we are doing weirdness to get there. Trust in the weirdness.
-      const d: DateEx = new DateEx(activity.startDatetimeLocal);
+      // Calculate Julian date from the local date components (YYYY-MM-DD).
+      //
+      // Background: Strava's start_date_local field has a misleading 'Z' suffix.
+      // Although it appears to be UTC (e.g., "2025-11-22T07:40:29Z"), the time
+      // components (07:40:29) actually represent the LOCAL time in the activity's
+      // timezone (from the 'timezone' field, e.g., "America/Costa_Rica").
+      //
+      // For PDF bikelog forms, we need a Julian date that corresponds to the
+      // LOCAL calendar date (e.g., Nov 22 in Costa Rica), not the UTC date.
+      //
+      // Solution: Extract just the date portion (YYYY-MM-DD) from start_date_local
+      // and calculate the Julian date from those components, treating them as a
+      // midnight UTC timestamp. This gives us a "local Julian date" that matches
+      // the calendar date shown to the user.
+      const localDateStr = activity.startDatetimeLocal.split('T')[0]; // e.g., "2025-11-22"
+      const [year, month, day] = localDateStr.split('-').map(Number);
+      const localDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+      const d: DateEx = new DateEx(localDate);
       const jd = d.julianDate();
       const entry: BikelogEntry = result[jd] || {
         jd: jd,

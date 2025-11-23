@@ -219,14 +219,13 @@ export class Bikelog {
       // LOCAL calendar date (e.g., Nov 22 in Costa Rica), not the UTC date.
       //
       // Solution: Extract just the date portion (YYYY-MM-DD) from start_date_local
-      // and calculate the Julian date from those components, treating them as a
-      // midnight UTC timestamp. This gives us a "local Julian date" that matches
-      // the calendar date shown to the user.
+      // and calculate the Julian date directly from those components using the
+      // proper formula (Math.round instead of Math.floor to account for the 0.5
+      // offset in Julian date calculations).
       const localDateStr = activity.startDatetimeLocal.split('T')[0]; // e.g., "2025-11-22"
       const [year, month, day] = localDateStr.split('-').map(Number);
       const localDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
-      const d: DateEx = new DateEx(localDate);
-      const jd = d.julianDate();
+      const jd = Math.round(localDate.getTime() / 86400000 + 2440587.5);
       const entry: BikelogEntry = result[jd] || {
         jd: jd,
         date: new Date(activity.startDatetimeLocal),

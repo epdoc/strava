@@ -15,7 +15,8 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(xmllint:*)",
-      "Bash(deno eval:*)"
+      "Bash(deno eval:*)",
+      "Bash(strava pdf:*)"
     ],
     "deny": [],
     "ask": []

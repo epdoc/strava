@@ -344,8 +344,7 @@ export class Main {
       assert(streamOpts.date);
 
       const opts: GetActivitiesOpts = {
-        detailed: streamOpts.laps === 'waypoints' || streamOpts.laps === 'both' ||
-          streamOpts.more || streamOpts.efforts,
+        detailed: streamOpts.laps === true || streamOpts.more || streamOpts.efforts,
         streams: writer?.streamTypes(),
         starredSegments: streamOpts.efforts,
         dedup: (streamOpts.allowDups === true) ? false : true,

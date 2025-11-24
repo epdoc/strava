@@ -4,18 +4,19 @@ This document provides essential context for Claude Code when working on this pr
 
 ## Project Overview
 
-This is a Deno/TypeScript monorepo for generating KML files from Strava activities and segments. It's a modern
-rewrite of the legacy [epdoc-strava](https://github.com/jpravetz/epdoc-strava) Node.js implementation.
+This is a Deno/TypeScript monorepo for generating KML files from Strava activities and segments.
+It's a modern rewrite of the legacy [epdoc-strava](https://github.com/jpravetz/epdoc-strava) Node.js
+implementation.
 
 See the top-level [README.md](./README.md) for workspace structure and quick start guide.
 
 ## Coding Standards
 
-**IMPORTANT**: All development in this project must follow the universal coding standards and conventions
-documented in:
+**IMPORTANT**: All development in this project must follow the universal coding standards and
+conventions documented in:
 
-- **[GEMINI_GLOBAL.md](/Users/jpravetz/dev/GEMINI_GLOBAL.md)** - Universal guidelines for Deno TypeScript
-  projects
+- **[GEMINI_GLOBAL.md](/Users/jpravetz/dev/GEMINI_GLOBAL.md)** - Universal guidelines for Deno
+  TypeScript projects
 
 This document covers:
 
@@ -33,7 +34,6 @@ This document covers:
 ├── packages/
 │   ├── strava/                             # Main CLI application
 │   └── strava-api/                         # Strava API client library
-/Users/jpravetz/dev/epdoc/epdoc-strava/     # OLD implementation (Node.js)
 /Users/jpravetz/dev/@epdoc/std/             # Shared utility packages (fs, type, daterange, etc.)
 /Users/jpravetz/dev/@epdoc/logger/          # Logging library (separate monorepo)
 ```
@@ -89,8 +89,8 @@ Commands follow a consistent pattern:
 
 1. **Command Definition**: Located in `src/cmd/<command>/cmd.ts`
 2. **Options Configuration**: Shared options defined in `src/cmd/options/definitions.ts`
-3. **Business Logic**: Commands call methods on `ctx.app` (like `ctx.app.getKml()`), where the actual
-   implementation lives in `src/app/app.ts`
+3. **Business Logic**: Commands call methods on `ctx.app` (like `ctx.app.getKml()`), where the
+   actual implementation lives in `src/app/app.ts`
 
 Example command structure:
 
@@ -132,14 +132,16 @@ export class MyCmd extends Options.BaseSubCmd {
 **Command-Specific Options** (`src/cmd/options/definitions.ts`):
 
 - **Definitions**: All option definitions are centralized in `definitions.ts`
-- **Reusability**: Options like `date`, `output`, `activities`, `segments` are shared across commands
+- **Reusability**: Options like `date`, `output`, `activities`, `segments` are shared across
+  commands
 - **Configuration**: Each command specifies which options it needs via `cmdConfig.options`
 - **Type Safety**: Options are strongly typed through TypeScript interfaces
 
 **How Options Work**:
 
 - Commander.js automatically merges parent (global) options into child command options
-- Command action handlers receive both global and command-specific options in the single options parameter
+- Command action handlers receive both global and command-specific options in the single options
+  parameter
 - Example: KML command receives `imperial` (global) + `output`, `dates`, etc. (command-specific)
 
 ### File Writing Pattern
@@ -224,8 +226,10 @@ strava-api/
 ```
 
 **Key Classes**:
+
 - `Api` (api.ts): Main API client - `getActivities()`, `getAthlete()`, `getStreamCoords()`, etc.
-- `Activity` (activity.ts): Activity wrapper - `attachStarredSegments()`, `getDetailed()`, `getTrackPoints()`
+- `Activity` (activity.ts): Activity wrapper - `attachStarredSegments()`, `getDetailed()`,
+  `getTrackPoints()`
 - `OAuth2Handler` (auth/auth.ts): Token management and refresh
 
 ### packages/strava/ - Main CLI Application
@@ -288,18 +292,18 @@ strava/
 
 **Key Files for Quick Navigation**:
 
-| Task | File Path |
-|------|-----------|
-| **Business Logic** | `src/app/app.ts` - Main.getTrack(), Main.getPdf(), Main.getSegments() |
-| **KML Generation** | `src/track/kml.ts` - KmlWriter class |
-| **GPX Generation** | `src/track/gpx.ts` - GpxWriter class |
-| **PDF/XML Generation** | `src/bikelog/bikelog.ts` - Bikelog class |
-| **API Calls** | `../strava-api/src/api.ts` - Api class |
-| **Activity Data** | `../strava-api/src/activity.ts` - Activity class |
-| **CLI Options** | `src/cmd/options/definitions.ts` - All option definitions |
-| **User Settings** | `~/.strava/user.settings.json` - Line styles, aliases, blackout zones |
+| Task                   | File Path                                                             |
+| ---------------------- | --------------------------------------------------------------------- |
+| **Business Logic**     | `src/app/app.ts` - Main.getTrack(), Main.getPdf(), Main.getSegments() |
+| **KML Generation**     | `src/track/kml.ts` - KmlWriter class                                  |
+| **GPX Generation**     | `src/track/gpx.ts` - GpxWriter class                                  |
+| **PDF/XML Generation** | `src/bikelog/bikelog.ts` - Bikelog class                              |
+| **API Calls**          | `../strava-api/src/api.ts` - Api class                                |
+| **Activity Data**      | `../strava-api/src/activity.ts` - Activity class                      |
+| **CLI Options**        | `src/cmd/options/definitions.ts` - All option definitions             |
+| **User Settings**      | `~/.strava/user.settings.json` - Line styles, aliases, blackout zones |
 
 ## Questions?
 
-If you encounter patterns or structures not documented here, ask the user for clarification and update this
-document.
+If you encounter patterns or structures not documented here, ask the user for clarification and
+update this document.

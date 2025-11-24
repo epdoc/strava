@@ -44,7 +44,8 @@ export type CommonOpts = {
  */
 export type StreamOpts = {
   activities?: boolean;
-  laps?: 'tracks' | 'waypoints' | 'both'; // what to output for laps: tracks only (default), waypoints only, or both
+  laps?: boolean; // include lap waypoints
+  noTracks?: boolean; // suppress track output (only output waypoints)
   blackout?: boolean;
   /** allow duplicate intermediate track points instead of filtering them out */
   allowDups?: boolean;

@@ -1,4 +1,3 @@
-import { DateEx } from '@epdoc/datetime';
 import type { Seconds } from '@epdoc/duration';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';

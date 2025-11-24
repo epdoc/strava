@@ -65,13 +65,11 @@ export const mapDef: Record<string, Options.Def> = {
   laps: {
     short: 'l',
     name: 'laps',
-    params: '[mode]',
-    description: 'Include lap data. Modes: "tracks", "waypoints", "both" (default: tracks)',
-    choices: ['tracks', 'waypoints', 'both'],
-    argParser: (str: string | boolean) => {
-      if (str === true || str === '') return 'tracks'; // Default
-      return str;
-    },
+    description: 'Include lap waypoints',
+  },
+  noTracks: {
+    name: 'noTracks',
+    description: 'Suppress track output (only output waypoints)',
   },
   efforts: {
     short: 'e',

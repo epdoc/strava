@@ -16,6 +16,7 @@ export const cmdConfig: Options.Config = {
     more: true,
     efforts: true,
     laps: true,
+    noTracks: true,
     blackout: true,
     commute: true,
     type: true,
@@ -29,7 +30,8 @@ type KmlCmdOpts = {
   output: string;
   more: boolean;
   efforts: boolean;
-  laps: Options.LapType;
+  laps?: boolean;
+  noTracks?: boolean;
   blackout: boolean;
   commute?: Options.CommuteType;
   type: Api.Schema.ActivityType[];
@@ -111,6 +113,7 @@ export class KmlCmd extends Options.BaseSubCmd {
           more: kmlOpts.more,
           efforts: kmlOpts.efforts,
           laps: kmlOpts.laps,
+          noTracks: kmlOpts.noTracks,
           commute: kmlOpts.commute,
           type: [],
           imperial: cmd.opts().imperial,

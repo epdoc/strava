@@ -47,7 +47,7 @@ export class KmlWriter extends TrackWriter {
     const types: Api.Schema.StreamType[] = [Api.Schema.StreamKeys.LatLng];
 
     // Request time and altitude streams if lap waypoints are enabled
-    if (this.opts.laps === 'waypoints' || this.opts.laps === 'both') {
+    if (this.opts.laps === true) {
       types.push(Api.Schema.StreamKeys.Time);
       types.push(Api.Schema.StreamKeys.Altitude);
     }
@@ -198,7 +198,7 @@ export class KmlWriter extends TrackWriter {
       }
     });
     // Add lap marker style if lap waypoints are enabled
-    if (this.opts.laps === 'waypoints' || this.opts.laps === 'both') {
+    if (this.opts.laps === true) {
       this.#addLapMarkerStyle();
     }
     await this.flush();
@@ -405,7 +405,7 @@ export class KmlWriter extends TrackWriter {
 
     // Output lap markers if laps waypoints are requested and available
     if (
-      (this.opts.laps === 'waypoints' || this.opts.laps === 'both') &&
+      this.opts.laps === true &&
       'laps' in activity.data && _.isArray(activity.data.laps) &&
       activity.data.laps.length > 1
     ) {

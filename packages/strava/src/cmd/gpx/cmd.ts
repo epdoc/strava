@@ -14,6 +14,7 @@ export const cmdConfig: Options.Config = {
     date: true,
     output: { description: 'Output folder (REQUIRED unless set in user settings)' },
     laps: true,
+    noTracks: true,
     commute: true,
     type: true,
     blackout: true,
@@ -25,7 +26,8 @@ export const cmdConfig: Options.Config = {
 type GpxCmdOpts = {
   date: DateRanges;
   output: string;
-  laps: Options.LapType;
+  laps?: boolean;
+  noTracks?: boolean;
   commute?: Options.CommuteType;
   type: Api.Schema.ActivityType[];
   blackout: boolean;
@@ -36,8 +38,9 @@ type GpxCmdOpts = {
  * Command to generate GPX files for Strava activities.
  *
  * This command creates individual GPX files for each activity with support for:
- * - Track points with lat/lon, elevation, and timezone-aware timestamps
+ * - Track points with lat/lon, elevation, and timezone-aware timestamps (default: on)
  * - Lap waypoints showing where lap button was pressed (--laps flag)
+ * - Waypoints-only mode with --laps --no-tracks
  * - Activity type filtering (--type)
  * - Commute filtering (--commute yes|no|all)
  * - Date range filtering (--date, required)
@@ -57,11 +60,12 @@ type GpxCmdOpts = {
  *   --output ./gpx-files/ \
  *   --laps
  *
- * # Generate GPX for rides only
+ * # Generate GPX for rides only, waypoints only (no tracks)
  * deno run -A ./packages/strava/main.ts gpx \
  *   --date 20240101-20241231 \
  *   --output ./rides/ \
- *   --type Ride
+ *   --type Ride \
+ *   --laps --no-tracks
  * ```
  */
 export class GpxCmd extends Options.BaseSubCmd {
@@ -118,6 +122,7 @@ export class GpxCmd extends Options.BaseSubCmd {
           date: gpxOpts.date,
           output: (gpxOpts.output ?? ctx.app.userSettings?.gpxFolder) as FS.Path,
           laps: gpxOpts.laps,
+          noTracks: gpxOpts.noTracks,
           commute: gpxOpts.commute,
           type: [],
           imperial: cmd.opts().imperial,

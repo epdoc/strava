@@ -325,7 +325,7 @@ export class GpxWriter extends TrackWriter {
         continue;
       }
 
-      // Calculate metrics for comment
+      // Calculate metrics
       const distanceKm = (lap.distance / 1000).toFixed(2);
       const elevation = coord.altitude ?? 0;
       let elevDelta = 0;
@@ -336,8 +336,17 @@ export class GpxWriter extends TrackWriter {
         gradient = (elevDelta / lap.distance) * 100; // Convert to percentage
       }
 
-      // Build comment with lap statistics
-      const comment = `Distance: ${distanceKm} km, Elevation: ${elevation.toFixed(1)} m` +
+      // Build name and description
+      const name = `${distanceKm} km`;
+      const desc = prevElevation !== undefined
+        ? `${elevation.toFixed(1)} m; ${elevDelta > 0 ? '+' : ''}${elevDelta.toFixed(1)} m; ${
+          gradient.toFixed(1)
+        }%`
+        : `${elevation.toFixed(1)} m`;
+
+      // Build comment with full lap statistics
+      const comment =
+        `Lap ${i + 1}: Distance: ${distanceKm} km, Elevation: ${elevation.toFixed(1)} m` +
         (prevElevation !== undefined
           ? `, Delta: ${elevDelta > 0 ? '+' : ''}${elevDelta.toFixed(1)} m, Gradient: ${
             gradient.toFixed(1)
@@ -345,8 +354,8 @@ export class GpxWriter extends TrackWriter {
           : '');
 
       this.writeln(1, '<wpt lat="' + coord.lat + '" lon="' + coord.lng + '">');
-      this.writeln(2, '<name>Lap ' + (i + 1) + '</name>');
-      this.writeln(2, '<desc>' + distanceKm + ' km</desc>');
+      this.writeln(2, '<name>' + name + '</name>');
+      this.writeln(2, '<desc>' + desc + '</desc>');
 
       if (coord.altitude !== undefined) {
         this.writeln(2, '<ele>' + coord.altitude + '</ele>');

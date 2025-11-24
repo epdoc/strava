@@ -24,17 +24,11 @@ export class TrackWriter {
   }
 
   writeTracks(): boolean {
-    return (!_.isNonEmptyString(this.opts.laps) || this.opts.laps === 'tracks' ||
-        this.opts.laps === 'both')
-      ? true
-      : false;
+    return this.opts.noTracks !== true;
   }
 
   writeWaypoints(): boolean {
-    return (_.isNonEmptyString(this.opts.laps) &&
-        (this.opts.laps === 'waypoints' || this.opts.laps === 'both'))
-      ? true
-      : false;
+    return this.opts.laps === true;
   }
 
   /**

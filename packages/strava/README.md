@@ -66,7 +66,7 @@ strava kml [options]
 **Content Options:**
 - `-m, --more` - Include activity stats in descriptions (distance, elevation, times)
 - `-e, --efforts` - Include starred segment efforts in descriptions (superset of `--more`)
-- `-l, --laps [mode]` - Include lap data. Modes: `tracks` (default), `waypoints`, `both`
+- `-l, --laps` - Include lap waypoints as point markers
 
 **Filtering Options:**
 - `-b, --blackout` - Apply blackout zones from user settings (exclude sensitive locations)
@@ -78,13 +78,13 @@ strava kml [options]
 strava kml -d 2025-01- -o january.kml
 
 # KML with activities and starred segments, including lap waypoints
-strava kml -d 2025-01- -o rides.kml -l waypoints -e
+strava kml -d 2025-01- -o rides.kml -l -e
 
 # Rides only with blackout zones applied
 strava kml -d 20250101-20250131 -t Ride,EBikeRide -b -o rides-filtered.kml
 
 # Non-commute activities with lap markers and segment efforts
-strava kml -d 2025-01- --commute no -l both -e -o activities.kml
+strava kml -d 2025-01- --commute no -l -e -o activities.kml
 ```
 
 ---
@@ -112,7 +112,8 @@ strava gpx [options]
 - `--commute <choice>` - Filter by commute status: `yes`, `no`, or `all`
 
 **Content Options:**
-- `-l, --laps [mode]` - Include lap data. Modes: `tracks` (default), `waypoints`, `both`
+- `-l, --laps` - Include lap waypoints (default: off)
+- `--noTracks` - Suppress track output (waypoints only, requires `--laps`)
 
 **Filtering Options:**
 - `-b, --blackout` - Apply blackout zones to exclude sensitive locations (defined in your user settings file)
@@ -127,7 +128,10 @@ When using `--output <folder>` each activity generates a separate GPX file named
 strava gpx -d 20251101- -o ~/gpxfiles -t Ride,EBikeRide
 
 # GPX with lap waypoints and blackout filtering
-strava gpx -d 20251101-20251130 -o ./rides/ -l waypoints -b
+strava gpx -d 20251101-20251130 -o ./rides/ -l -b
+
+# Lap waypoints only (no track points)
+strava gpx -d 20251124 -o ./laps/ -l --noTracks
 
 # All activities with default folder from user settings
 strava gpx -d 20251101-
@@ -137,11 +141,14 @@ strava gpx -d 20250101- -o ~/gpx/2025_Activities.gpx
 ```
 
 **Lap Waypoints:**
-When `-l waypoints` or `-l both` is specified, lap button presses are exported as GPX waypoints with:
-- Name: `Lap X (distance)`
+When `-l` or `--laps` is specified, lap button presses are exported as GPX waypoints with:
+- Name: `Lap X`
 - Description: Distance for that lap (e.g., "0.27 km")
 - Comment: Distance, elevation, elevation delta, gradient percentage
 - Timezone-aware timestamps
+- Elevation data
+
+By default, both track points and lap waypoints are included. Use `--noTracks` to output only waypoints.
 
 ---
 
@@ -318,7 +325,7 @@ Options:
 
 ```bash
 # Complete KML with everything
-strava kml -d 2025-01- -o complete.kml -l both -e -b
+strava kml -d 2025-01- -o complete.kml -l -e -b
 
 # Training rides only, no commutes
 strava kml -d 2025-01- --commute no -t Ride -o training.kml
@@ -334,7 +341,7 @@ strava segments --kml segments.kml
 strava gpx -d 20251114 -o ~/josm/ -b
 
 # Multiple activity types with lap waypoints
-strava gpx -d 2025-11- -t Ride,Run,Hike -l waypoints
+strava gpx -d 2025-11- -t Ride,Run,Hike -l
 
 # Use default folder from settings
 strava gpx -d 2025-11-14
@@ -344,8 +351,8 @@ strava gpx -d 2025-11-14
 
 ```bash
 # Monthly workflow: Generate all three formats
-strava kml -d 2025-01- -o jan-earth.kml -l both -e
-strava gpx -d 2025-01- -o ~/gpx/jan/ -b -l waypoints
+strava kml -d 2025-01- -o jan-earth.kml -l -e
+strava gpx -d 2025-01- -o ~/gpx/jan/ -b -l
 strava pdf -d 2025-01- -o jan-bikelog.xml
 ```
 

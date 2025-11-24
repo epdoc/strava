@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.4] - 2025-11-24
+
+### Changed
+- **Breaking**: Simplified `--laps` option to boolean flag (no mode parameter)
+  - Previously: `--laps [mode]` with modes: `tracks`, `waypoints`, `both`
+  - Now: `--laps` enables lap waypoints (default: off)
+- Added `--noTracks` option to suppress track output (waypoints only)
+  - Use `--laps --noTracks` for waypoints-only GPX files
+- Updated GPX waypoint format for better readability:
+  - Name: Distance (e.g., "3.04 km")
+  - Description: Elevation; Delta; Gradient (e.g., "103.0 m; +19.0 m; 8.1%")
+  - Comment: Full lap statistics with lap number
+
+### Fixed
+- Fixed bug where `--laps` flag was not including waypoints in GPX output
+
 ## [2.0.3] - 2025-11-22
 
 - Really fixed julian day issue with PDF dates (was not fixed by previous fix)

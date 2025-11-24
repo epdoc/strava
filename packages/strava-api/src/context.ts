@@ -6,13 +6,12 @@ import type { Console } from '@epdoc/msgbuilder';
  */
 
 export type MsgBuilder = Console.Builder;
-export type Logger<M extends MsgBuilder = MsgBuilder> = Log.Std.Logger<M>;
+export type Logger<M extends Console.Builder = MsgBuilder> = Log.Std.Logger<M>;
 
 /**
  * Represents the application context, containing a logger.
  */
-export interface IContext<M extends MsgBuilder, L extends Logger<M>> {
+export interface IContext<M extends Console.Builder, L extends Logger<M>> {
   /** The application logger. */
   log: L;
 }
-

@@ -7,6 +7,7 @@ import rawConfig from '../config.json' with { type: 'json' };
 import type * as Ctx from '../context.ts';
 import { type Activity, Api, type StravaApi } from '../dep.ts';
 import * as Segment from '../segment/mod.ts';
+import * as State from '../state/mod.ts';
 import { KmlWriter } from '../track/kml.ts';
 import * as Stream from '../track/mod.ts';
 import type * as App from './types.ts';
@@ -63,6 +64,7 @@ type GetActivitiesOpts = {
  */
 export class Main {
   #api: StravaApi;
+  #stateFile?: State.StateFile;
   athlete?: Api.Schema.DetailedAthlete;
   userSettings?: App.UserSettings;
   notifyOffline = false;
@@ -97,20 +99,22 @@ export class Main {
    * 1. Configuration files (if `opts.config` is true).
    * 2. Strava API with OAuth authentication (if `opts.strava` is true).
    * 3. User settings from `~/.strava/user.settings.json` (if `opts.userSettings` is true).
+   * 4. State file from `~/.strava/user.state.json` (if `opts.state` is true).
    *
    * @param ctx - Application context with logging.
    * @param [opts={}] - Initialization options.
    * @param [opts.config] - When true, initializes configuration files.
    * @param [opts.strava] - When true, initializes the Strava API client with authentication.
    * @param [opts.userSettings] - When true, loads user settings (e.g. line styles, bikes).
+   * @param [opts.state] - When true, loads the persistent state file.
    *
    * @example
    * ```ts
    * // Initialize only what's needed for an athlete command
    * await app.init(ctx, { strava: true, userSettings: true });
    *
-   * // Initialize everything
-   * await app.init(ctx, { config: true, strava: true, userSettings: true });
+   * // Initialize everything including state
+   * await app.init(ctx, { config: true, strava: true, userSettings: true, state: true });
    * ```
    */
   async init(ctx: Ctx.Context, opts: App.Opts = {}): Promise<void> {
@@ -130,6 +134,28 @@ export class Main {
         post: '}',
       }) as App.UserSettings;
     }
+
+    if (opts.state) {
+      this.#stateFile = new State.StateFile(new FS.File(configPaths.userState));
+      await this.#stateFile.load(ctx);
+    }
+  }
+
+  /**
+   * Gets a date range starting from the last update for the specified output type.
+   *
+   * This method retrieves the last updated timestamp from the state file and creates
+   * a DateRanges object from that date to now. If no state file is loaded or no last
+   * update exists, returns undefined.
+   *
+   * @param type - The output type ('kml' or 'pdf')
+   * @returns DateRanges from last update to now, or undefined if no state available
+   */
+  getDateRangeFromState(type: State.OutputType): DateRanges | undefined {
+    if (!this.#stateFile) {
+      return undefined;
+    }
+    return this.#stateFile.getDateRangeFrom(type);
   }
 
   /**
@@ -281,46 +307,48 @@ export class Main {
   }
 
   /**
-   * Generates a KML file from Strava activities or segments for Google Earth.
+   * Generates a KML or GPX file from Strava activities or segments.
    *
-   * This method orchestrates the complete KML generation workflow:
-   * 1. Initializes a KML generator with user-configured line styles.
+   * This method orchestrates the complete track generation workflow:
+   * 1. Initializes a track generator with user-configured line styles.
    * 2. Validates that activities or segments are requested.
    * 3. Fetches activities for the specified date ranges, applying filters.
-   * 4. Optionally fetches detailed activity data for lap markers (if `kmlOpts.laps` is true).
+   * 4. Optionally fetches detailed activity data for lap markers (if `streamOpts.laps` is true).
    * 5. Fetches track points for each activity from Strava streams.
-   * 6. Applies commute filtering based on `kmlOpts.commute`.
-   * 7. Generates a KML file with appropriate styling and organization.
+   * 6. Applies commute filtering based on `streamOpts.commute`.
+   * 7. Generates output file with appropriate styling and organization.
+   * 8. Updates state file with the latest activity timestamp (if outputType provided).
    *
-   * The generated KML can include:
-   * - Activity routes as color-coded `LineString` elements.
-   * - Optional lap markers as `Point` placemarks.
+   * The generated file can include:
+   * - Activity routes as color-coded tracks.
+   * - Optional lap markers as waypoints.
    * - Segment routes organized by region.
    *
    * @param ctx - Application context for logging.
-   * @param streamOpts - KML generation options.
-   * @param [kmlOpts.activities=false] - Whether to include activity paths in the KML.
-   * @param [kmlOpts.date] - Date ranges for filtering activities. Required if `kmlOpts.activities` is true.
-   * @param [kmlOpts.output='Activities.kml'] - The path for the output file.
-   * @param [kmlOpts.laps=false] - Whether to include lap markers.
-   * @param [kmlOpts.commute='all'] - Commute filter ('yes', 'no', or 'all').
-   * @param [kmlOpts.more=false] - Whether to include detailed descriptions.
-   * @param [kmlOpts.efforts=false] - Whether to include effort data.
-   * @param [kmlOpts.imperial=false] - Whether to use imperial units.
-   * @throws If neither `kmlOpts.activities` nor `kmlOpts.segments` is true.
+   * @param streamOpts - Track generation options.
+   * @param [outputType] - Optional output type ('kml' or 'pdf') for state tracking.
+   * @param [streamOpts.activities=false] - Whether to include activity paths in the output.
+   * @param [streamOpts.date] - Date ranges for filtering activities. Required if `streamOpts.activities` is true.
+   * @param [streamOpts.output='Activities.kml'] - The path for the output file.
+   * @param [streamOpts.laps=false] - Whether to include lap markers.
+   * @param [streamOpts.commute='all'] - Commute filter ('yes', 'no', or 'all').
+   * @param [streamOpts.more=false] - Whether to include detailed descriptions.
+   * @param [streamOpts.efforts=false] - Whether to include effort data.
+   * @param [streamOpts.imperial=false] - Whether to use imperial units.
+   * @throws If neither `streamOpts.activities` nor `streamOpts.segments` is true.
    *
    * @example
    * ```ts
-   * await app.getKml(ctx, {
+   * await app.getTrack(ctx, {
    *   activities: true,
    *   laps: true,
    *   date: dateRanges,
    *   output: 'rides.kml',
    *   commute: 'no'
-   * });
+   * }, 'kml');
    * ```
    */
-  async getTrack(ctx: Ctx.Context, streamOpts: Stream.Opts): Promise<void> {
+  async getTrack(ctx: Ctx.Context, streamOpts: Stream.Opts, outputType?: State.OutputType): Promise<void> {
     // Validate that at least activities or segments is requested
     if (!streamOpts.activities && !streamOpts.segments) {
       throw new Error('When writing KML, select either segments, activities, or both');
@@ -373,6 +401,11 @@ export class Main {
       const outputPath = streamOpts.output;
 
       await handler.outputData(ctx, outputPath, activities, segments);
+
+      // Update state file with the latest activity timestamp
+      if (outputType && this.#stateFile && activities.length > 0) {
+        await this.#stateFile.updateLastUpdated(ctx, outputType, activities);
+      }
     } else {
       ctx.log.info.warn('No activities or segments found for the specified criteria').emit();
     }
@@ -409,6 +442,7 @@ export class Main {
    * 3. Fetches detailed data for each activity to access descriptions and private notes.
    * 4. Prepares a dictionary of the athlete's bikes from their profile.
    * 5. Generates an XML file containing daily activity summaries.
+   * 6. Updates state file with the latest activity timestamp (if outputType provided).
    *
    * The generated XML can include:
    * - Up to two bike ride events per day (distance, bike, elevation, time).
@@ -418,6 +452,7 @@ export class Main {
    *
    * @param ctx - Application context for logging.
    * @param pdfOpts - PDF/XML generation options.
+   * @param [outputType] - Optional output type ('pdf') for state tracking.
    * @param pdfOpts.date - The date ranges for activity filtering.
    * @param [pdfOpts.output='bikelog.xml'] - The path for the output file.
    *
@@ -426,10 +461,10 @@ export class Main {
    * await app.getPdf(ctx, {
    *   date: dateRanges,
    *   output: 'bikelog2024.xml'
-   * });
+   * }, 'pdf');
    * ```
    */
-  async getPdf(ctx: Ctx.Context, pdfOpts: BikeLog.Opts): Promise<void> {
+  async getPdf(ctx: Ctx.Context, pdfOpts: BikeLog.Opts, outputType?: State.OutputType): Promise<void> {
     // Fetch activities if we have date ranges
     if (!(pdfOpts.date && pdfOpts.date.hasRanges())) {
       ctx.log.warn.warn('No date ranges specified').emit();
@@ -483,6 +518,11 @@ export class Main {
     ctx.log.info.text('Generating XML file').fs(outputPath).emit();
     await bikelog.outputData(ctx, outputPath, activities);
     ctx.log.info.h2('PDF/XML file generated successfully').fs(outputPath).emit();
+
+    // Update state file with the latest activity timestamp
+    if (outputType && this.#stateFile && activities.length > 0) {
+      await this.#stateFile.updateLastUpdated(ctx, outputType, activities);
+    }
   }
 
   /**

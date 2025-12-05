@@ -22,6 +22,7 @@ export type Opts = Partial<{
   strava: boolean;
   userSettings: boolean;
   config: boolean;
+  state: boolean;
 }>;
 
 export type BikeId = string;
@@ -83,6 +84,8 @@ export type ConfigFile = {
     userCreds: FS.FilePath;
     /** The credentials for this application, registered with Strava */
     clientCreds: FS.FilePath;
+    /** The persistent state file tracking last update times for KML and PDF generation */
+    userState: FS.FilePath;
   };
 };
 

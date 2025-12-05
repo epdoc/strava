@@ -9,8 +9,8 @@ export const mapDef: Record<string, Options.Def> = {
   date: {
     short: 'd',
     name: 'date',
-    params: '<dates>',
-    description: `Comma-separated date ranges (REQUIRED). Format: ${
+    params: '[dates]',
+    description: `Comma-separated date ranges (defaults to activities since last run). Format: ${
       colors.blue('20141231-20150105,20150107-')
     }`,
     argParser: (str: string) => {

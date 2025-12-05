@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.10] - 2025-12-05
+
+- Fixed lastUpdated to be beyond start date of last activity seen by 1 minute
+
 ## [2.0.9] - 2025-12-05
 
 - Fix state file date range to exclude already-processed activities

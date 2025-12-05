@@ -1,4 +1,4 @@
-import type { DateRanges } from '@epdoc/daterange';
+import { DateRanges } from '@epdoc/daterange';
 import type * as BikeLog from '../../bikelog/mod.ts';
 import type { Ctx } from '../dep.ts';
 import * as Options from '../options/mod.ts';
@@ -64,22 +64,28 @@ export class PdfCmd extends Options.BaseSubCmd {
         // Initialize app with required services
         await ctx.app.init(ctx, { strava: true, userSettings: true, state: true });
 
-        // Determine date range: use command line if provided, otherwise use state file
-        let dateRange = opts.date;
-        if (!dateRange || !dateRange.hasRanges()) {
-          // Try to get date range from state file
-          dateRange = ctx.app.getDateRangeFromState('pdf');
-          if (dateRange && dateRange.hasRanges()) {
-            ctx.log.info.text('Using date range from state file (since last update)').emit();
-          } else {
+        // Normalize to DateRanges: use command line if provided, otherwise create from state file
+        let dateRanges: DateRanges;
+
+        if (opts.date && opts.date.hasRanges()) {
+          // Use command line date ranges as-is
+          dateRanges = opts.date;
+        } else {
+          // Create DateRanges from state file's lastUpdated timestamp
+          const lastUpdated = ctx.app.getLastUpdated('pdf');
+          if (!lastUpdated) {
             ctx.log.error.error(
-              '--date is required for first run (or no activities found since last update). Specify date range(s) (e.g., 20240101-20241231)',
+              '--date is required for first run. Specify date range(s) (e.g., 20240101-20241231)',
             )
               .emit();
             console.error(''); // blank line before help
             this.cmd.outputHelp();
             Deno.exit(1);
           }
+
+          // Create a single range: from lastUpdated to now
+          dateRanges = new DateRanges([{ after: new Date(lastUpdated) }]);
+          ctx.log.info.text('Fetching activities since last update').value(lastUpdated).emit();
         }
 
         // Use default formsDataFile from user settings if --output not provided
@@ -102,7 +108,7 @@ export class PdfCmd extends Options.BaseSubCmd {
         // Build PDF options from command opts
         const pdfOpts: BikeLog.Opts = {
           output: outputPath,
-          date: dateRange,
+          date: dateRanges,
         };
 
         // Call app layer to generate PDF/XML

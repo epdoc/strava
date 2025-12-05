@@ -1,7 +1,7 @@
-import type { ISODate } from '@epdoc/datetime';
 import type { DateRanges } from '@epdoc/daterange';
 import { dateRanges } from '@epdoc/daterange';
-import * as FS from '@epdoc/fs/fs';
+import type { ISODate } from '@epdoc/datetime';
+import type * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import type * as Ctx from '../context.ts';
 import type { Activity } from '../dep.ts';

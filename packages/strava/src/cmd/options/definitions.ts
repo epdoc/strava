@@ -21,7 +21,7 @@ export const mapDef: Record<string, Options.Def> = {
     short: 'o',
     name: 'output',
     params: '[filename]',
-    description: 'Output ${cmd} filename (defaults from user settings: kmlFile or formsDataFile).',
+    description: 'Output ${cmd} filename (default location is set in user settings).',
     argParser: (str: string) => {
       return str;
     },

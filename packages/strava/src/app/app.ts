@@ -1,5 +1,5 @@
 import type { DateRanges } from '@epdoc/daterange';
-import { ISODate } from '@epdoc/datetime';
+import type { ISODate } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';

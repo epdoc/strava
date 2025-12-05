@@ -104,11 +104,10 @@ export class StateFile {
   }
 
   /**
-   * Creates a DateRanges object starting from the last updated date for the given output type.
+   * Creates a DateRanges object starting from the day after the last updated date.
    *
-   * If no last updated date exists, returns undefined. The date range will be from
-   * the last updated date (exclusive) to now (inclusive), which means it will fetch
-   * all activities that occurred after the last update.
+   * If no last updated date exists, returns undefined. The date range will start from
+   * the day AFTER the last update (to avoid re-processing the same activities) and go to now.
    *
    * @param type Output type ('kml' or 'pdf')
    * @returns DateRanges object for fetching new activities, or undefined if no last update exists
@@ -117,7 +116,7 @@ export class StateFile {
    * ```ts
    * // If state.kml.lastUpdated is "2024-12-01T10:00:00Z"
    * const ranges = stateFile.getDateRangeFrom('kml');
-   * // Returns DateRanges from 2024-12-01T10:00:00Z to now
+   * // Returns DateRanges from 2024-12-02 (next day) to now
    * ```
    */
   getDateRangeFrom(type: State.OutputType): DateRanges | undefined {
@@ -126,9 +125,12 @@ export class StateFile {
       return undefined;
     }
 
-    // Create date range from last updated to now
+    // Create date range from the day AFTER last updated to now
+    // This ensures we don't re-fetch activities from the last processed day
     // Format: "YYYYMMDD-" means from that date to now
     const fromDate = new Date(lastUpdated);
+    // Add 1 day to start from the next day
+    fromDate.setDate(fromDate.getDate() + 1);
     const dateStr = fromDate.toISOString().split('T')[0].replace(/-/g, '');
     return dateRanges(`${dateStr}-`);
   }

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.9] - 2025-12-05
+
+- Fix state file date range to exclude already-processed activities
+
 ## [2.0.8] - 2025-12-05
 
 - Added lastUpdated for generating KML and Acroforms data

@@ -171,6 +171,10 @@ export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
     return this.data.gear_id;
   }
 
+  get startDate(): Date {
+    return new Date(this.data.start_date);
+  }
+
   /**
    * The start datetime of the activity in the local timezone, in ISO 8601 format.
    */

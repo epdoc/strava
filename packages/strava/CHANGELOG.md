@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.6] - 2025-12-05
+
+- Add default output file path support for KML and PDF commands
+
 ## [2.0.5] - 2025-11-24
 
 - Updated dependencies

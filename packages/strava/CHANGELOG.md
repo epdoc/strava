@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.11] - 2025-12-05
+
+- Updated dependencies; fixed lint error.
+
 ## [2.0.10] - 2025-12-05
 
 - Fixed lastUpdated to be beyond start date of last activity seen by 1 minute

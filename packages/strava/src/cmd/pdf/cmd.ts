@@ -15,7 +15,7 @@ export const cmdConfig: Options.Config = {
 
 type PdfCmdOpts = {
   date?: DateRanges;
-  output: string;
+  output?: string;
 };
 
 /**
@@ -64,6 +64,18 @@ export class PdfCmd extends Options.BaseSubCmd {
         // Initialize app with required services
         await ctx.app.init(ctx, { strava: true, userSettings: true });
 
+        // Use default formsDataFile from user settings if --output not provided
+        const outputPath = opts.output || ctx.app.userSettings?.formsDataFile;
+        if (!outputPath) {
+          ctx.log.error.error(
+            '--output is required (or set formsDataFile in ~/.strava/user.settings.json). Specify output filename (e.g., -o bikelog.xml)',
+          )
+            .emit();
+          console.error(''); // blank line before help
+          this.cmd.outputHelp();
+          Deno.exit(1);
+        }
+
         // Ensure we have athlete info
         if (!ctx.app.athlete) {
           await ctx.app.getAthlete(ctx);
@@ -71,7 +83,7 @@ export class PdfCmd extends Options.BaseSubCmd {
 
         // Build PDF options from command opts
         const pdfOpts: BikeLog.Opts = {
-          output: opts.output,
+          output: outputPath,
           date: opts.date,
         };
 

@@ -27,7 +27,7 @@ export const cmdConfig: Options.Config = {
 
 type KmlCmdOpts = {
   date: DateRanges;
-  output: string;
+  output?: string;
   more: boolean;
   efforts: boolean;
   laps?: boolean;
@@ -98,8 +98,15 @@ export class KmlCmd extends Options.BaseSubCmd {
           Deno.exit(1);
         }
 
-        if (!kmlOpts.output) {
-          ctx.log.error.error('--output is required. Specify output filename (e.g., -o output.kml)')
+        // Initialize app to access user settings for default output path
+        await ctx.app.init(ctx, { strava: true, userSettings: true });
+
+        // Use default kmlFile from user settings if --output not provided
+        const outputPath = kmlOpts.output || ctx.app.userSettings?.kmlFile;
+        if (!outputPath) {
+          ctx.log.error.error(
+            '--output is required (or set kmlFile in ~/.strava/user.settings.json). Specify output filename (e.g., -o output.kml)',
+          )
             .emit();
           console.error(''); // blank line before help
           this.cmd.outputHelp();
@@ -109,7 +116,7 @@ export class KmlCmd extends Options.BaseSubCmd {
         const opts: Track.ActivityOpts & Track.CommonOpts & Track.StreamOpts = {
           activities: true,
           date: kmlOpts.date,
-          output: kmlOpts.output as FS.Path,
+          output: outputPath as FS.Path,
           more: kmlOpts.more,
           efforts: kmlOpts.efforts,
           laps: kmlOpts.laps,
@@ -132,8 +139,6 @@ export class KmlCmd extends Options.BaseSubCmd {
             Deno.exit(1);
           }
         }
-
-        await ctx.app.init(ctx, { strava: true, userSettings: true });
 
         await ctx.app.getTrack(ctx, opts);
       } catch (e) {

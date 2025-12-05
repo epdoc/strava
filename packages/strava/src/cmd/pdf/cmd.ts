@@ -62,7 +62,25 @@ export class PdfCmd extends Options.BaseSubCmd {
     this.cmd.init(ctx).action(async (opts: PdfCmdOpts) => {
       try {
         // Initialize app with required services
-        await ctx.app.init(ctx, { strava: true, userSettings: true });
+        await ctx.app.init(ctx, { strava: true, userSettings: true, state: true });
+
+        // Determine date range: use command line if provided, otherwise use state file
+        let dateRange = opts.date;
+        if (!dateRange || !dateRange.hasRanges()) {
+          // Try to get date range from state file
+          dateRange = ctx.app.getDateRangeFromState('pdf');
+          if (dateRange && dateRange.hasRanges()) {
+            ctx.log.info.text('Using date range from state file (since last update)').emit();
+          } else {
+            ctx.log.error.error(
+              '--date is required for first run (or no activities found since last update). Specify date range(s) (e.g., 20240101-20241231)',
+            )
+              .emit();
+            console.error(''); // blank line before help
+            this.cmd.outputHelp();
+            Deno.exit(1);
+          }
+        }
 
         // Use default formsDataFile from user settings if --output not provided
         const outputPath = opts.output || ctx.app.userSettings?.formsDataFile;
@@ -84,11 +102,11 @@ export class PdfCmd extends Options.BaseSubCmd {
         // Build PDF options from command opts
         const pdfOpts: BikeLog.Opts = {
           output: outputPath,
-          date: opts.date,
+          date: dateRange,
         };
 
         // Call app layer to generate PDF/XML
-        await ctx.app.getPdf(ctx, pdfOpts);
+        await ctx.app.getPdf(ctx, pdfOpts, 'pdf');
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : String(err);
         ctx.log.error.error(`Failed to generate PDF/XML: ${errorMsg}`).emit();

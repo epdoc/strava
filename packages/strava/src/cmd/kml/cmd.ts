@@ -26,7 +26,7 @@ export const cmdConfig: Options.Config = {
 };
 
 type KmlCmdOpts = {
-  date: DateRanges;
+  date?: DateRanges;
   output?: string;
   more: boolean;
   efforts: boolean;
@@ -89,17 +89,26 @@ export class KmlCmd extends Options.BaseSubCmd {
   init(ctx: Ctx.Context): Promise<Cmd.Command> {
     this.cmd.init(ctx).action(async (kmlOpts: KmlCmdOpts, cmd: Command) => {
       try {
-        // Validate required options - show help and exit on validation failure
-        if (!kmlOpts.date || !kmlOpts.date.hasRanges()) {
-          ctx.log.error.error('--date is required. Specify date range(s) (e.g., 20240101-20241231)')
-            .emit();
-          console.error(''); // blank line before help
-          this.cmd.outputHelp();
-          Deno.exit(1);
-        }
+        // Initialize app to access user settings and state file
+        await ctx.app.init(ctx, { strava: true, userSettings: true, state: true });
 
-        // Initialize app to access user settings for default output path
-        await ctx.app.init(ctx, { strava: true, userSettings: true });
+        // Determine date range: use command line if provided, otherwise use state file
+        let dateRange: DateRanges | undefined = kmlOpts.date;
+        if (!dateRange || !dateRange.hasRanges()) {
+          // Try to get date range from state file
+          dateRange = ctx.app.getDateRangeFromState('kml');
+          if (dateRange && dateRange.hasRanges()) {
+            ctx.log.info.text('Using date range from state file (since last update)').emit();
+          } else {
+            ctx.log.error.error(
+              '--date is required for first run (or no activities found since last update). Specify date range(s) (e.g., 20240101-20241231)',
+            )
+              .emit();
+            console.error(''); // blank line before help
+            this.cmd.outputHelp();
+            Deno.exit(1);
+          }
+        }
 
         // Use default kmlFile from user settings if --output not provided
         const outputPath = kmlOpts.output || ctx.app.userSettings?.kmlFile;
@@ -115,7 +124,7 @@ export class KmlCmd extends Options.BaseSubCmd {
 
         const opts: Track.ActivityOpts & Track.CommonOpts & Track.StreamOpts = {
           activities: true,
-          date: kmlOpts.date,
+          date: dateRange,
           output: outputPath as FS.Path,
           more: kmlOpts.more,
           efforts: kmlOpts.efforts,
@@ -140,7 +149,7 @@ export class KmlCmd extends Options.BaseSubCmd {
           }
         }
 
-        await ctx.app.getTrack(ctx, opts);
+        await ctx.app.getTrack(ctx, opts, 'kml');
       } catch (e) {
         const err = _.asError(e);
         ctx.log.error.error(`Failed to generate KML: ${err.message}`).emit();

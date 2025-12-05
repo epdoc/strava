@@ -4,6 +4,7 @@
     "clientCreds": "${HOME}/.strava/client.creds.json",
     "userSegments": "${HOME}/.strava/user.segments.json",
     "userSettings": "${HOME}/.strava/user.settings.json",
-    "userCreds": "${HOME}/.strava/user.creds.json"
+    "userCreds": "${HOME}/.strava/user.creds.json",
+    "userState": "${HOME}/.strava/user.state.json"
   }
 }

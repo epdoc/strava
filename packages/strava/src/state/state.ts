@@ -1,6 +1,4 @@
-import type { DateRanges } from '@epdoc/daterange';
-import { dateRanges } from '@epdoc/daterange';
-import type { ISODate } from '@epdoc/datetime';
+import { DateEx, type ISODate } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import type * as Ctx from '../context.ts';
@@ -104,38 +102,6 @@ export class StateFile {
   }
 
   /**
-   * Creates a DateRanges object starting from the day after the last updated date.
-   *
-   * If no last updated date exists, returns undefined. The date range will start from
-   * the day AFTER the last update (to avoid re-processing the same activities) and go to now.
-   *
-   * @param type Output type ('kml' or 'pdf')
-   * @returns DateRanges object for fetching new activities, or undefined if no last update exists
-   *
-   * @example
-   * ```ts
-   * // If state.kml.lastUpdated is "2024-12-01T10:00:00Z"
-   * const ranges = stateFile.getDateRangeFrom('kml');
-   * // Returns DateRanges from 2024-12-02 (next day) to now
-   * ```
-   */
-  getDateRangeFrom(type: State.OutputType): DateRanges | undefined {
-    const lastUpdated = this.getLastUpdated(type);
-    if (!lastUpdated) {
-      return undefined;
-    }
-
-    // Create date range from the day AFTER last updated to now
-    // This ensures we don't re-fetch activities from the last processed day
-    // Format: "YYYYMMDD-" means from that date to now
-    const fromDate = new Date(lastUpdated);
-    // Add 1 day to start from the next day
-    fromDate.setDate(fromDate.getDate() + 1);
-    const dateStr = fromDate.toISOString().split('T')[0].replace(/-/g, '');
-    return dateRanges(`${dateStr}-`);
-  }
-
-  /**
    * Updates the last updated timestamp based on the most recent activity in the list.
    *
    * Finds the activity with the latest `startDatetimeLocal` and stores that as the
@@ -163,7 +129,7 @@ export class StateFile {
     // Find the most recent activity by startDatetimeLocal
     let mostRecent: Activity | undefined;
     for (const activity of activities) {
-      if (!mostRecent || activity.startDatetimeLocal > mostRecent.startDatetimeLocal) {
+      if (!mostRecent || activity.startDate.getTime() > mostRecent.startDate.getTime()) {
         mostRecent = activity;
       }
     }
@@ -174,11 +140,12 @@ export class StateFile {
         this.#state[type] = {};
       }
 
-      // Update the lastUpdated timestamp
-      this.#state[type]!.lastUpdated = mostRecent.startDatetimeLocal;
+      // Update the lastUpdated timestamp to the start date + 1 minute
+      this.#state[type]!.lastUpdated = new DateEx(mostRecent.startDate.getTime() + 60 * 1000)
+        .toISOLocalString() as ISODate;
 
       ctx.log.info.text('Updated').value(type).text('last updated to')
-        .value(mostRecent.startDatetimeLocal).emit();
+        .date(this.#state[type]!.lastUpdated).emit();
 
       // Save the updated state
       await this.save(ctx);

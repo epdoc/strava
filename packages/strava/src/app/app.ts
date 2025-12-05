@@ -1,4 +1,5 @@
 import type { DateRanges } from '@epdoc/daterange';
+import { ISODate } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
@@ -142,20 +143,20 @@ export class Main {
   }
 
   /**
-   * Gets a date range starting from the last update for the specified output type.
+   * Gets the last updated timestamp for a specific output type from the state file.
    *
-   * This method retrieves the last updated timestamp from the state file and creates
-   * a DateRanges object from that date to now. If no state file is loaded or no last
-   * update exists, returns undefined.
+   * This method retrieves the timestamp of the most recent activity processed for
+   * the given output type. This timestamp can be used to fetch only new activities
+   * since the last run.
    *
    * @param type - The output type ('kml' or 'pdf')
-   * @returns DateRanges from last update to now, or undefined if no state available
+   * @returns ISO date string of last update, or undefined if no state available
    */
-  getDateRangeFromState(type: State.OutputType): DateRanges | undefined {
+  getLastUpdated(type: State.OutputType): ISODate | undefined {
     if (!this.#stateFile) {
       return undefined;
     }
-    return this.#stateFile.getDateRangeFrom(type);
+    return this.#stateFile.getLastUpdated(type);
   }
 
   /**
@@ -247,7 +248,7 @@ export class Main {
 
     // Get activities for each date range
     for (const dateRange of date.ranges) {
-      const opts: Api.ActivityOpts = {
+      const apiOpts: Api.ActivityOpts = {
         athleteId,
         query: {
           per_page: 200,
@@ -260,7 +261,7 @@ export class Main {
         },
       };
 
-      activities = [...activities, ...await this.api.getActivities(ctx, opts)];
+      activities = [...activities, ...await this.api.getActivities(ctx, apiOpts)];
     }
     if (opts.filter) {
       activities = activities.filter((activity) => activity.include(opts.filter!));

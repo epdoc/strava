@@ -1,5 +1,5 @@
 import type { Command } from '@epdoc/cliapp';
-import type { DateRanges } from '@epdoc/daterange';
+import { DateRanges } from '@epdoc/daterange';
 import type * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { Api } from '../../dep.ts';
@@ -92,22 +92,28 @@ export class KmlCmd extends Options.BaseSubCmd {
         // Initialize app to access user settings and state file
         await ctx.app.init(ctx, { strava: true, userSettings: true, state: true });
 
-        // Determine date range: use command line if provided, otherwise use state file
-        let dateRange: DateRanges | undefined = kmlOpts.date;
-        if (!dateRange || !dateRange.hasRanges()) {
-          // Try to get date range from state file
-          dateRange = ctx.app.getDateRangeFromState('kml');
-          if (dateRange && dateRange.hasRanges()) {
-            ctx.log.info.text('Using date range from state file (since last update)').emit();
-          } else {
+        // Normalize to DateRanges: use command line if provided, otherwise create from state file
+        let dateRanges: DateRanges;
+
+        if (kmlOpts.date && kmlOpts.date.hasRanges()) {
+          // Use command line date ranges as-is
+          dateRanges = kmlOpts.date;
+        } else {
+          // Create DateRanges from state file's lastUpdated timestamp
+          const lastUpdated = ctx.app.getLastUpdated('kml');
+          if (!lastUpdated) {
             ctx.log.error.error(
-              '--date is required for first run (or no activities found since last update). Specify date range(s) (e.g., 20240101-20241231)',
+              '--date is required for first run. Specify date range(s) (e.g., 20240101-20241231)',
             )
               .emit();
             console.error(''); // blank line before help
             this.cmd.outputHelp();
             Deno.exit(1);
           }
+
+          // Create a single range: from lastUpdated to now
+          dateRanges = new DateRanges([{ after: new Date(lastUpdated) }]);
+          ctx.log.info.text('Fetching activities since last update').value(lastUpdated).emit();
         }
 
         // Use default kmlFile from user settings if --output not provided
@@ -124,7 +130,7 @@ export class KmlCmd extends Options.BaseSubCmd {
 
         const opts: Track.ActivityOpts & Track.CommonOpts & Track.StreamOpts = {
           activities: true,
-          date: dateRange,
+          date: dateRanges,
           output: outputPath as FS.Path,
           more: kmlOpts.more,
           efforts: kmlOpts.efforts,

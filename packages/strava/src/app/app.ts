@@ -348,7 +348,11 @@ export class Main {
    * }, 'kml');
    * ```
    */
-  async getTrack(ctx: Ctx.Context, streamOpts: Stream.Opts, outputType?: State.OutputType): Promise<void> {
+  async getTrack(
+    ctx: Ctx.Context,
+    streamOpts: Stream.Opts,
+    outputType?: State.OutputType,
+  ): Promise<void> {
     // Validate that at least activities or segments is requested
     if (!streamOpts.activities && !streamOpts.segments) {
       throw new Error('When writing KML, select either segments, activities, or both');
@@ -464,7 +468,11 @@ export class Main {
    * }, 'pdf');
    * ```
    */
-  async getPdf(ctx: Ctx.Context, pdfOpts: BikeLog.Opts, outputType?: State.OutputType): Promise<void> {
+  async getPdf(
+    ctx: Ctx.Context,
+    pdfOpts: BikeLog.Opts,
+    outputType?: State.OutputType,
+  ): Promise<void> {
     // Fetch activities if we have date ranges
     if (!(pdfOpts.date && pdfOpts.date.hasRanges())) {
       ctx.log.warn.warn('No date ranges specified').emit();

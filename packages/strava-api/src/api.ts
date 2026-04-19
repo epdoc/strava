@@ -1,9 +1,9 @@
 import type * as FS from '@epdoc/fs/fs';
+import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import { _, type Dict } from '@epdoc/type';
 import { Activity } from './activity.ts';
 import type { StravaCreds } from './auth/creds.ts';
 import * as Auth from './auth/mod.ts';
-import type * as Ctx from './context.ts';
 import {
   hasLatLngData,
   isDetailedActivity,
@@ -66,8 +66,7 @@ export type TokenUrlOpts = {
  * }
  * ```
  */
-export class Api<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
-  public Context!: Ctx.IContext<M, L>;
+export class Api extends BaseClass {
   public AuthService!: Auth.Service<M, L>;
   public Activity!: Activity<M, L>;
   #auth: Auth.Service<M, L>;
@@ -79,13 +78,15 @@ export class Api<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * @param clientCreds The Strava application credentials. This can be a single `ClientCredSrc` object or an array of them. Defaults to `{ env: true }`.
    */
   constructor(
+    ctx: Ctx.Context,
     userCredsFile: FS.FilePath | FS.File,
     clientCreds: Strava.ClientCredSrc | Strava.ClientCredSrc[] = { env: true },
   ) {
+    super(ctx);
     this.#auth = new Auth.Service(userCredsFile, clientCreds);
   }
 
-  public toString(): string {
+  override toString(): string {
     return '[Strava]';
   }
 

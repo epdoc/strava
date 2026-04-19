@@ -1,6 +1,7 @@
-import { DateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 import { type EpochMilliseconds, type EpochSeconds, humanize } from '@epdoc/duration';
 import * as FS from '@epdoc/fs/fs';
+import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import { _ } from '@epdoc/type';
 import type { ClientCreds } from '@jpravetz/strava-api';
 import type { Context as OakContext } from '@oak/oak';
@@ -8,10 +9,10 @@ import { Application } from '@oak/oak/application';
 import { Router } from '@oak/oak/router';
 import { open } from '@opensrc/deno-open';
 import { assert } from '@std/assert';
-import type * as Ctx from '../context.ts';
 import type * as Strava from '../types.ts';
 import { StravaCreds } from './creds.ts';
 import type { Oauth2Code } from './types.ts';
+import * as Cliapp from '@epdoc/cliapp';
 
 const STRAVA_URL_PREFIX = Deno.env.get('STRAVA_URL_PREFIX') || 'https://www.strava.com';
 const STRAVA_API_PREFIX = STRAVA_URL_PREFIX + '/api/v3';
@@ -48,8 +49,7 @@ function isClientCreds(val: unknown): val is Strava.ClientCreds {
  * credentials from various sources and will handle the user authentication flow by starting a local web server and
  * opening the user's browser to the Strava authorization page.
  */
-export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
-  public Context!: Ctx.IContext<M, L>;
+export class AuthService extends BaseClass {
   #client?: ClientCreds;
   clientCredSrc: Strava.ClientCredSrc[];
   #creds: StravaCreds;
@@ -70,9 +70,11 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * allowing for flexible configuration from environment variables, files, or direct objects.
    */
   constructor(
+    ctx: Ctx.Context,
     credsFile: FS.FilePath | FS.File,
     clientCreds: Strava.ClientCredSrc | Strava.ClientCredSrc[],
   ) {
+    super(ctx);
     this.clientCredSrc = _.isArray(clientCreds) ? clientCreds : [clientCreds];
     this.#creds = new StravaCreds(credsFile);
   }
@@ -95,24 +97,21 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * @returns A promise that resolves to `true` if authentication is successful, `false` otherwise.
    */
   async init(
-    ctx: this['Context'],
     opts: { force: boolean } = { force: false },
   ): Promise<boolean> {
-    await this.#initClientCreds(ctx);
-    const m0 = ctx.log.mark();
-    ctx.log.verbose.h2('Authenticating Strava API ...').emit();
-    ctx.log.indent();
+    await this.#initClientCreds();
+    this.log.info.h2('Authenticating Strava API ...').start();
     await this.#creds.read();
-    await this.refreshToken(ctx, opts.force);
+    await this.refreshToken(opts.force);
     const hasAuth = this.#creds.isValid();
     if (hasAuth && opts.force !== true) {
       await this.#logAuthStatus(ctx, m0);
-      ctx.log.outdent();
+      this.log.outdent();
       return true;
     }
 
     const result = await this.runAuthWebPage(ctx, m0);
-    ctx.log.outdent();
+    this.log.outdent();
     return result;
   }
 
@@ -125,7 +124,7 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * @param ctx The application context for logging.
    * @throws {Error} If the client credentials cannot be loaded from any of the configured sources.
    */
-  async #initClientCreds(ctx: this['Context']) {
+  async #initClientCreds() {
     let src: Strava.ClientCredSrc | undefined = this.clientCredSrc.shift();
     while (!isClientCreds(this.#client) && src) {
       if ('creds' in src && isClientCreds(src.creds)) {
@@ -163,7 +162,7 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
         '}',
         'Get credentials at: https://www.strava.com/settings/api',
       ];
-      ctx.log.error.error('Missing Strava API credentials.').warn(s.join('\n')).emit();
+      this.log.error.error('Missing Strava API credentials.').warn(s.join('\n')).emit();
       throw new Error('Missing Strava API Credentials');
     }
   }
@@ -212,7 +211,7 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    */
   #logAuthStatus(ctx: this['Context'], mark: string): Promise<boolean> {
     const delta = this.#creds.expiresAt - new Date().getTime();
-    ctx.log.debug.h2('Authorization')
+    this.log.debug.h2('Authorization')
       .if(delta > 0).h2('is still valid, expires').else().h2('has expired').endif()
       .value(humanize(delta), true).ewt(mark);
     return Promise.resolve(true);
@@ -228,7 +227,7 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * @param code The authorization code.
    * @returns A promise that resolves to `true` if the token is successfully requested, `false` otherwise.
    */
-  async requestToken(ctx: this['Context'], code: Strava.Code): Promise<boolean> {
+  async requestToken(code: Strava.Code): Promise<boolean> {
     const reqOpts: RequestInit = {
       method: 'POST',
       body: JSON.stringify({
@@ -243,15 +242,18 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
       },
     };
 
-    const m0 = ctx.log.mark();
+    this.log.info.text('Requesting token from Strava API ...').start();
     const resp = await fetch(STRAVA_URL.token, reqOpts);
     if (resp && resp.ok) {
-      ctx.log.info.h2('Authorization obtained.').ewt(m0);
       const data: Strava.StravaCredsData = await resp.json();
-      const m1 = ctx.log.mark();
+      this.log.info.icheck().text('Retrieved Strava API token').stop();
+      this.log.info.text('Authorization obtained. Saving to local storage').start();
       await this.creds.write(data);
-      ctx.log.info.h2('Credentials written to local storage').path(this.creds.path).ewt(m1);
+      this.log.info.icheck().text('Credentials written to local storage').path(this.creds.path)
+        .stop();
       return true;
+    } else {
+      this.log.info.ierror().text('Failed to retrieve Strava API token').stop();
     }
     return false;
   }
@@ -264,13 +266,13 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * @param ctx The application context for logging.
    * @param force If `true`, the token will be refreshed even if it is still valid.
    */
-  async refreshToken(ctx: this['Context'], force = false): Promise<void> {
+  async refreshToken(force = false): Promise<void> {
     if (this.#creds.needsRefresh() || force) {
       if (force) {
-        ctx.log.info.warn('Forcing token refresh').emit();
+        this.log.info.warn('Forcing token refresh').emit();
       } else {
-        const m1 = ctx.log.mark();
-        this.#logAuthStatus(ctx, m1);
+        const m1 = this.log.mark();
+        this.#logAuthStatus(m1);
       }
       const payload = {
         client_id: this.client.id,
@@ -288,22 +290,25 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
         },
       };
 
-      const m0 = ctx.log.mark();
       try {
+        this.log.info.text('Requesting new access token using refresh token ...').start();
         const resp = await fetch(STRAVA_URL.token, reqOpts);
         if (!resp.ok) {
           const errorText = await resp.text();
-          throw new Error(
+          this.log.info.ierror().text('Failed to refresh access token').error(errorText).stop();
+          throw new Cliapp.SilentError(
             `Failed to refresh access token: ${resp.status} ${resp.statusText} - ${errorText}`,
           );
         }
         // this.#data.expires_at;
-        ctx.log.info.h2('Refreshed Access Token.').ewt(m0);
         const data: Strava.StravaCredsData = await resp.json();
+        this.log.info.icheck().text('Refreshed Access Token.').stop();
+        this.log.info.text('Saving Access Token').start();
         await this.creds.write(data);
+        this.log.info.text('Saved Access Token').relative(this.creds.path).stop();
       } catch (error: unknown) {
         const err = _.asError(error);
-        ctx.log.info.h2('Failed to refresh access token').err(err).ewt(m0);
+        this.log.info.h2('Failed to refresh access token').err(err).ewt(m0);
         throw err;
       }
     }
@@ -320,11 +325,11 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * @param mark A timestamp for logging the duration of the operation.
    * @returns A promise that resolves to `true` if the flow is successful, or rejects with an error.
    */
-  runAuthWebPage(ctx: this['Context'], mark: string): Promise<boolean> { // Changed ctx type to Ctx.IContext and return type to Promise<boolean>
+  runAuthWebPage(mark: string): Promise<boolean> { // Changed ctx type to Ctx.IContext and return type to Promise<boolean>
     // assert(ctx.api, 'Strava API not initialized'); // No longer needed
     return new Promise((resolve, reject) => {
       const cb: cbFunction = () => { // Removed async as it's not needed here
-        this.#close(ctx); // No await needed as close is synchronous
+        this.#close(); // No await needed as close is synchronous
         if (this.result.resolve) {
           resolve(true); // Resolve with true on success
         } else if (this.result.reject) {
@@ -332,11 +337,11 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
         }
       };
 
-      ctx && ctx.log.info.h2('Authorization required. Opening web authorization page').ewt(mark);
+      this.log.info.h2('Authorization required. Opening web authorization page').ewt(mark);
       const authUrl = this.getAuthUrl(); // Use ctx.app! for StravaApi instance
-      this.#startServer(ctx, authUrl, cb);
+      this.#startServer(authUrl, cb);
       return open(authUrl).then(() => {
-        ctx.log.info.text('Authorization page is open in your browser and waiting your response')
+        this.log.info.text('Authorization page is open in your browser and waiting your response')
           .emit();
       });
     });
@@ -354,7 +359,7 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * @param authUrl The Strava authorization URL.
    * @param cb The callback function to execute when the flow is complete.
    */
-  #startServer(ctx: this['Context'], authUrl: string, cb: cbFunction): void { // Changed ctx type to Ctx.IContext
+  #startServer(authUrl: string, cb: cbFunction): void { // Changed ctx type to Ctx.IContext
     const app = new Application();
     const router = new Router();
     this.abortController = new AbortController();
@@ -371,9 +376,9 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
         } else if (code) {
           s += `<p>Authorization code: <code>${code}</code></p>`;
           try {
-            await this.requestToken(ctx, code); // Use ctx.app! for StravaApi instance
+            await this.requestToken(code); // Use ctx.app! for StravaApi instance
             const seconds: EpochSeconds | undefined = this.#creds.expiresAt; // Use ctx.app! for StravaApi instance
-            const d: string = seconds ? new DateEx(seconds).toISOLocalString() : 'Unknown';
+            const d: string = seconds ? new DateTime(seconds).setTz('local').toString() : 'Unknown';
             s += '<p>Authentication tokens retrieved.</p>';
             s += `<p>Expiry date is ${d}</p>`;
             this.result = { resolve: 'Tokens retrieved' };
@@ -405,7 +410,7 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
 
     app.listen({ port: 3000, signal: this.abortController.signal });
 
-    ctx.log.verbose.text('Server running on port 3000').emit();
+    this.log.info.text('Server running on port 3000').emit();
   }
 
   /**
@@ -413,10 +418,10 @@ export class AuthService<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    *
    * @param ctx The application context for logging.
    */
-  #close(ctx?: this['Context']): void { // Removed async and changed return type
+  #close(): void { // Removed async and changed return type
     if (this.abortController) {
       this.abortController.abort();
-      ctx && ctx.log.debug.text('Server closed').emit();
+      this.log.debug.text('Server closed').emit();
     }
     this.abortController = undefined;
   }

@@ -1,12 +1,12 @@
 import type { DateRanges } from '@epdoc/daterange';
 import type { ISODate } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
+import type { Ctx } from '@epdoc/strava-core';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import * as BikeLog from '../bikelog/mod.ts';
 import rawConfig from '../config.json' with { type: 'json' };
-import type * as Ctx from '../context.ts';
-import { type Activity, Api, type StravaApi } from '../dep.ts';
+import { type Activity, Api, type StravaApi } from '@epdoc/strava-api';
 import * as Segment from '../segment/mod.ts';
 import * as State from '../state/mod.ts';
 import { KmlWriter } from '../track/kml.ts';
@@ -253,10 +253,11 @@ export class Main {
         query: {
           per_page: 200,
           after: Math.floor(
-            (dateRange.after ? dateRange.after.getTime() : new Date(1975, 0, 1).getTime()) / 1000,
+            (dateRange.after ? dateRange.after.epochMilliseconds : new Date(1975, 0, 1).getTime()) /
+              1000,
           ),
           before: Math.floor(
-            (dateRange.before ? dateRange.before.getTime() : new Date().getTime()) / 1000,
+            (dateRange.before ? dateRange.before.epochMilliseconds : new Date().getTime()) / 1000,
           ),
         },
       };
@@ -389,8 +390,8 @@ export class Main {
         opts.filter = { nonCommuteOnly: true };
       }
       if (streamOpts.blackout) {
-        assert(ctx.app.userSettings, 'User settings have not been read');
-        opts.blackoutZones = ctx.app.userSettings.blackoutZones;
+        assert(this.userSettings, 'User settings have not been read');
+        opts.blackoutZones = this.userSettings.blackoutZones;
       }
 
       activities = await this.getActivitiesForDateRange(ctx, streamOpts.date!, opts);
@@ -713,8 +714,9 @@ export class Main {
             const params: Api.Query = {
               athlete_id: athleteId,
               per_page: 200,
-              start_date_local: (dateRange.after || new Date(1975, 0, 1)).toISOString(),
-              end_date_local: (dateRange.before || new Date()).toISOString(),
+              start_date_local: (dateRange.after || new Date(1975, 0, 1)).toString(),
+              end_date_local: (dateRange.before || Temporal.Instant.fromEpochMilliseconds(0))
+                .toString(),
             };
 
             const efforts = await this.api.getSegmentEfforts(ctx, segment.id, params);

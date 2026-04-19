@@ -9,22 +9,13 @@
     "lint": "deno lint packages/** deno.json",
     "check": "deno check packages/**"
   },
-  "workspace": ["./packages/*"],
+  "workspace": [
+    "./packages/core",
+    "./packages/strava-api",
+    "./packages/strava"
+  ],
   "fmt": {
     "singleQuote": true,
     "lineWidth": 100
-  },
-  "lint": {
-    "include": [
-      "packages/strava/src",
-      "packages/strava/test",
-      "packages/strava-api/src",
-      "packages/strava-api/test",
-      "launch.config.json",
-      "deno.json"
-    ],
-    "exclude": [
-      ".vscode"
-    ]
   }
 }

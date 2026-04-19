@@ -100,7 +100,7 @@ export class AuthService extends BaseClass {
     opts: { force: boolean } = { force: false },
   ): Promise<boolean> {
     await this.#initClientCreds();
-    this.log.info.text('Authenticating Strava API ...').emit();
+    this.log.info.h2('Authenticating Strava API ...').emit();
     this.log.info.text('Reading').relative(this.#creds.path).start();
     await this.#creds.read();
     this.log.info.icheck().text('Read').relative(this.#creds.path).stop();
@@ -109,13 +109,13 @@ export class AuthService extends BaseClass {
     if (hasAuth && opts.force !== true) {
       await this.#logAuthStatus();
       this.log.outdent();
-      this.log.info.text('Authentication complete.').emit();
+      // this.log.info.text('Authentication complete.').emit();
       return true;
     }
 
     const result = await this.runAuthWebPage();
     this.log.outdent();
-    this.log.info.text('Authentication complete.').emit();
+    // this.log.info.text('Authentication complete.').emit();
     return result;
   }
 

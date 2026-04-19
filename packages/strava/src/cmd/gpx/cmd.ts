@@ -1,18 +1,20 @@
-import type { Command } from '@epdoc/cliapp';
-import type { DateRanges } from '@epdoc/daterange';
-import type * as FS from '@epdoc/fs/fs';
-import { _ } from '@epdoc/type';
-import { Api } from '../../dep.ts';
-import type * as Track from '../../track/mod.ts';
-import type { Ctx } from '../dep.ts';
-import * as Options from '../options/mod.ts';
-import type * as Cmd from '../types.ts';
+import type { Command } from "@epdoc/cliapp";
+import type { DateRanges } from "@epdoc/daterange";
+import type * as FS from "@epdoc/fs/fs";
+import { Track } from "@epdoc/strava-app";
+import { _ } from "@epdoc/type";
+import { Api } from "../../dep.ts";
+import type { Ctx } from "../dep.ts";
+import * as Options from "../options/mod.ts";
+import type * as Cmd from "../types.ts";
 
 export const cmdConfig: Options.Config = {
-  replace: { cmd: 'GPX' },
+  replace: { cmd: "GPX" },
   options: {
     date: true,
-    output: { description: 'Output folder (REQUIRED unless set in user settings)' },
+    output: {
+      description: "Output folder (REQUIRED unless set in user settings)",
+    },
     laps: true,
     noTracks: true,
     commute: true,
@@ -70,7 +72,7 @@ type GpxCmdOpts = {
  */
 export class GpxCmd extends Options.BaseSubCmd {
   constructor() {
-    super('gpx', 'Generate GPX files from Strava activities.');
+    super("gpx", "Generate GPX files from Strava activities.");
   }
 
   /**
@@ -92,17 +94,21 @@ export class GpxCmd extends Options.BaseSubCmd {
       try {
         // Validate required options - show help and exit on validation failure
         if (!gpxOpts.date || !gpxOpts.date.hasRanges()) {
-          ctx.log.error.error('--date is required. Specify date range(s) (e.g., 20240101-20241231)')
+          ctx.log.error.error(
+            "--date is required. Specify date range(s) (e.g., 20240101-20241231)",
+          )
             .emit();
-          console.error(''); // blank line before help
+          console.error(""); // blank line before help
           this.cmd.outputHelp();
           Deno.exit(1);
         }
 
         if (!gpxOpts.output && !ctx.app.userSettings?.gpxFolder) {
-          ctx.log.error.error('--output is required. Specify output folder (e.g., -o ./gpx-files/)')
+          ctx.log.error.error(
+            "--output is required. Specify output folder (e.g., -o ./gpx-files/)",
+          )
             .emit();
-          console.error(''); // blank line before help
+          console.error(""); // blank line before help
           this.cmd.outputHelp();
           Deno.exit(1);
         }
@@ -110,9 +116,9 @@ export class GpxCmd extends Options.BaseSubCmd {
         // Validate output is not a .kml file
         if (/\.kml$/i.test(gpxOpts.output)) {
           ctx.log.error.error(
-            'Output must be a folder path for GPX generation, not a .kml file. Use the kml command for KML output.',
+            "Output must be a folder path for GPX generation, not a .kml file. Use the kml command for KML output.",
           ).emit();
-          console.error(''); // blank line before help
+          console.error(""); // blank line before help
           this.cmd.outputHelp();
           Deno.exit(1);
         }
@@ -120,7 +126,8 @@ export class GpxCmd extends Options.BaseSubCmd {
         const opts: Track.ActivityOpts & Track.CommonOpts & Track.StreamOpts = {
           activities: true,
           date: gpxOpts.date,
-          output: (gpxOpts.output ?? ctx.app.userSettings?.gpxFolder) as FS.Path,
+          output:
+            (gpxOpts.output ?? ctx.app.userSettings?.gpxFolder) as FS.Path,
           laps: gpxOpts.laps,
           noTracks: gpxOpts.noTracks,
           commute: gpxOpts.commute,
@@ -135,8 +142,8 @@ export class GpxCmd extends Options.BaseSubCmd {
           if (Api.isActivityTypeArray(gpxOpts.type)) {
             opts.type = [];
           } else {
-            ctx.log.error.error('Invalid activity types').emit();
-            console.error(''); // blank line before help
+            ctx.log.error.error("Invalid activity types").emit();
+            console.error(""); // blank line before help
             this.cmd.outputHelp();
             Deno.exit(1);
           }

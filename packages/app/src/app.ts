@@ -240,8 +240,7 @@ export class Main extends BaseClass {
   ): Promise<Strava.Activity[]> {
     let activities: Strava.Activity[] = [];
 
-    const m0 = this.log.mark();
-    this.log.info.h2('Fetching activities for date ranges').dateRange(date).emit();
+    this.log.info.text('Fetching activities for').dateRange(date).start();
 
     const athleteId: Strava.Schema.AthleteId = (this.athlete && Strava.isStravaId(this.athlete.id))
       ? this.athlete.id
@@ -269,7 +268,8 @@ export class Main extends BaseClass {
       activities = activities.filter((activity) => activity.include(opts.filter!));
     }
 
-    this.log.info.text('Found').count(activities.length).text('activity', 'activities').ewt(m0);
+    this.log.info.icheck().text('Retrieved').count(activities.length).text('activity', 'activities')
+      .stop();
 
     if (activities.length) {
       if (opts.detailed || opts.starredSegments) {

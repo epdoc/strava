@@ -10,10 +10,12 @@
     "check": "deno check packages/**"
   },
   "workspace": [
+    "./packages/schema",
     "./packages/core",
     "./packages/app",
     "./packages/athlete",
     "./packages/gpx",
+    "./packages/info",
     "./packages/api"
   ],
   "fmt": {

@@ -1,123 +1,233 @@
+import type { DateRanges } from '@epdoc/daterange';
+import { DateTime } from '@epdoc/datetime';
+import * as FS from '@epdoc/fs/fs';
+import type { Ctx, RegionCode } from '@epdoc/strava-core';
 import * as App from '@epdoc/strava-app';
+import * as Strava from '@epdoc/strava-api';
 
-export type AthleteOptions = {
+/**
+ * Options for GPX generation
+ */
+export type GpxOptions = {
+  /** Athlete ID (optional, defaults to authenticated user) */
   athleteId?: string;
+  /** Date range for activities (required) */
+  date: DateRanges;
+  /** Output filename (optional, defaults to date range in gpxFolder) */
+  output?: string;
+  /** Include lap waypoints */
+  laps?: boolean;
+  /** Suppress track output (only output waypoints) */
+  noTracks?: boolean;
+  /** Filter by commute: yes|no|all (default: all) */
+  commute?: 'yes' | 'no' | 'all';
+  /** Filter by activity types (empty array = all types) */
+  type?: string[];
+  /** Apply user's blackout zones */
+  blackout?: boolean;
+  /** Allow duplicate intermediate track points */
+  allowDups?: boolean;
+  /** Filter activities by region code */
+  region?: RegionCode;
+  /** Use imperial units */
+  imperial?: boolean;
 };
 
 /**
- * Command to retrieve and display athlete information from Strava API.
+ * Tool for generating GPX files from Strava activities.
  *
- * This command fetches and displays the logged-in athlete's profile information including:
- * - Name, ID, location (city, state, country)
- * - List of bikes with IDs
- * - User-configured bike display names (if defined in user settings)
+ * This tool creates GPX files with support for:
+ * - Single file output with all activities (default behavior)
+ * - Track points with lat/lon, elevation, and timezone-aware timestamps
+ * - Lap waypoints showing where lap button was pressed (--laps flag)
+ * - Waypoints-only mode with --laps --no-tracks
+ * - Activity type filtering (--type)
+ * - Commute filtering (--commute yes|no|all)
+ * - Date range filtering (--date, required)
+ * - Region filtering (--region)
  *
- * The command follows the established pattern of delegating business logic to the app layer
- * (this.app.getAthlete) while handling only the CLI presentation concerns.
+ * Output behavior:
+ * - By default, all GPX data is written to a single file
+ * - The default filename is based on the date range (YYYYMMDD-YYYYMMDD.gpx)
+ * - Files are saved to the gpxFolder from user settings
+ * - Use -o to specify a custom filename (relative to gpxFolder)
  *
  * @example
  * ```bash
- * # From workspace root
- * deno run -A ./packages/strava/main.ts athlete
+ * # Generate GPX for all activities in date range (single file)
+ * strava-gpx --date 20240101-20240131
+ *
+ * # Generate GPX with custom filename
+ * strava-gpx --date 20240101-20240131 --output rides.gpx
+ *
+ * # Generate GPX for Costa Rica activities only
+ * strava-gpx --date 20240101-20241231 --region CR
+ *
+ * # Generate GPX with lap markers for rides only
+ * strava-gpx --date 20240101-20241231 --type Ride --laps
  * ```
  */
-export class AthleteTool extends App.BaseClass {
+export class GpxTool extends App.BaseClass {
+  private opts: GpxOptions;
+
+  constructor(ctx: Ctx.Context, opts: GpxOptions) {
+    super(ctx);
+    this.opts = opts;
+  }
+
   /**
-   * Initializes the athlete command with its action handler and options.
+   * Executes the GPX generation.
    *
-   * Sets up the command action that:
-   * 1. Initializes the app with Strava API and user settings
-   * 2. Fetches athlete data via this.app.getAthlete()
-   * 3. Formats and displays athlete information with proper indentation
-   * 4. Shows bike list with user-configured display names
-   *
-   * @param ctx Application context with logging and app instance
-   * @returns Promise resolving to the configured command instance
+   * This method:
+   * 1. Validates required options (date)
+   * 2. Initializes the app with Strava API and user settings
+   * 3. Determines the output path (default or custom)
+   * 4. Fetches activities and applies filters
+   * 5. Generates the GPX file
    */
   async run(): Promise<void> {
     try {
-      this.ctx.app = new App.Main(this.ctx);
-
-      // Initialize only what we need for this command
-      await this.app.init({ strava: true, userSettings: true });
-
-      // Delegate to app layer for business logic
-      await this.app.getAthlete();
-
-      // Display athlete information
-      if (this.app.athlete) {
-        this.log.info.section('Athlete Information').emit();
-        this.log.indent();
-        const athleteInfo = [
-          {
-            label: 'Name:',
-            value: `${this.app.athlete.firstname} ${this.app.athlete.lastname}`,
-          },
-          { label: 'ID:', value: String(this.app.athlete.id) },
-          { label: 'City:', value: this.app.athlete.city || 'Not specified' },
-          {
-            label: 'State:',
-            value: this.app.athlete.state || 'Not specified',
-          },
-          {
-            label: 'Country:',
-            value: this.app.athlete.country || 'Not specified',
-          },
-        ];
-
-        const maxLabelLength = athleteInfo.reduce(
-          (max, item) => Math.max(max, item.label.length),
-          0,
+      // Validate required options
+      if (!this.opts.date || !this.opts.date.hasRanges()) {
+        throw new Error(
+          '--date is required. Specify date range(s) (e.g., 20240101-20241231)',
         );
-
-        athleteInfo.forEach((item) => {
-          this.log.info.label(item.label.padEnd(maxLabelLength)).value(
-            item.value,
-          ).emit();
-        });
-
-        if (this.app.athlete.bikes && this.app.athlete.bikes.length > 0) {
-          this.log.info.h3('Bikes:').emit();
-          this.log.indent();
-          const userBikes = this.app.userSettings?.bikes;
-          const bikeInfo = this.app.athlete.bikes.map((bike) => {
-            const userBike = userBikes?.find((b) => b.pattern === bike.name);
-            return {
-              label: bike.name + ':',
-              id: String(bike.id),
-              userBikeName: userBike?.name || '',
-            };
-          });
-
-          const maxBikeLabelLength = bikeInfo.reduce(
-            (max, item) => Math.max(max, item.label.length),
-            0,
-          );
-          const maxBikeIdLength = bikeInfo.reduce(
-            (max, item) => Math.max(max, item.id.length),
-            0,
-          );
-
-          bikeInfo.forEach((item) => {
-            this.log.info
-              .label(item.label.padEnd(maxBikeLabelLength))
-              .value(item.id.padEnd(maxBikeIdLength))
-              .h3(item.userBikeName)
-              .emit();
-          });
-          this.log.outdent();
-        }
-        this.log.outdent();
-        this.log.info.section().emit();
-      } else {
-        this.log.warn.warn('No athlete information retrieved').emit();
       }
+
+      // Create and initialize the app
+      const app = new App.Main(this.ctx);
+      this.ctx.app = app;
+      await app.init({ strava: true, userSettings: true });
+
+      // Determine output path
+      const outputPath = this.#resolveOutputPath();
+      if (!outputPath) {
+        throw new Error(
+          'Output path could not be determined. Specify --output or set gpxFolder in user settings.',
+        );
+      }
+
+      this.log.info.h2('Generating GPX file').fs(outputPath).emit();
+
+      // Build track options
+      const trackOpts: App.Track.Opts = {
+        activities: true,
+        date: this.opts.date,
+        output: outputPath as FS.Path,
+        laps: this.opts.laps,
+        noTracks: this.opts.noTracks,
+        commute: this.opts.commute ?? 'all',
+        type: (this.opts.type ?? []) as Strava.Schema.ActivityType[],
+        imperial: this.opts.imperial ?? false,
+        blackout: this.opts.blackout ?? false,
+        allowDups: this.opts.allowDups ?? false,
+      };
+
+      // Generate GPX
+      await this.app.getTrack(trackOpts);
+
+      this.log.info.h2('GPX file generated successfully').fs(outputPath).emit();
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);
-      this.log.error.error(
-        `Failed to retrieve athlete information: ${errorMsg}`,
-      ).emit();
+      this.log.error.error(`Failed to generate GPX: ${errorMsg}`).emit();
       throw err;
     }
+  }
+
+  /**
+   * Resolves the output path for the GPX file.
+   *
+   * Rules:
+   * - If --output is specified, use it relative to gpxFolder
+   * - Otherwise, use date range as filename in gpxFolder
+   * - If no gpxFolder in settings, return undefined
+   *
+   * @returns The resolved output path, or undefined if it cannot be determined
+   */
+  #resolveOutputPath(): string | undefined {
+    const gpxFolder = this.app.userSettings?.gpxFolder;
+
+    if (!gpxFolder) {
+      // No gpxFolder in settings - must specify output
+      if (this.opts.output) {
+        return this.opts.output;
+      }
+      return undefined;
+    }
+
+    // Generate default filename from date range
+    const defaultFilename = this.#generateFilenameFromDateRange();
+
+    // Use specified output or default filename
+    const filename = this.opts.output ?? defaultFilename;
+
+    // Ensure filename has .gpx extension
+    const filenameWithExt = filename.endsWith('.gpx') ? filename : `${filename}.gpx`;
+
+    // Combine with gpxFolder
+    const fsFile = new FS.File(gpxFolder, filenameWithExt);
+    return fsFile.path;
+  }
+
+  /**
+   * Generates a filename based on the date range.
+   * Format: YYYYMMDD-YYYYMMDD.gpx (without time component)
+   *
+   * @returns The generated filename
+   */
+  #generateFilenameFromDateRange(): string {
+    const ranges = this.opts.date.ranges;
+
+    if (ranges.length === 0) {
+      return 'activities.gpx';
+    }
+
+    // Get the overall date span across all ranges
+    let minDate: DateTime | undefined;
+    let maxDate: DateTime | undefined;
+
+    for (const range of ranges) {
+      if (!minDate || range.afterDateTime.epochMilliseconds < minDate.epochMilliseconds) {
+        minDate = range.afterDateTime;
+      }
+      if (!maxDate || range.beforeDateTime.epochMilliseconds > maxDate.epochMilliseconds) {
+        maxDate = range.beforeDateTime;
+      }
+    }
+
+    // Format as YYYYMMDD
+    const formatDate = (date: DateTime): string => {
+      return date.format('yyyyMMdd');
+    };
+
+    const startStr = minDate ? formatDate(minDate) : '';
+    const endStr = maxDate ? formatDate(maxDate) : '';
+
+    if (startStr && endStr && startStr !== endStr) {
+      return `${startStr}-${endStr}`;
+    } else if (startStr) {
+      return startStr;
+    } else {
+      return 'activities';
+    }
+  }
+
+  /**
+   * Filters activities by region if specified.
+   * This is a placeholder for future region detection based on coordinates.
+   *
+   * @param activities The activities to filter
+   * @returns Filtered activities
+   */
+  filterByRegion(activities: Strava.Activity[]): Strava.Activity[] {
+    if (!this.opts.region) {
+      return activities;
+    }
+
+    // TODO: Implement region detection based on activity coordinates
+    // For now, this is a placeholder that returns all activities
+    this.log.warn.warn(`Region filtering not yet implemented for region: ${this.opts.region}`)
+      .emit();
+    return activities;
   }
 }

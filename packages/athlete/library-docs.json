@@ -1,0 +1,162 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "AthleteCommand",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
+                "line": 8,
+                "col": 0,
+                "byteIndex": 248
+              },
+              "declarationKind": "export",
+              "kind": "class",
+              "def": {
+                "methods": [
+                  {
+                    "isOverride": true,
+                    "name": "defineMetadata",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
+                      "line": 9,
+                      "col": 2,
+                      "byteIndex": 324
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "defineOptions",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
+                      "line": 14,
+                      "col": 2,
+                      "byteIndex": 437
+                    }
+                  },
+                  {
+                    "name": "helpText",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
+                      "line": 19,
+                      "col": 2,
+                      "byteIndex": 574
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "execute",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "options",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "AthleteCmdOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "AthleteCmdOptions",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "_args",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "CliApp.CmdArgs",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "CliApp.CmdArgs",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/cliapp"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "Promise",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "void",
+                              "kind": "keyword",
+                              "value": "void"
+                            }
+                          ],
+                          "typeName": "Promise"
+                        }
+                      },
+                      "hasBody": true,
+                      "isAsync": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
+                      "line": 65,
+                      "col": 2,
+                      "byteIndex": 2362
+                    }
+                  }
+                ],
+                "extends": "BaseRootCmdClass",
+                "superTypeParams": [
+                  {
+                    "repr": "AthleteCmdOptions",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "AthleteCmdOptions",
+                      "resolution": {
+                        "kind": "local"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

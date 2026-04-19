@@ -36,8 +36,8 @@
   },
   "imports": {
     "@epdoc/strava-core": "../core/src/mod.ts",
-    "@epdoc/strava-api": "../strava-api/src/mod.ts",
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.1.22",
+    "@epdoc/strava-api": "../api/src/mod.ts",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.1",
     "@epdoc/daterange": "jsr:@epdoc/daterange@^2.1.7",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.6",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.3.10",
@@ -50,7 +50,6 @@
     "@std/http": "jsr:@std/http@^1.0.25",
     "@std/path": "jsr:@std/path@^1.1.4",
     "@std/expect": "jsr:@std/expect@^1.0.18",
-    "@std/testing": "jsr:@std/testing@^1.0.17",
     "commander": "npm:commander@^14.0.3",
     "xmlbuilder": "npm:xmlbuilder@^15.1.1",
     "@oak/oak": "jsr:@oak/oak@^17.2.0",

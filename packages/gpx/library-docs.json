@@ -133,9 +133,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
-                      "line": 35,
+                      "line": 65,
                       "col": 2,
-                      "byteIndex": 1091
+                      "byteIndex": 2362
                     }
                   }
                 ],

@@ -476,8 +476,6 @@
       },
       "packages/schema": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^3.2.6",
-          "jsr:@epdoc/duration@~0.3.10",
           "jsr:@epdoc/type@^1.2.11",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.18",

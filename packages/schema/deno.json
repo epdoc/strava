@@ -1,14 +1,22 @@
 {
-  "name": "@epdoc/strava-schema",
+  "name": "@jpravetz/strava-schema",
   "description": "Zod schemas and TypeScript types for the Strava API",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
   },
   "license": "MIT",
   "exports": {
-    ".": "./src/mod.ts"
+    ".": "./src/mod.ts",
+    "./activity": "./src/activity.ts",
+    "./athlete": "./src/athlete.ts",
+    "./consts": "./src/consts.ts",
+    "./gear": "./src/gear.ts",
+    "./segment": "./src/segment.ts",
+    "./stream": "./src/stream.ts",
+    "./types": "./src/types.ts",
+    "./zones": "./src/zones.ts"
   },
   "tasks": {
     "fmt": "deno fmt src test *.json",

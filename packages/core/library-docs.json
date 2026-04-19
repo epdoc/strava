@@ -1,0 +1,517 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "BaseClass",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/base.ts",
+                "line": 18,
+                "col": 0,
+                "byteIndex": 463
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Abstract base class for all domain classes in the core package.\n\nProvides convenient access to logging methods and the application context.\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nclass MyService extends BaseClass {\n  doWork() {\n    this.info.text('Starting work').emit();\n    this.debug.data({ key: 'value' }).emit();\n  }\n}\n```"
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "isAbstract": true,
+                "extends": "CliApp.BaseClass",
+                "superTypeParams": [
+                  {
+                    "repr": "Context",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "Context",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./context.ts",
+                        "name": "Context"
+                      }
+                    }
+                  },
+                  {
+                    "repr": "CustomMsgBuilder",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "CustomMsgBuilder",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./context.ts",
+                        "name": "CustomMsgBuilder"
+                      }
+                    }
+                  },
+                  {
+                    "repr": "CliApp.Ctx.Logger",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "CliApp.Ctx.Logger",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "@epdoc/cliapp"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "BaseRootCmdClass",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/base.ts",
+                "line": 28,
+                "col": 0,
+                "byteIndex": 752
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Abstract base class for root commands in the core package.\n\nExtends the cliapp command base with the core Context type.\n",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "TOpts",
+                    "doc": "Command options type"
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "isAbstract": true,
+                "extends": "CliApp.Cmd.AbstractBase",
+                "typeParams": [
+                  {
+                    "name": "TOpts",
+                    "constraint": {
+                      "repr": "CliApp.CmdOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "CliApp.CmdOptions",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/cliapp"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "superTypeParams": [
+                  {
+                    "repr": "Context",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "Context",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./context.ts",
+                        "name": "Context"
+                      }
+                    }
+                  },
+                  {
+                    "repr": "Context",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "Context",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./context.ts",
+                        "name": "Context"
+                      }
+                    }
+                  },
+                  {
+                    "repr": "TOpts",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "TOpts",
+                      "resolution": {
+                        "kind": "typeParam",
+                        "declaringName": "BaseRootCmdClass",
+                        "declaringKind": "class"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ctx",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/mod.ts",
+                "line": 1,
+                "col": 7,
+                "byteIndex": 34
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "CustomMsgBuilder",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/context.ts",
+                          "line": 9,
+                          "col": 0,
+                          "byteIndex": 286
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Custom message builder demonstrating extension of the base builder.\n\nAdds application-specific formatting methods for consistent logging."
+                        },
+                        "kind": "class",
+                        "def": {
+                          "constructors": [
+                            {
+                              "jsDoc": {
+                                "doc": "Creates a CustomMsgBuilder instance.\n",
+                                "tags": [
+                                  {
+                                    "kind": "unsupported",
+                                    "value": "@remarks\nThis constructor is normally called by the @epdoc/cliapp library with a\nfully-configured ProgressEmitter. However, for standalone usage (e.g., building\nhelp text without a logger), the emitter parameter can be omitted. In that case,\nprogress indicator methods (start, update, complete) will not function, but all\nformatting methods from Console.Builder (h1, h2, label, value, etc.) work normally.\n"
+                                  },
+                                  {
+                                    "kind": "param",
+                                    "name": "emitter",
+                                    "doc": "The progress emitter from the logger (optional for standalone use)"
+                                  }
+                                ]
+                              },
+                              "hasBody": true,
+                              "name": "constructor",
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "emitter",
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "CliApp.Progress.ProgressEmitter",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "CliApp.Progress.ProgressEmitter",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "@epdoc/cliapp"
+                                      }
+                                    }
+                                  }
+                                }
+                              ],
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/context.ts",
+                                "line": 22,
+                                "col": 2,
+                                "byteIndex": 944
+                              }
+                            }
+                          ],
+                          "methods": [
+                            {
+                              "name": "activity",
+                              "kind": "method",
+                              "functionDef": {
+                                "params": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "activity",
+                                    "optional": false,
+                                    "tsType": {
+                                      "kind": "union",
+                                      "value": [
+                                        {
+                                          "repr": "object",
+                                          "kind": "keyword",
+                                          "value": "object"
+                                        },
+                                        {
+                                          "repr": "undefined",
+                                          "kind": "keyword",
+                                          "value": "undefined"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ],
+                                "returnType": {
+                                  "repr": "this",
+                                  "kind": "this"
+                                },
+                                "hasBody": true
+                              },
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/context.ts",
+                                "line": 29,
+                                "col": 2,
+                                "byteIndex": 1187
+                              }
+                            },
+                            {
+                              "name": "dateRange",
+                              "kind": "method",
+                              "functionDef": {
+                                "params": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "dateRanges",
+                                    "optional": false,
+                                    "tsType": {
+                                      "kind": "union",
+                                      "value": [
+                                        {
+                                          "repr": "DateRanges",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "DateRanges",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "@epdoc/daterange",
+                                              "name": "DateRanges"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "repr": "undefined",
+                                          "kind": "keyword",
+                                          "value": "undefined"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ],
+                                "returnType": {
+                                  "repr": "this",
+                                  "kind": "this"
+                                },
+                                "hasBody": true
+                              },
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/context.ts",
+                                "line": 38,
+                                "col": 2,
+                                "byteIndex": 1403
+                              }
+                            }
+                          ],
+                          "extends": "CliApp.Progress.MsgBuilder"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "msgBuilder",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/context.ts",
+                          "line": 47,
+                          "col": 0,
+                          "byteIndex": 1623
+                        },
+                        "declarationKind": "export",
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "emitter",
+                              "optional": true,
+                              "tsType": {
+                                "repr": "CliApp.Progress.ProgressEmitter",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "CliApp.Progress.ProgressEmitter",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "@epdoc/cliapp"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "CustomMsgBuilder",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "CustomMsgBuilder",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Context",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/context.ts",
+                          "line": 73,
+                          "col": 0,
+                          "byteIndex": 2392
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Core context class for workspace management tools.\n\nExtends the cliapp AbstractBase with workspace-specific functionality.\nThis context is used across the @jpravetz/tools monorepo for CLI applications\nthat need to work with Deno workspaces and deno.json configurations.\n\nFeatures:\n- Custom message builder with progress indicators\n- Include/exclude pattern filtering for workspaces\n- Root deno.json config management\n",
+                          "tags": [
+                            {
+                              "kind": "example",
+                              "doc": "```typescript\nconst ctx = new Context(pkg);\nawait ctx.setupLogging({ pkg: 'my-app' });\nctx.include = ['@epdoc/*'];\nctx.exclude = ['*test*'];\n```"
+                            }
+                          ]
+                        },
+                        "kind": "class",
+                        "def": {
+                          "constructors": [
+                            {
+                              "hasBody": true,
+                              "name": "constructor",
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "pkg",
+                                  "optional": false,
+                                  "tsType": {
+                                    "kind": "union",
+                                    "value": [
+                                      {
+                                        "repr": "CliApp.DenoPkg",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "CliApp.DenoPkg",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "@epdoc/cliapp"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "repr": "Context",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "Context",
+                                          "resolution": {
+                                            "kind": "local"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "kind": "assign",
+                                  "left": {
+                                    "kind": "identifier",
+                                    "name": "params",
+                                    "optional": false,
+                                    "tsType": {
+                                      "repr": "Log.IGetChildParams",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "Log.IGetChildParams",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/logger"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "right": "[UNSUPPORTED]"
+                                }
+                              ],
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/context.ts",
+                                "line": 79,
+                                "col": 2,
+                                "byteIndex": 2549
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              },
+                              "name": "online",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/context.ts",
+                                "line": 74,
+                                "col": 2,
+                                "byteIndex": 2449
+                              }
+                            },
+                            {
+                              "tsType": {
+                                "kind": "union",
+                                "value": [
+                                  {
+                                    "repr": "object",
+                                    "kind": "keyword",
+                                    "value": "object"
+                                  },
+                                  {
+                                    "repr": "undefined",
+                                    "kind": "keyword",
+                                    "value": "undefined"
+                                  }
+                                ]
+                              },
+                              "name": "app",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/context.ts",
+                                "line": 75,
+                                "col": 2,
+                                "byteIndex": 2466
+                              }
+                            },
+                            {
+                              "accessibility": "protected",
+                              "isOverride": true,
+                              "name": "builderClass",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/context.ts",
+                                "line": 77,
+                                "col": 2,
+                                "byteIndex": 2494
+                              }
+                            }
+                          ],
+                          "extends": "CliApp.Ctx.AbstractBase"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

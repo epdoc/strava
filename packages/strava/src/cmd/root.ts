@@ -1,28 +1,20 @@
 import * as CliApp from '@epdoc/cliapp';
-import type * as Ctx from '../context.ts';
-import { SubCommand } from './sub.ts';
+import { BaseRootCmdClass, Ctx } from '@epdoc/strava-core';
 import type { Api } from '../dep.ts';
+import { SubCommand } from './sub.ts';
 
 type RootCmdOpts = CliApp.CmdOptions & {
-  offline: boolean;
-  dryRun: boolean;
-  athleteId?: Api.Schema.AthleteId;
   imperial?: boolean;
+  offline: boolean;
+  athleteId?: Api.Schema.AthleteId;
 };
 
-export class RootCommand
-  extends CliApp.Cmd.AbstractBase<Ctx.RootContext, Ctx.RootContext, RootOpts> {
-  constructor(ctx: Ctx.RootContext) {
-    super(ctx, { root: true, dryRun: true });
-  }
-
+export class RootCommand extends BaseRootCmdClass<RootCmdOpts> {
   get info(): Ctx.CustomMsgBuilder {
     return this.ctx.log.info;
   }
 
   override defineOptions(): void {
-    const ctx = this.ctx || this.parentContext;
-    ctx.log.info.section('RootCommand defineOptions').emit();
     this.option('--happy-mode', 'Enable special happy mode on the RootCommand').emit();
     this.option('--name <name>', 'Name to use for greeting').emit();
     this.addHelpText('\nThis is help text for the root command.');

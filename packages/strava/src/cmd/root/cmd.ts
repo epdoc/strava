@@ -36,10 +36,9 @@ export class RootCmd {
     //   }
     // });
     await this.cmd.init(ctx);
-    // Individual commands will call ctx.app.init() with what they need
-    // await ctx.app.initClient(); // Removed - let commands initialize what they need
-    // await ctx.app.initOpts();
-    // await this.app.init(ctx, { config: true });
+    // Individual commands will call ctx.app.init() with what they need await ctx.app.initClient();
+    // // Removed - let commands initialize what they need await ctx.app.initOpts(); await
+    // this.app.init(ctx, { config: true });
 
     const athleteCmd = new Athlete.Cmd();
     const gpxCmd = new Gpx.Cmd();

@@ -4,7 +4,12 @@ import { StravaLongIntSchema } from './types.ts';
 /**
  * Zod schema for PhotoSummary_primary.
  */
-export const PhotoSummaryPrimarySchema = z.object({
+export const PhotoSummaryPrimarySchema: z.ZodObject<{
+  id: z.ZodNullable<typeof StravaLongIntSchema>;
+  source: z.ZodNumber;
+  unique_id: z.ZodString;
+  urls: z.ZodRecord<z.ZodString, z.ZodString>;
+}> = z.object({
   id: StravaLongIntSchema.nullable(),
   source: z.number(),
   unique_id: z.string(),
@@ -17,7 +22,10 @@ export type PhotoSummary_primary = z.infer<typeof PhotoSummaryPrimarySchema>;
 /**
  * Zod schema for PhotoSummary.
  */
-export const PhotoSummarySchema = z.object({
+export const PhotoSummarySchema: z.ZodObject<{
+  count: z.ZodNumber;
+  primary: typeof PhotoSummaryPrimarySchema;
+}> = z.object({
   count: z.number(),
   primary: PhotoSummaryPrimarySchema,
 });

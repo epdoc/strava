@@ -6,7 +6,7 @@ import { StravaLongIntSchema } from './types.ts';
 /**
  * Zod schema for SegmentName.
  */
-export const SegmentNameSchema = z.string();
+export const SegmentNameSchema: z.ZodString = z.string();
 
 /** SegmentName type inferred from SegmentNameSchema */
 export type SegmentName = z.infer<typeof SegmentNameSchema>;
@@ -14,7 +14,7 @@ export type SegmentName = z.infer<typeof SegmentNameSchema>;
 /**
  * Zod schema for SegmentId.
  */
-export const SegmentIdSchema = StravaLongIntSchema;
+export const SegmentIdSchema: z.ZodNumber = StravaLongIntSchema;
 
 /** SegmentId type inferred from SegmentIdSchema */
 export type SegmentId = z.infer<typeof SegmentIdSchema>;
@@ -22,7 +22,7 @@ export type SegmentId = z.infer<typeof SegmentIdSchema>;
 /**
  * Zod schema for EffortId.
  */
-export const EffortIdSchema = StravaLongIntSchema;
+export const EffortIdSchema: z.ZodNumber = StravaLongIntSchema;
 
 /** EffortId type inferred from EffortIdSchema */
 export type EffortId = z.infer<typeof EffortIdSchema>;
@@ -30,7 +30,10 @@ export type EffortId = z.infer<typeof EffortIdSchema>;
 /**
  * Zod schema for Achievement.
  */
-export const AchievementSchema = z.object({
+export const AchievementSchema: z.ZodObject<{
+  type: z.ZodOptional<z.ZodString>;
+  rank: z.ZodOptional<z.ZodNumber>;
+}> = z.object({
   type: z.string().optional(),
   rank: z.number().optional(),
 });
@@ -120,7 +123,18 @@ export interface DetailedSegment extends SummarySegment {
  * Zod schema for ExplorerSegment.
  * Used for segment exploration API.
  */
-export const ExplorerSegmentSchema = z.object({
+export const ExplorerSegmentSchema: z.ZodObject<{
+  id: typeof SegmentIdSchema;
+  name: typeof SegmentNameSchema;
+  climb_category: z.ZodNumber;
+  climb_category_desc: z.ZodString;
+  avg_grade: z.ZodNumber;
+  start_latlng: z.ZodArray<z.ZodNumber>;
+  end_latlng: z.ZodArray<z.ZodNumber>;
+  elev_difference: z.ZodNumber;
+  distance: z.ZodNumber;
+  points: z.ZodString;
+}> = z.object({
   id: SegmentIdSchema,
   name: SegmentNameSchema,
   climb_category: z.number(),

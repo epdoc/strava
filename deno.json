@@ -11,6 +11,8 @@
   },
   "workspace": [
     "./packages/core",
+    "./packages/strava-app",
+    "./packages/athlete",
     "./packages/strava-api",
     "./packages/strava"
   ],

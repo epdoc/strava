@@ -1,5 +1,5 @@
-import * as CliApp from "@epdoc/cliapp";
-import type { Context, CustomMsgBuilder } from "./context.ts";
+import * as CliApp from '@epdoc/cliapp';
+import type { Context, CustomMsgBuilder } from './context.ts';
 
 /**
  * Abstract base class for all domain classes in the core package.
@@ -16,8 +16,7 @@ import type { Context, CustomMsgBuilder } from "./context.ts";
  * }
  * ```
  */
-export abstract class BaseClass
-  extends CliApp.BaseClass<Context, CustomMsgBuilder, CliApp.Ctx.Logger> {
+export abstract class BaseClass extends CliApp.BaseClass<Context, CustomMsgBuilder, CliApp.Ctx.Logger> {
 }
 
 /**

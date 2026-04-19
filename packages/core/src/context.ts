@@ -1,5 +1,6 @@
 import * as CliApp from '@epdoc/cliapp';
 import { DateRanges } from '@epdoc/daterange';
+import type * as FS from '@epdoc/fs/fs';
 import type * as Log from '@epdoc/logger';
 
 /**
@@ -25,6 +26,11 @@ export class CustomMsgBuilder extends CliApp.Progress.MsgBuilder {
     const actualEmitter = emitter ??
       CliApp.Progress.createStandaloneProgressEmitter();
     super(actualEmitter);
+  }
+
+  fs(file: FS.File | FS.Folder): this {
+    this.relative(file.path);
+    return this;
   }
 
   activity(activity: object | undefined): this {

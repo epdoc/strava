@@ -11,10 +11,10 @@
   },
   "workspace": [
     "./packages/core",
-    "./packages/strava-app",
+    "./packages/app",
     "./packages/athlete",
-    "./packages/strava-api",
-    "./packages/strava"
+    "./packages/gpx",
+    "./packages/api"
   ],
   "fmt": {
     "singleQuote": true,

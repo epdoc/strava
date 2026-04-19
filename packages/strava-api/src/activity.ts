@@ -1,10 +1,10 @@
 import type { IANATZ, ISODate } from '@epdoc/datetime';
-import { DateEx } from '@epdoc/datetime'; // Import DateEx
+import { DateEx, DateTime } from '@epdoc/datetime'; // Import DateEx
 import type { EpochMilliseconds, Seconds } from '@epdoc/duration';
+import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import { _, type CompareResult, type Dict, type Integer } from '@epdoc/type';
 import { assert } from '@std/assert';
 import type { Api } from './api.ts';
-import type * as Ctx from './context.ts';
 import type * as Schema from './schema/mod.ts';
 import type {
   ActivityFilter,
@@ -27,10 +27,9 @@ const REGEX = {
  * This class encapsulates the data for a Strava activity and provides convenient methods for accessing and manipulating
  * that data.
  */
-export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
-  public Context!: Ctx.IContext<M, L>;
+export class Activity extends BaseClass {
   public data: Schema.SummaryActivity | Schema.DetailedActivity;
-  api?: Api<M, L>;
+  api?: Api;
   #detailed = false;
   #trackPoints: TrackPoint[] = []; // will contain the latlng coordinates for the activity
   #segments: SegmentData[] = []; // Will be declared here
@@ -46,12 +45,14 @@ export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * @param opts.segmentProvider A provider for retrieving segment data.
    */
   constructor(
+    ctx: Ctx.Context,
     data: Schema.SummaryActivity | Schema.DetailedActivity,
     opts?: {
       aliases?: Record<string, string>;
       segmentProvider?: { getSegment(name: string): Schema.SummarySegment | undefined };
     },
   ) {
+    super(ctx);
     this.data = data;
     this.#aliases = opts?.aliases;
     this.#segmentProvider = opts?.segmentProvider;
@@ -78,7 +79,7 @@ export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
   /**
    * Returns a string representation of the activity, including the date, type, distance, and name.
    */
-  public toString(): string {
+  override toString(): string {
     const d = Math.round(this.data.distance / 100) / 10;
     return `${this.startDateLocal}, ${this.type} ${d} km, ${this.name}`;
   }
@@ -209,14 +210,14 @@ export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * console.log(pointTime.toISOLocalString()); // "2025-11-14T10:53:35.000-06:00"
    * ```
    */
-  startDateEx(delta: Seconds = 0): DateEx {
+  startDateEx(delta: Seconds = 0): DateTime {
     const ms: EpochMilliseconds = new Date(this.data.start_date).getTime() + delta * 1000;
-    const dateEx = new DateEx(ms);
+    const dateEx = new DateTime(ms);
     if (this.data.timezone) {
       const tzMatch = this.data.timezone.match(/\)\s*(.+)$/);
       if (tzMatch) {
         const tz = tzMatch[1];
-        dateEx.tz(tz as IANATZ);
+        dateEx.setTz(tz as IANATZ);
       }
     }
     return dateEx;
@@ -357,12 +358,11 @@ export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * console.log(activity.coordinates[0]); // { lat: 9.108, lng: -83.647, altitude: 124.8, time: 0 }
    * ```
    */
-  async getTrackPoints(ctx: this['Context'], streamTypes: Schema.StreamType[]): Promise<void> {
+  async getTrackPoints(streamTypes: Schema.StreamType[]): Promise<void> {
     assert(this.api, 'api not set');
     try {
-      const m0 = ctx.log.mark();
+      const m0 = this.log.mark();
       const coords = await this.api.getStreamCoords(
-        ctx,
         'activities',
         streamTypes,
         this.data.id,
@@ -370,12 +370,12 @@ export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
       );
       if (coords && coords.length > 0) {
         this.#trackPoints = coords;
-        ctx.log.info.h2('Retrieved').count(coords.length)
+        this.log.info.h2('Retrieved').count(coords.length)
           .h2('track point').h2('for').value(this.toString()).ewt(m0);
       }
     } catch (_e) {
       // const err = _.asError(_e);
-      ctx.log.warn.text('Failed to fetch coordinates for activity').value(this.name).emit();
+      this.log.warn.text('Failed to fetch coordinates for activity').value(this.name).emit();
     }
   }
 
@@ -405,13 +405,13 @@ export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * // Logs: "Filtered 244 points in blackout zones and 2235 duplicate points for ..."
    * ```
    */
-  filterTrackPoints(ctx: this['Context'], dedup: boolean, blackoutZones?: LatLngRect[]) {
+  filterTrackPoints(dedup: boolean, blackoutZones?: LatLngRect[]) {
     const len0 = this.#trackPoints.length;
     if (_.isNonEmptyArray(blackoutZones)) {
       this.#trackPoints = this.#trackPoints.filter((pt) => {
         const rm = pointIsInRects(pt as TrackPoint, blackoutZones);
         if (rm) {
-          ctx.log.spam.text('Blackout').value(pt.lat).value(pt.lng).value(pt.time).emit();
+          this.log.spam.text('Blackout').value(pt.lat).value(pt.lng).value(pt.time).emit();
         }
         return rm ? false : true;
       });
@@ -448,7 +448,7 @@ export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
         if (!(isSameAsPrev && isSameAsNext)) {
           filtered.push(pt);
         } else {
-          ctx.log.spam.text('Dedup').value(pt.lat).value(pt.lng).value(pt.time).emit();
+          this.log.spam.text('Dedup').value(pt.lat).value(pt.lng).value(pt.time).emit();
         }
       }
 
@@ -461,7 +461,7 @@ export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
     const totalRemoved = len0 - len2;
 
     if (totalRemoved > 0) {
-      const line = ctx.log.info.text('Filtered');
+      const line = this.log.info.text('Filtered');
       if (blackoutRemoved > 0) {
         line.count(blackoutRemoved).text('point').text('in blackout zones');
       }
@@ -501,19 +501,19 @@ export class Activity<M extends Ctx.MsgBuilder, L extends Ctx.Logger<M>> {
    * }
    * ```
    */
-  async getDetailed(ctx: this['Context']): Promise<void> {
+  async getDetailed(): Promise<void> {
     assert(this.api, 'api not set');
     if (this.#detailed) {
       return;
     }
     try {
-      const m0 = ctx.log.mark();
-      const detailedActivity = await this.api.getDetailedActivity(ctx, this.data);
+      const m0 = this.log.mark();
+      const detailedActivity = await this.api.getDetailedActivity(this.data);
       this.data = detailedActivity;
       this.#detailed = true;
-      ctx.log.info.h2('Retrieved detailed activity data for').value(this.toString()).ewt(m0);
+      this.log.info.h2('Retrieved detailed activity data for').value(this.toString()).ewt(m0);
     } catch (_e) {
-      ctx.log.warn.warn('Failed to fetch detailed data for').value(this.name).emit();
+      this.log.warn.warn('Failed to fetch detailed data for').value(this.name).emit();
     }
   }
 

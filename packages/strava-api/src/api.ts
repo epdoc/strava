@@ -59,17 +59,16 @@ export type TokenUrlOpts = {
  * const api = new StravaApi(userCredsFile);
  *
  * // 4. Authenticate and make API calls
- * const isAuthenticated = await api.init(ctx);
+ * const isAuthenticated = await api.init();
  * if (isAuthenticated) {
- *   const athlete = await api.getAthlete(ctx);
+ *   const athlete = await api.getAthlete();
  *   console.log(`Welcome, ${athlete.firstname} ${athlete.lastname}!`);
  * }
  * ```
  */
 export class Api extends BaseClass {
-  public AuthService!: Auth.Service<M, L>;
-  public Activity!: Activity<M, L>;
-  #auth: Auth.Service<M, L>;
+  public Activity!: Activity;
+  #auth: Auth.Service;
 
   /**
    * Constructs a new `StravaApi` instance.
@@ -83,7 +82,7 @@ export class Api extends BaseClass {
     clientCreds: Strava.ClientCredSrc | Strava.ClientCredSrc[] = { env: true },
   ) {
     super(ctx);
-    this.#auth = new Auth.Service(userCredsFile, clientCreds);
+    this.#auth = new Auth.Service(ctx, userCredsFile, clientCreds);
   }
 
   override toString(): string {
@@ -102,11 +101,8 @@ export class Api extends BaseClass {
    * @param opts.force If `true`, the web-based authentication flow will be forced, even if a valid token already exists.
    * @returns A promise that resolves to `true` if authentication is successful, otherwise `false`.
    */
-  async init(
-    ctx: this['Context'],
-    opts: { force: boolean } = { force: false },
-  ): Promise<boolean> {
-    return await this.#auth.init(ctx, opts);
+  async init(opts: { force: boolean } = { force: false }): Promise<boolean> {
+    return await this.#auth.init(opts);
   }
 
   /**
@@ -119,8 +115,8 @@ export class Api extends BaseClass {
     return this.#auth.creds;
   }
 
-  async #refreshToken(ctx: this['Context'], force = false): Promise<void> {
-    await this.#auth.refreshToken(ctx, force);
+  async #refreshToken(force = false): Promise<void> {
+    await this.#auth.refreshToken(force);
   }
 
   /**
@@ -134,10 +130,9 @@ export class Api extends BaseClass {
    * @returns A promise that resolves to the athlete's detailed profile.
    */
   public async getAthlete(
-    ctx: this['Context'],
     athleteId?: Schema.AthleteId,
   ): Promise<Schema.DetailedAthlete> {
-    await this.#refreshToken(ctx);
+    await this.#refreshToken();
     let url = STRAVA_URL.athlete;
     if (isStravaId(athleteId)) {
       url = url + '/' + athleteId;
@@ -153,7 +148,7 @@ export class Api extends BaseClass {
 
     const resp = await fetch(url, reqOpts);
     if (!resp.ok) {
-      ctx.log.error.warn('Failed to get athlete').error(resp.statusText).emit();
+      this.log.error.warn('Failed to get athlete').error(resp.statusText).emit();
       throw new Error('Failed to retrieve athlete ' + athleteId);
     }
 
@@ -176,10 +171,9 @@ export class Api extends BaseClass {
    * @returns A promise that resolves to an array of activities.
    */
   public async getActivities(
-    ctx: this['Context'],
     options: Strava.ActivityOpts,
   ): Promise<this['Activity'][]> {
-    await this.#refreshToken(ctx);
+    await this.#refreshToken();
     const url = new URL(STRAVA_URL.activities);
     // if (_.isPosInteger(options.athleteId)) {
     //   url = new URL(url.toString() + '/' + options.athleteId);
@@ -202,7 +196,9 @@ export class Api extends BaseClass {
     try {
       const resp = await fetch(url.toString(), reqOpts);
       if (!resp.ok) {
-        ctx.log.error.error('Failed to get activities:').error(resp.statusText).path(url.toString())
+        this.log.error.error('Failed to get activities:').error(resp.statusText).path(
+          url.toString(),
+        )
           .emit();
         throw new Error(`Failed to get activities: ${resp.statusText}`);
       }
@@ -211,7 +207,7 @@ export class Api extends BaseClass {
 
       if (isSummaryActivityArray(data)) {
         return data.map((item) => {
-          const activity = new Activity<M, L>(item);
+          const activity = new Activity(this.ctx, item);
           activity.api = this;
           return activity;
         });
@@ -237,11 +233,10 @@ export class Api extends BaseClass {
    * @param page The page number to retrieve. Defaults to 1.
    */
   public async getStarredSegments(
-    ctx: this['Context'],
     accum: Schema.SummarySegment[],
     page: number = 1,
   ): Promise<void> {
-    await this.#refreshToken(ctx);
+    await this.#refreshToken();
     const perPage = 200;
     const url = new URL(STRAVA_URL.starred);
     url.searchParams.append('per_page', String(perPage));
@@ -255,23 +250,23 @@ export class Api extends BaseClass {
       },
     };
 
-    const m0 = ctx.log.mark();
+    const m0 = this.log.mark();
     const resp = await fetch(url.toString(), reqOpts);
     if (!resp.ok) {
-      ctx.log.error.error('Failed to retrieved starred segments').error(resp.statusText).emit();
+      this.log.error.error('Failed to retrieved starred segments').error(resp.statusText).emit();
       return;
     }
 
     const data: unknown = await resp.json();
 
     if (isSummarySegmentArray(data)) {
-      ctx.log.info.h2('Retrieved').count(data.length).h2('starred segments for page').value(page)
+      this.log.info.h2('Retrieved').count(data.length).h2('starred segments for page').value(page)
         .ewt(m0);
       data.forEach((item) => {
         accum.push(item);
       });
       if (data.length >= perPage) {
-        return this.getStarredSegments(ctx, accum, page + 1);
+        return this.getStarredSegments(accum, page + 1);
       }
       return Promise.resolve();
     }
@@ -289,10 +284,9 @@ export class Api extends BaseClass {
    * @returns A promise that resolves to the detailed representation of the activity.
    */
   public async getDetailedActivity(
-    ctx: this['Context'],
     activity: Schema.SummaryActivity,
   ): Promise<Schema.DetailedActivity> {
-    await this.#refreshToken(ctx);
+    await this.#refreshToken();
     const url = STRAVA_URL.detailedActivity + '/' + activity.id;
 
     const reqOpts: RequestInit = {
@@ -362,7 +356,6 @@ export class Api extends BaseClass {
    * ```
    */
   public async getStreamCoords(
-    ctx: this['Context'],
     source: 'activities' | 'segments',
     streamTypes: Schema.StreamKeyType[],
     objId: Schema.ActivityId | Schema.SegmentId,
@@ -372,9 +365,9 @@ export class Api extends BaseClass {
       keys: streamTypes.join(','),
       key_by_type: true,
     };
-    const m0 = ctx.log.mark();
+    const m0 = this.log.mark();
     try {
-      const resp: Partial<Schema.StreamSet> = await this.getStreams(ctx, source, objId, query);
+      const resp: Partial<Schema.StreamSet> = await this.getStreams(source, objId, query);
       if (hasLatLngData(resp)) {
         const results: Strava.TrackPoint[] = [];
         const len = resp.latlng.data.length;
@@ -398,11 +391,11 @@ export class Api extends BaseClass {
           results.push(item);
         }
 
-        // ctx.log.info.h2('Retrieved').count(results.length).h2('track point')
+        // this.log.info.h2('Retrieved').count(results.length).h2('track point')
         //   .h2('for').value(name).ewt(m0);
         return results;
       }
-      ctx.log.info.h2('Get').value(name).h2('did not contain latlng coordinates').ewt(m0);
+      this.log.info.h2('Get').value(name).h2('did not contain latlng coordinates').ewt(m0);
       return [];
     } catch (error: unknown) {
       const err = _.asError(error);
@@ -416,12 +409,12 @@ export class Api extends BaseClass {
 
       // Handle 429 rate limit errors with a warning (no stack trace)
       if (errorMsg.includes('429')) {
-        ctx.log.warn.text('Rate limit exceeded fetching coordinates for').value(name).emit();
+        this.log.warn.text('Rate limit exceeded fetching coordinates for').value(name).emit();
         return [];
       }
 
       // Log other errors with full details
-      ctx.log.error.h2('Get').value(name).h2('coordinates').err(err).ewt(m0);
+      this.log.error.h2('Get').value(name).h2('coordinates').err(err).ewt(m0);
       return [];
     }
   }
@@ -439,12 +432,11 @@ export class Api extends BaseClass {
    * are arrays of the stream data.
    */
   public async getStreams(
-    ctx: this['Context'],
     source: 'activities' | 'segments',
     objId: Schema.ActivityId | Schema.SegmentId,
     options: Strava.Query,
   ): Promise<Partial<Schema.StreamSet>> {
-    await this.#refreshToken(ctx);
+    await this.#refreshToken();
     const url = new URL(`${STRAVA_API_PREFIX}/${source}/${objId}/streams`);
 
     if (options) {
@@ -495,10 +487,9 @@ export class Api extends BaseClass {
    * @returns A promise that resolves to the segment data.
    */
   public async getSegment(
-    ctx: this['Context'],
     segmentId: Schema.SegmentId,
   ): Promise<Schema.SummarySegment> {
-    await this.#refreshToken(ctx);
+    await this.#refreshToken();
     const url = STRAVA_API_PREFIX + '/' + 'segments/' + segmentId;
 
     const reqOpts: RequestInit = {
@@ -533,11 +524,10 @@ export class Api extends BaseClass {
    * @returns A promise that resolves to an array of segment efforts.
    */
   public async getSegmentEfforts(
-    ctx: this['Context'],
     segmentId: Schema.SegmentId,
     params: Strava.Query,
   ): Promise<Schema.DetailedSegmentEffort[]> {
-    await this.#refreshToken(ctx);
+    await this.#refreshToken();
     const url = new URL(STRAVA_API_PREFIX + '/' + 'segments/' + segmentId + '/' + 'all_efforts');
 
     if (params) {

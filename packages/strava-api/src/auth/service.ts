@@ -1,3 +1,4 @@
+import * as Cliapp from '@epdoc/cliapp';
 import { DateTime } from '@epdoc/datetime';
 import { type EpochMilliseconds, type EpochSeconds, humanize } from '@epdoc/duration';
 import * as FS from '@epdoc/fs/fs';
@@ -12,7 +13,6 @@ import { assert } from '@std/assert';
 import type * as Strava from '../types.ts';
 import { StravaCreds } from './creds.ts';
 import type { Oauth2Code } from './types.ts';
-import * as Cliapp from '@epdoc/cliapp';
 
 const STRAVA_URL_PREFIX = Deno.env.get('STRAVA_URL_PREFIX') || 'https://www.strava.com';
 const STRAVA_API_PREFIX = STRAVA_URL_PREFIX + '/api/v3';
@@ -105,12 +105,12 @@ export class AuthService extends BaseClass {
     await this.refreshToken(opts.force);
     const hasAuth = this.#creds.isValid();
     if (hasAuth && opts.force !== true) {
-      await this.#logAuthStatus(ctx, m0);
+      await this.#logAuthStatus();
       this.log.outdent();
       return true;
     }
 
-    const result = await this.runAuthWebPage(ctx, m0);
+    const result = await this.runAuthWebPage();
     this.log.outdent();
     return result;
   }
@@ -209,11 +209,11 @@ export class AuthService extends BaseClass {
    * Logs the current authentication status, including token expiration.
    * @private
    */
-  #logAuthStatus(ctx: this['Context'], mark: string): Promise<boolean> {
+  #logAuthStatus(): Promise<boolean> {
     const delta = this.#creds.expiresAt - new Date().getTime();
     this.log.debug.h2('Authorization')
       .if(delta > 0).h2('is still valid, expires').else().h2('has expired').endif()
-      .value(humanize(delta), true).ewt(mark);
+      .value(humanize(delta), true).emit();
     return Promise.resolve(true);
   }
 
@@ -271,8 +271,7 @@ export class AuthService extends BaseClass {
       if (force) {
         this.log.info.warn('Forcing token refresh').emit();
       } else {
-        const m1 = this.log.mark();
-        this.#logAuthStatus(m1);
+        this.#logAuthStatus();
       }
       const payload = {
         client_id: this.client.id,
@@ -308,7 +307,7 @@ export class AuthService extends BaseClass {
         this.log.info.text('Saved Access Token').relative(this.creds.path).stop();
       } catch (error: unknown) {
         const err = _.asError(error);
-        this.log.info.h2('Failed to refresh access token').err(err).ewt(m0);
+        this.log.info.h2('Failed to refresh access token').err(err).emit();
         throw err;
       }
     }
@@ -325,7 +324,7 @@ export class AuthService extends BaseClass {
    * @param mark A timestamp for logging the duration of the operation.
    * @returns A promise that resolves to `true` if the flow is successful, or rejects with an error.
    */
-  runAuthWebPage(mark: string): Promise<boolean> { // Changed ctx type to Ctx.IContext and return type to Promise<boolean>
+  runAuthWebPage(): Promise<boolean> { // Changed ctx type to Ctx.IContext and return type to Promise<boolean>
     // assert(ctx.api, 'Strava API not initialized'); // No longer needed
     return new Promise((resolve, reject) => {
       const cb: cbFunction = () => { // Removed async as it's not needed here
@@ -337,7 +336,7 @@ export class AuthService extends BaseClass {
         }
       };
 
-      this.log.info.h2('Authorization required. Opening web authorization page').ewt(mark);
+      this.log.info.h2('Authorization required. Opening web authorization page').emit();
       const authUrl = this.getAuthUrl(); // Use ctx.app! for StravaApi instance
       this.#startServer(authUrl, cb);
       return open(authUrl).then(() => {

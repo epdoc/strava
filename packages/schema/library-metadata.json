@@ -1,0 +1,126 @@
+{
+  "name": "@jpravetz/strava-schema",
+  "description": "Zod schemas and TypeScript types for the Strava API",
+  "version": "2.0.5",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "path": "./src/mod.ts",
+      "description": "Main entry point - exports all schemas and types"
+    }
+  },
+  "modules": {
+    "./src/mod.ts": {
+      "description": "Main module that re-exports all schema definitions",
+      "exports": [
+        {
+          "name": "*",
+          "description": "Re-exports all schemas and types from ./schema/mod.ts"
+        }
+      ]
+    },
+    "./src/schema/mod.ts": {
+      "description": "Central export point for all schema definitions",
+      "exports": [
+        {
+          "category": "Constants",
+          "items": [
+            "ActivityName",
+            "ActivityNameSchema",
+            "ActivityZoneDefs",
+            "ActivityZoneTypeSchema",
+            "FollowerStatus",
+            "FollowerStatusSchema",
+            "ResourceState",
+            "ResourceStateSchema",
+            "Sex",
+            "SexSchema",
+            "SportName",
+            "SportNameSchema",
+            "StreamKeys",
+            "StreamTypeSchema",
+            "StreamResolution",
+            "StreamResolutionSchema",
+            "StreamSeriesType",
+            "StreamSeriesTypeSchema",
+            "UnitSystem",
+            "UnitSystemSchema"
+          ]
+        },
+        {
+          "category": "Activity Schemas",
+          "items": [
+            "ActivityIdSchema",
+            "SummaryActivitySchema",
+            "DetailedActivitySchema",
+            "ActivityStatsSchema",
+            "ActivityTotalSchema",
+            "LapSchema",
+            "PolylineMapSchema"
+          ]
+        },
+        {
+          "category": "Athlete Schemas",
+          "items": [
+            "AthleteIdSchema",
+            "SummaryAthleteSchema",
+            "DetailedAthleteSchema",
+            "SummaryClubSchema",
+            "CommentSchema"
+          ]
+        },
+        {
+          "category": "Segment Types",
+          "items": [
+            "SegmentIdSchema",
+            "SegmentNameSchema",
+            "SummarySegment",
+            "SummarySegmentEffort",
+            "DetailedSegment",
+            "DetailedSegmentEffort",
+            "ExplorerSegmentSchema",
+            "isSummarySegment",
+            "isSummarySegmentEffort"
+          ]
+        },
+        {
+          "category": "Gear Schemas",
+          "items": [
+            "GearIdSchema",
+            "SummaryGearSchema",
+            "DetailedGearSchema"
+          ]
+        },
+        {
+          "category": "Stream Schemas",
+          "items": [
+            "StreamSchema",
+            "LatLngStreamSchema",
+            "StreamSetSchema"
+          ]
+        },
+        {
+          "category": "Zone Schemas",
+          "items": [
+            "ZonesSchema",
+            "ZoneRangeSchema",
+            "PowerZoneRangesSchema",
+            "HeartRateZoneRangesSchema"
+          ]
+        }
+      ]
+    }
+  },
+  "usage": {
+    "examples": [
+      {
+        "title": "Validate API Response",
+        "code": "import { SummaryActivitySchema } from '@jpravetz/strava-schema';\n\nconst result = SummaryActivitySchema.safeParse(apiResponse);\nif (result.success) {\n  console.log(result.data.name);\n}"
+      },
+      {
+        "title": "Use Type",
+        "code": "import type { SummaryActivity } from '@jpravetz/strava-schema';\n\nfunction processActivity(activity: SummaryActivity): void {\n  console.log(activity.name);\n}"
+      }
+    ]
+  }
+}

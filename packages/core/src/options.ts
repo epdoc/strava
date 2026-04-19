@@ -9,7 +9,14 @@ export type CmdOptions = CliApp.LogCmdOptions & {
   laps?: boolean;
   blackout: boolean;
   allowDups: boolean;
+  imperial?: boolean;
 };
+
+/** Region code for filtering activities by geographic region (e.g., 'CR' for Costa Rica, 'EU' for Europe) */
+export type RegionCode = string;
+
+/** Activity type strings for filtering */
+export type ActivityType = string;
 
 export const optionDefs: CliApp.OptionDefMap = {
   date: {
@@ -110,6 +117,19 @@ EXAMPLES:
     name: 'refresh',
     description: 'Refresh list of starred segments',
   },
+  imperial: {
+    short: 'i',
+    name: 'imperial',
+    description: 'Display distances in imperial units',
+  },
+  format: {
+    short: 'f',
+    name: 'format',
+    params: '<format>',
+    description: 'Output format. Default: table. Options: table, csv, json, yaml',
+    choices: ['table', 'csv', 'json', 'yaml'],
+    defVal: 'table',
+  },
   kml: {
     short: 'k',
     name: 'kml',
@@ -117,6 +137,31 @@ EXAMPLES:
     description: 'Generate KML file for starred segments',
     argParser: (str: string) => {
       return _.isString(str) ? FS.File.cwd(str) : str;
+    },
+  },
+  type: {
+    short: 't',
+    name: 'type',
+    params: '[types]',
+    description:
+      'Include activity types (default when no flags specified). Optional: comma-separated activity types (e.g., Ride,Run,Hike)',
+    argParser: (str: string | boolean): ActivityType[] => {
+      if (str === true || str === '') return []; // All activities
+      if (_.isString(str)) {
+        return str.split(',').map((s) => s.trim());
+      }
+      return [];
+    },
+  },
+  region: {
+    name: 'region',
+    params: '<code>',
+    description: 'Filter activities by region (e.g., "CR" for Costa Rica, "EU" for Europe, "ON" for Ontario)',
+    argParser: (str: string | boolean): RegionCode | undefined => {
+      if (_.isString(str) && str.length > 0) {
+        return str.toUpperCase();
+      }
+      return undefined;
     },
   },
 } as const;

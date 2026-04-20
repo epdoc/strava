@@ -1,7 +1,7 @@
 import type { EpochSeconds, Seconds } from '@epdoc/duration';
 import type * as FS from '@epdoc/fs/fs';
 import type { Dict, Integer } from '@epdoc/type';
-import type * as Schema from './schema/mod.ts';
+import type * as StravaSchema from '@epdoc/strava-schema';
 
 /** An authorization code obtained from the Strava OAuth2 flow. */
 export type Code = string;
@@ -81,7 +81,7 @@ export type AuthUrlOpts = {
 
 /** Options for retrieving activities. */
 export type ActivityOpts = {
-  athleteId: Schema.AthleteId;
+  athleteId: StravaSchema.Athlete.IdType;
   query: {
     after: EpochSeconds;
     before: EpochSeconds;
@@ -102,7 +102,7 @@ export type StravaCredsData = {
   refresh_token?: string;
   access_token?: string;
   athlete: {
-    id?: Schema.AthleteId;
+    id?: StravaSchema.Athlete.IdType;
     username?: string;
     [key: string]: unknown;
   };
@@ -125,8 +125,8 @@ export type ActivityFilter = {
 };
 
 /** Data for a segment effort, as returned by the Strava API. */
-export type SegmentData = Schema.DetailedSegmentEffort; // Changed to DetailedSegmentEffort
+export type SegmentData = StravaSchema.Segment.DetailedEffortType; // Changed to DetailedSegmentEffort
 /** A segment effort. */
-export type SegmentEffort = Schema.DetailedSegmentEffort;
+export type SegmentEffort = StravaSchema.Segment.DetailedEffortType;
 
-export type StarredSegmentDict = Record<Schema.SegmentId, string>;
+export type StarredSegmentDict = Record<StravaSchema.Segment.IdType, string>;

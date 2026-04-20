@@ -25,6 +25,15 @@
     ]
   },
   "imports": {
+    "@epdoc/strava-schema": "../schema/src/mod.ts",
+    "@epdoc/strava-schema/activity": "../schema/src/activity.ts",
+    "@epdoc/strava-schema/athlete": "../schema/src/athlete.ts",
+    "@epdoc/strava-schema/consts": "../schema/src/consts.ts",
+    "@epdoc/strava-schema/gear": "../schema/src/gear.ts",
+    "@epdoc/strava-schema/segment": "../schema/src/segment.ts",
+    "@epdoc/strava-schema/stream": "../schema/src/stream.ts",
+    "@epdoc/strava-schema/types": "../schema/src/types.ts",
+    "@epdoc/strava-schema/zones": "../schema/src/zones.ts",
     "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.1",
     "@epdoc/daterange": "jsr:@epdoc/daterange@^2.1.7",
     "@epdoc/strava-core": "../core/src/mod.ts",

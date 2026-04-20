@@ -5,7 +5,7 @@ import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import { _, type CompareResult, type Dict, type Integer } from '@epdoc/type';
 import { assert } from '@std/assert';
 import type { Api } from './api.ts';
-import type * as Schema from './schema/mod.ts';
+import type * as StravaSchema from '@epdoc/strava-schema';
 import type {
   ActivityFilter,
   Kilometres,
@@ -28,13 +28,13 @@ const REGEX = {
  * that data.
  */
 export class Activity extends BaseClass {
-  public data: Schema.SummaryActivity | Schema.DetailedActivity;
+  public data: StravaSchema.Activity.SummaryType | StravaSchema.Activity.DetailedType;
   api?: Api;
   #detailed = false;
   #trackPoints: TrackPoint[] = []; // will contain the latlng coordinates for the activity
   #segments: SegmentData[] = []; // Will be declared here
   #aliases?: Record<string, string>; // Private property for aliases
-  #segmentProvider?: { getSegment(name: string): Schema.SummarySegment | undefined }; // Private property for segment provider
+  #segmentProvider?: { getSegment(name: string): StravaSchema.Segment.SummaryType | undefined }; // Private property for segment provider
 
   /**
    * Constructs a new `Activity` instance.
@@ -46,10 +46,10 @@ export class Activity extends BaseClass {
    */
   constructor(
     ctx: Ctx.Context,
-    data: Schema.SummaryActivity | Schema.DetailedActivity,
+    data: StravaSchema.Activity.SummaryType | StravaSchema.Activity.DetailedType,
     opts?: {
       aliases?: Record<string, string>;
-      segmentProvider?: { getSegment(name: string): Schema.SummarySegment | undefined };
+      segmentProvider?: { getSegment(name: string): StravaSchema.Segment.SummaryType | undefined };
     },
   ) {
     super(ctx);
@@ -65,7 +65,7 @@ export class Activity extends BaseClass {
    *
    * @param data The new activity data.
    */
-  update(data: Schema.SummaryActivity | Schema.DetailedActivity) {
+  update(data: StravaSchema.Activity.SummaryType | StravaSchema.Activity.DetailedType) {
     this.data = data;
   }
 
@@ -105,7 +105,7 @@ export class Activity extends BaseClass {
   /**
    * The unique identifier of the activity.
    */
-  public get id(): Schema.ActivityId {
+  public get id(): StravaSchema.Activity.IdType {
     return this.data.id;
   }
 
@@ -147,14 +147,14 @@ export class Activity extends BaseClass {
   /**
    * The average temperature of the activity in degrees Celsius.
    */
-  public get averageTemp(): number {
+  public get averageTemp(): number | undefined {
     return this.data.average_temp;
   }
 
   /**
    * The name of the device used to record the activity.
    */
-  public get deviceName(): string {
+  public get deviceName(): string | undefined {
     return this.data.device_name;
   }
 
@@ -168,7 +168,7 @@ export class Activity extends BaseClass {
   /**
    * The ID of the gear used for the activity.
    */
-  get gearId(): string {
+  get gearId(): string | null | undefined {
     return this.data.gear_id;
   }
 
@@ -179,7 +179,7 @@ export class Activity extends BaseClass {
   /**
    * The start datetime of the activity in the local timezone, in ISO 8601 format.
    */
-  get startDatetimeLocal(): ISODate {
+  get startDatetimeLocal(): string {
     return this.data.start_date_local;
   }
 
@@ -348,9 +348,9 @@ export class Activity extends BaseClass {
    * ```ts
    * // Fetch coordinates with altitude and time for GPX export
    * await activity.getCoordinates(ctx, [
-   *   Api.Schema.StreamKeys.LatLng,
-   *   Api.Schema.StreamKeys.Altitude,
-   *   Api.Schema.StreamKeys.Time
+   *   StravaSchema.Consts.StreamKeys.LatLng,
+   *   StravaSchema.Consts.StreamKeys.Altitude,
+   *   StravaSchema.Consts.StreamKeys.Time
    * ]);
    *
    * // Access the populated coordinates
@@ -358,7 +358,7 @@ export class Activity extends BaseClass {
    * console.log(activity.coordinates[0]); // { lat: 9.108, lng: -83.647, altitude: 124.8, time: 0 }
    * ```
    */
-  async getTrackPoints(streamTypes: Schema.StreamType[]): Promise<void> {
+  async getTrackPoints(streamTypes: StravaSchema.Consts.StreamType[]): Promise<void> {
     assert(this.api, 'api not set');
     try {
       const m0 = this.log.mark();

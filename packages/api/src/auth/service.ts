@@ -4,7 +4,7 @@ import { type EpochMilliseconds, type EpochSeconds, humanize } from '@epdoc/dura
 import * as FS from '@epdoc/fs/fs';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import { _ } from '@epdoc/type';
-import type { ClientCreds } from '@jpravetz/strava-api';
+import type { ClientCreds } from '../types.ts';
 import type { Context as OakContext } from '@oak/oak';
 import { Application } from '@oak/oak/application';
 import { Router } from '@oak/oak/router';

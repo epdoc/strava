@@ -16,7 +16,7 @@ import {
   isSummarySegment,
   isSummarySegmentArray,
 } from './guards.ts';
-import type * as Schema from './schema/mod.ts';
+import type * as StravaSchema from '@epdoc/strava-schema';
 import type * as Strava from './types.ts';
 
 const STRAVA_URL_PREFIX = Deno.env.get('STRAVA_URL_PREFIX') || 'https://www.strava.com';
@@ -130,8 +130,8 @@ export class Api extends BaseClass {
    * @returns A promise that resolves to the athlete's detailed profile.
    */
   public async getAthlete(
-    athleteId?: Schema.AthleteId,
-  ): Promise<Schema.DetailedAthlete> {
+    athleteId?: StravaSchema.Athlete.IdType,
+  ): Promise<StravaSchema.Athlete.DetailedType> {
     await this.#refreshToken();
     let url = STRAVA_URL.athlete;
     if (isStravaId(athleteId)) {
@@ -233,7 +233,7 @@ export class Api extends BaseClass {
    * @param page The page number to retrieve. Defaults to 1.
    */
   public async getStarredSegments(
-    accum: Schema.SummarySegment[],
+    accum: StravaSchema.Segment.SummaryType[],
     page: number = 1,
   ): Promise<void> {
     await this.#refreshToken();
@@ -284,8 +284,8 @@ export class Api extends BaseClass {
    * @returns A promise that resolves to the detailed representation of the activity.
    */
   public async getDetailedActivity(
-    activity: Schema.SummaryActivity,
-  ): Promise<Schema.DetailedActivity> {
+    activity: StravaSchema.Activity.SummaryType,
+  ): Promise<StravaSchema.Activity.DetailedType> {
     await this.#refreshToken();
     const url = STRAVA_URL.detailedActivity + '/' + activity.id;
 
@@ -347,9 +347,9 @@ export class Api extends BaseClass {
    * ```ts
    * // Fetch lat/lng + altitude + time for an activity
    * const coords = await api.getStreamCoords(ctx, 'activities', [
-   *   Schema.StreamKeys.LatLng,
-   *   Schema.StreamKeys.Altitude,
-   *   Schema.StreamKeys.Time
+   *   StravaSchema.Consts.StreamKeys.LatLng,
+   *   StravaSchema.Consts.StreamKeys.Altitude,
+   *   StravaSchema.Consts.StreamKeys.Time
    * ], activityId, activityName);
    *
    * // Result: [{ lat: 9.108, lng: -83.647, altitude: 124.8, time: 0 }, ...]
@@ -357,8 +357,8 @@ export class Api extends BaseClass {
    */
   public async getStreamCoords(
     source: 'activities' | 'segments',
-    streamTypes: Schema.StreamKeyType[],
-    objId: Schema.ActivityId | Schema.SegmentId,
+    streamTypes: StravaSchema.Types.StreamKeyType[],
+    objId: StravaSchema.Activity.IdType | StravaSchema.Segment.IdType,
     name: string,
   ): Promise<Strava.TrackPoint[]> {
     const query: Dict = {
@@ -367,7 +367,7 @@ export class Api extends BaseClass {
     };
     const m0 = this.log.mark();
     try {
-      const resp: Partial<Schema.StreamSet> = await this.getStreams(source, objId, query);
+      const resp: Partial<StravaSchema.Stream.SetType> = await this.getStreams(source, objId, query);
       if (hasLatLngData(resp)) {
         const results: Strava.TrackPoint[] = [];
         const len = resp.latlng.data.length;
@@ -433,9 +433,9 @@ export class Api extends BaseClass {
    */
   public async getStreams(
     source: 'activities' | 'segments',
-    objId: Schema.ActivityId | Schema.SegmentId,
+    objId: StravaSchema.Activity.IdType | StravaSchema.Segment.IdType,
     options: Strava.Query,
-  ): Promise<Partial<Schema.StreamSet>> {
+  ): Promise<Partial<StravaSchema.Stream.SetType>> {
     await this.#refreshToken();
     const url = new URL(`${STRAVA_API_PREFIX}/${source}/${objId}/streams`);
 
@@ -465,11 +465,11 @@ export class Api extends BaseClass {
     // or an object when key_by_type=true
     if (isStreamArray(data)) {
       // Convert array format to object format: [{ type: 'latlng', data: [...] }] -> { latlng: { type: 'latlng', data: [...] } }
-      const result: Record<string, Schema.Stream | Schema.LatLngStream> = {};
+      const result: Record<string, StravaSchema.Stream.DataType | StravaSchema.Stream.LatLngType> = {};
       for (const stream of data) {
         result[stream.type] = stream;
       }
-      return result as Partial<Schema.StreamSet>;
+      return result as Partial<StravaSchema.Stream.SetType>;
     }
 
     if (isStreamSet(data)) {
@@ -487,8 +487,8 @@ export class Api extends BaseClass {
    * @returns A promise that resolves to the segment data.
    */
   public async getSegment(
-    segmentId: Schema.SegmentId,
-  ): Promise<Schema.SummarySegment> {
+    segmentId: StravaSchema.Segment.IdType,
+  ): Promise<StravaSchema.Segment.SummaryType> {
     await this.#refreshToken();
     const url = STRAVA_API_PREFIX + '/' + 'segments/' + segmentId;
 
@@ -524,9 +524,9 @@ export class Api extends BaseClass {
    * @returns A promise that resolves to an array of segment efforts.
    */
   public async getSegmentEfforts(
-    segmentId: Schema.SegmentId,
+    segmentId: StravaSchema.Segment.IdType,
     params: Strava.Query,
-  ): Promise<Schema.DetailedSegmentEffort[]> {
+  ): Promise<StravaSchema.Segment.DetailedEffortType[]> {
     await this.#refreshToken();
     const url = new URL(STRAVA_API_PREFIX + '/' + 'segments/' + segmentId + '/' + 'all_efforts');
 

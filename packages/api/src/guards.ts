@@ -1,5 +1,5 @@
 import { _ } from '@epdoc/type';
-import * as Schema from './schema/mod.ts';
+import * as StravaSchema from '@epdoc/strava-schema';
 
 /**
  * Type guard to check if a value is a valid StravaId.
@@ -7,15 +7,15 @@ import * as Schema from './schema/mod.ts';
  * StravaIds are JavaScript integers. While Strava's API uses int64 (Long) values,
  * in practice these values are small enough to fit within JavaScript's Number.MAX_SAFE_INTEGER.
  */
-export function isStravaId(value: unknown): value is Schema.StravaLongInt {
+export function isStravaId(value: unknown): value is StravaSchema.Types.StravaLongInt {
   return _.isInteger(value);
 }
 
-export function isAthleteId(value: unknown): value is Schema.AthleteId {
+export function isAthleteId(value: unknown): value is StravaSchema.Athlete.IdType {
   return _.isInteger(value);
 }
 
-export function isSegmentId(value: unknown): value is Schema.SegmentId {
+export function isSegmentId(value: unknown): value is StravaSchema.Segment.IdType {
   return _.isInteger(value);
 }
 
@@ -26,7 +26,7 @@ export function isSegmentId(value: unknown): value is Schema.SegmentId {
  * Note: When key_by_type is used in Strava API, the type field may be omitted
  * (it's implicit from the object key), so we only require the data array.
  */
-export function isStream(value: unknown): value is Schema.Stream | Schema.LatLngStream {
+export function isStream(value: unknown): value is StravaSchema.Stream.DataType | StravaSchema.Stream.LatLngType {
   return _.isDict(value) &&
     'data' in value &&
     _.isArray(value.data);
@@ -37,7 +37,7 @@ export function isStream(value: unknown): value is Schema.Stream | Schema.LatLng
  *
  * This is the format returned when key_by_type parameter is empty/false.
  */
-export function isStreamArray(value: unknown): value is (Schema.Stream | Schema.LatLngStream)[] {
+export function isStreamArray(value: unknown): value is (StravaSchema.Stream.DataType | StravaSchema.Stream.LatLngType)[] {
   return _.isArray(value) && value.every(isStream);
 }
 
@@ -46,7 +46,7 @@ export function isStreamArray(value: unknown): value is (Schema.Stream | Schema.
  *
  * This is the format returned when key_by_type=true.
  */
-export function isStreamSet(value: unknown): value is Partial<Schema.StreamSet> {
+export function isStreamSet(value: unknown): value is Partial<StravaSchema.Stream.SetType> {
   return _.isDict(value) &&
     Object.values(value).every((stream) => isStream(stream));
 }
@@ -57,8 +57,8 @@ export function isStreamSet(value: unknown): value is Partial<Schema.StreamSet> 
  * Checks if the StreamSet has a latlng property with a data array.
  */
 export function hasLatLngData(
-  value: Partial<Schema.StreamSet>,
-): value is Schema.StreamSet & { latlng: Schema.LatLngStream } {
+  value: Partial<StravaSchema.Stream.SetType>,
+): value is StravaSchema.Stream.SetType & { latlng: StravaSchema.Stream.LatLngType } {
   return _.isDict(value.latlng) && _.isArray(value.latlng.data);
 }
 
@@ -67,7 +67,7 @@ export function hasLatLngData(
  *
  * IDs are validated as StravaId (JavaScript integers) per Strava API Long type specification.
  */
-export function isSummarySegment(value: unknown): value is Schema.SummarySegment {
+export function isSummarySegment(value: unknown): value is StravaSchema.Segment.SummaryType {
   return _.isDict(value) &&
     isStravaId(value.id) &&
     _.isString(value.name) &&
@@ -77,14 +77,14 @@ export function isSummarySegment(value: unknown): value is Schema.SummarySegment
 /**
  * Type guard to check if a value is an array of SummarySegment objects.
  */
-export function isSummarySegmentArray(value: unknown): value is Schema.SummarySegment[] {
+export function isSummarySegmentArray(value: unknown): value is StravaSchema.Segment.SummaryType[] {
   return _.isArray(value) && value.every((item) => isSummarySegment(item));
 }
 
 /**
  * Type guard to check if a value is an array of DetailedSegmentEffort objects.
  */
-export function isSegmentEffortArray(value: unknown): value is Schema.DetailedSegmentEffort[] {
+export function isSegmentEffortArray(value: unknown): value is StravaSchema.Segment.DetailedEffortType[] {
   return _.isArray(value);
 }
 
@@ -93,7 +93,7 @@ export function isSegmentEffortArray(value: unknown): value is Schema.DetailedSe
  *
  * IDs are validated as StravaId (JavaScript integers) per Strava API Long type specification.
  */
-export function isDetailedAthlete(value: unknown): value is Schema.DetailedAthlete {
+export function isDetailedAthlete(value: unknown): value is StravaSchema.Athlete.DetailedType {
   return _.isDict(value) &&
     isStravaId(value.id) &&
     _.isString(value.firstname) &&
@@ -105,7 +105,7 @@ export function isDetailedAthlete(value: unknown): value is Schema.DetailedAthle
  *
  * IDs are validated as StravaId (JavaScript integers) per Strava API Long type specification.
  */
-export function isSummaryActivity(value: unknown): value is Schema.SummaryActivity {
+export function isSummaryActivity(value: unknown): value is StravaSchema.Activity.SummaryType {
   return _.isDict(value) &&
     isStravaId(value.id) &&
     _.isString(value.name);
@@ -114,7 +114,7 @@ export function isSummaryActivity(value: unknown): value is Schema.SummaryActivi
 /**
  * Type guard to check if a value is an array of SummaryActivity objects.
  */
-export function isSummaryActivityArray(value: unknown): value is Schema.SummaryActivity[] {
+export function isSummaryActivityArray(value: unknown): value is StravaSchema.Activity.SummaryType[] {
   return _.isArray(value) && value.every((item) => isSummaryActivity(item));
 }
 
@@ -123,7 +123,7 @@ export function isSummaryActivityArray(value: unknown): value is Schema.SummaryA
  *
  * IDs are validated as StravaId (JavaScript integers) per Strava API Long type specification.
  */
-export function isDetailedActivity(value: unknown): value is Schema.DetailedActivity {
+export function isDetailedActivity(value: unknown): value is StravaSchema.Activity.DetailedType {
   return _.isDict(value) &&
     isStravaId(value.id) &&
     _.isString(value.name) &&
@@ -131,12 +131,12 @@ export function isDetailedActivity(value: unknown): value is Schema.DetailedActi
 }
 
 // Create a Set for O(1) lookups in the type guard
-const ACTIVITY_NAMES_SET = new Set(Object.values(Schema.ActivityName));
+const ACTIVITY_NAMES_SET = new Set(Object.values(StravaSchema.Consts.ActivityName));
 
-export function isActivityType(value: unknown): value is Schema.ActivityType {
-  return typeof value === 'string' && ACTIVITY_NAMES_SET.has(value as Schema.ActivityType);
+export function isActivityType(value: unknown): value is StravaSchema.Consts.ActivityType {
+  return typeof value === 'string' && ACTIVITY_NAMES_SET.has(value as StravaSchema.Consts.ActivityType);
 }
 
-export function isActivityTypeArray(value: unknown): value is Schema.ActivityType[] {
+export function isActivityTypeArray(value: unknown): value is StravaSchema.Consts.ActivityType[] {
   return Array.isArray(value) && value.every(isActivityType);
 }

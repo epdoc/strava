@@ -219,7 +219,7 @@ export class AuthService extends BaseClass {
    * @private
    */
   #logAuthStatus(): Promise<boolean> {
-    const delta = this.#creds.expiresAt - new Date().getTime();
+    const delta = this.#creds.expiresAt * 1000 - DateTime.now().epochMilliseconds;
     this.log.info.icheck().text('Authorization')
       .if(delta < 0).text('is still valid, expires in').else().text('has expired').endif()
       .value(humanize(delta)).emit();

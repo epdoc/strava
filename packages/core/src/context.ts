@@ -3,6 +3,8 @@ import { DateRanges } from '@epdoc/daterange';
 import type * as FS from '@epdoc/fs/fs';
 import type * as Log from '@epdoc/logger';
 
+export type OutputFormat = 'auto' | 'json' | 'yaml' | 'table' | 'csv' | 'text';
+
 /**
  * Custom message builder demonstrating extension of the base builder.
  *
@@ -78,8 +80,12 @@ export function msgBuilder(
  * ```
  */
 export class Context extends CliApp.Ctx.AbstractBase {
+  format: OutputFormat = 'auto';
   online = true;
+  imperial = false;
   app: object | undefined;
+  date: DateRanges | undefined;
+  more = false;
 
   protected override builderClass = CustomMsgBuilder;
 

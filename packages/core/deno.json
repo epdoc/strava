@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/strava-core",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "exports": "./src/mod.ts",
   "tasks": {
     "fmt": "deno fmt src test *.json",
@@ -15,9 +15,10 @@
     "@epdoc/daterange": "jsr:@epdoc/daterange@^2.1.7",
     "@epdoc/fs": "jsr:@epdoc/fs@^1.3.5",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.12",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.11",
-    "@std/expect": "jsr:@std/expect@^1.0.18",
-    "@std/testing/bdd": "jsr:@std/testing@^1.0.17/bdd"
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.12",
+    "@std/expect": "jsr:@std/expect@^1.0.19",
+    "@epdoc/strava-schema": "../schema/src/mod.ts",
+    "@std/testing/bdd": "jsr:@std/testing@^1.0.18/bdd"
   },
   "fmt": {
     "singleQuote": true,

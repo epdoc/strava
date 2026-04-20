@@ -1,5 +1,5 @@
 /**
- * Consts namespace - Constants and enums for Strava API.
+ * Constants namespace - enums and constants for Strava API.
  *
  * @example
  * ```typescript
@@ -11,40 +11,43 @@
  * ```
  */
 
-// Export schemas and const objects
-export {
-  ActivityName,
-  ActivityNameSchema,
-  ActivityZoneDefs,
-  ActivityZoneTypeSchema,
-  FollowerStatus,
-  FollowerStatusSchema,
-  ResourceState,
-  ResourceStateSchema,
-  Sex,
-  SexSchema,
-  SportName,
-  SportNameSchema,
-  StreamKeys,
-  StreamResolution,
-  StreamResolutionSchema,
-  StreamSeriesType,
-  StreamSeriesTypeSchema,
-  StreamTypeSchema,
-  UnitSystem,
-  UnitSystemSchema,
-} from './schema/consts.ts';
+// Re-export all core constants
+export { ActivityName, StreamKeys } from './types/core.ts';
 
-// Export types separately
+// Re-export all core types
 export type {
+  Achievement,
+  ActivityId,
   ActivityType,
   ActivityZoneType,
-  FollowerStatusType,
-  ResourceStateType,
-  SexType,
+  AthleteId,
+  FollowerStatus,
+  MetaActivity,
+  MetaAthlete,
+  PolylineMap,
+  ResourceState,
+  SegmentId,
+  Sex,
   SportType,
-  StreamResolutionType,
-  StreamSeriesType as StreamSeriesTypeAlias,
+  StravaId,
+  StreamResolution,
+  StreamSeriesType,
   StreamType,
-  UnitSystemType,
-} from './schema/consts.ts';
+  UnitSystem,
+} from './types/core.ts';
+
+// Re-export core guards
+export {
+  isActivityId,
+  isActivityType,
+  isAthleteId,
+  isGearId,
+  isKnownActivityType,
+  isResourceState,
+  isSegmentId,
+  isSex,
+  isSportType,
+  isStravaId,
+  isStreamType,
+  isUnitSystem,
+} from './guards/core.ts';

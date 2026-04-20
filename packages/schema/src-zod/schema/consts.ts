@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from '@zod/zod';
 
 /**
  * Activity type names as defined by the Strava API.
@@ -43,43 +43,7 @@ export const ActivityName = {
 /**
  * Zod schema for ActivityName.
  */
-export const ActivityNameSchema: z.ZodEnum<
-  [
-    'AlpineSki',
-    'BackcountrySki',
-    'Canoeing',
-    'Crossfit',
-    'EBikeRide',
-    'Elliptical',
-    'Hike',
-    'IceSkate',
-    'InlineSkate',
-    'Kayaking',
-    'Kitesurf',
-    'NordicSki',
-    'Ride',
-    'RockClimbing',
-    'RollerSki',
-    'Rowing',
-    'Run',
-    'Snowboard',
-    'Snowshoe',
-    'StairStepper',
-    'StandUpPaddling',
-    'Surfing',
-    'Swim',
-    'VirtualRide',
-    'Walk',
-    'WeightTraining',
-    'Windsurf',
-    'Workout',
-    'Yoga',
-    'Handcycle',
-    'Velomobile',
-    'VirtualRun',
-    'Wheelchair',
-  ]
-> = z.enum([
+export const ActivityNameSchema = z.enum([
   'AlpineSki',
   'BackcountrySki',
   'Canoeing',
@@ -129,7 +93,7 @@ export const ActivityZoneDefs = {
 /**
  * Zod schema for ActivityZoneType.
  */
-export const ActivityZoneTypeSchema: z.ZodEnum<['heartrate', 'power']> = z.enum([
+export const ActivityZoneTypeSchema = z.enum([
   'heartrate',
   'power',
 ]);
@@ -149,7 +113,7 @@ export const FollowerStatus = {
 /**
  * Zod schema for FollowerStatus.
  */
-export const FollowerStatusSchema: z.ZodEnum<['pending', 'accepted', 'blocked']> = z.enum([
+export const FollowerStatusSchema = z.enum([
   'pending',
   'accepted',
   'blocked',
@@ -189,7 +153,7 @@ export const Sex = {
 /**
  * Zod schema for Sex.
  */
-export const SexSchema: z.ZodEnum<['F', 'M']> = z.enum(['F', 'M']);
+export const SexSchema = z.enum(['F', 'M']);
 
 /** Sex type inferred from SexSchema */
 export type SexType = z.infer<typeof SexSchema>;
@@ -207,7 +171,7 @@ export const SportName = {
 /**
  * Zod schema for SportName.
  */
-export const SportNameSchema: z.ZodEnum<['cycling', 'running', 'triathlon', 'other']> = z.enum([
+export const SportNameSchema = z.enum([
   'cycling',
   'running',
   'triathlon',
@@ -237,21 +201,7 @@ export const StreamKeys = {
 /**
  * Zod schema for StreamType.
  */
-export const StreamTypeSchema: z.ZodEnum<
-  [
-    'time',
-    'distance',
-    'latlng',
-    'altitude',
-    'velocity_smooth',
-    'heartrate',
-    'cadence',
-    'watts',
-    'temp',
-    'moving',
-    'grade_smooth',
-  ]
-> = z.enum([
+export const StreamTypeSchema = z.enum([
   'time',
   'distance',
   'latlng',
@@ -279,7 +229,7 @@ export const UnitSystem = {
 /**
  * Zod schema for UnitSystem.
  */
-export const UnitSystemSchema: z.ZodEnum<['feet', 'meters']> = z.enum(['feet', 'meters']);
+export const UnitSystemSchema = z.enum(['feet', 'meters']);
 
 /** Unit system type inferred from UnitSystemSchema */
 export type UnitSystemType = z.infer<typeof UnitSystemSchema>;
@@ -296,7 +246,7 @@ export const StreamResolution = {
 /**
  * Zod schema for StreamResolution.
  */
-export const StreamResolutionSchema: z.ZodEnum<['low', 'medium', 'high']> = z.enum([
+export const StreamResolutionSchema = z.enum([
   'low',
   'medium',
   'high',
@@ -316,7 +266,7 @@ export const StreamSeriesType = {
 /**
  * Zod schema for StreamSeriesType.
  */
-export const StreamSeriesTypeSchema: z.ZodEnum<['distance', 'time']> = z.enum([
+export const StreamSeriesTypeSchema = z.enum([
   'distance',
   'time',
 ]);

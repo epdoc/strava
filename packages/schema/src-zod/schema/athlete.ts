@@ -1,7 +1,8 @@
-import { z } from 'zod';
+import { z } from '@zod/zod';
 import { ResourceStateSchema, SexSchema, SportNameSchema, UnitSystemSchema } from './consts.ts';
-import { StravaLongIntSchema } from './types.ts';
 import { SummaryGearSchema } from './gear.ts';
+
+const StravaLongIntSchema: z.ZodNumber = z.number().int();
 
 /**
  * Zod schema for AthleteId.
@@ -94,22 +95,7 @@ export type SummaryAthlete = z.infer<typeof SummaryAthleteSchema>;
 /**
  * Zod schema for DetailedAthlete.
  */
-export const DetailedAthleteSchema: z.ZodObject<
-  z.objectUtil.extendShape<
-    typeof SummaryAthleteSchema.shape,
-    {
-      follower_count: z.ZodNumber;
-      friend_count: z.ZodNumber;
-      measurement_preference: typeof UnitSystemSchema;
-      ftp: z.ZodNullable<z.ZodNumber>;
-      clubs: z.ZodArray<typeof SummaryClubSchema>;
-      bikes: z.ZodArray<typeof SummaryGearSchema>;
-      shoes: z.ZodArray<typeof SummaryGearSchema>;
-      email: z.ZodOptional<z.ZodString>;
-      athlete_type: z.ZodOptional<z.ZodNumber>;
-    }
-  >
-> = SummaryAthleteSchema.extend({
+export const DetailedAthleteSchema = SummaryAthleteSchema.extend({
   follower_count: z.number(),
   friend_count: z.number(),
   measurement_preference: UnitSystemSchema,

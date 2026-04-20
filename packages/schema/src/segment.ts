@@ -1,39 +1,34 @@
 /**
- * Segment namespace - Types and schemas for Strava segments.
- *
- * Note: Segment types use TypeScript interfaces due to circular dependencies.
+ * Segment namespace - types and guards for Strava segments.
  *
  * @example
  * ```typescript
  * import * as Segment from '@epdoc/strava-schema/segment';
  *
- * if (Segment.isSummarySegment(data)) {
+ * if (Segment.isSummary(data)) {
  *   console.log(data.name);
  * }
  * ```
  */
 
-// Zod schemas with short names
-export {
-  AchievementSchema as Achievement,
-  EffortIdSchema as EffortId,
-  ExplorerSegmentSchema as Explorer,
-  SegmentIdSchema as Id,
-  SegmentNameSchema as Name,
-} from './schema/segment.ts';
-
-// TypeScript types (interfaces for circular dependencies)
+// Types
 export type {
-  Achievement as AchievementType,
-  DetailedSegment as DetailedType,
-  DetailedSegmentEffort as DetailedEffortType,
-  EffortId as EffortIdType,
-  ExplorerSegment as ExplorerType,
-  SegmentId as IdType,
-  SegmentName as NameType,
-  SummarySegment as SummaryType,
-  SummarySegmentEffort as SummaryEffortType,
-} from './schema/segment.ts';
+  DetailedSegment as Detailed,
+  DetailedSegmentEffort as DetailedEffort,
+  ExplorerSegment as Explorer,
+  SegmentId as Id,
+  SegmentName as Name,
+  SummarySegment as Summary,
+  SummarySegmentEffort as SummaryEffort,
+} from './types/segment.ts';
 
-// Type guard functions
-export { isSummarySegment, isSummarySegmentEffort } from './schema/segment.ts';
+// Type guards
+export {
+  isDetailedSegment as isDetailed,
+  isDetailedSegmentEffort as isDetailedEffort,
+  isDetailedSegmentEffortArray as isDetailedEffortArray,
+  isExplorerSegment as isExplorer,
+  isSummarySegment as isSummary,
+  isSummarySegmentArray as isSummaryArray,
+  isSummarySegmentEffort as isSummaryEffort,
+} from './guards/segment.ts';

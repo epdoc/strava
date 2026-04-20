@@ -1,7 +1,7 @@
-import { z } from 'zod';
+import { z } from '@zod/zod';
 import type { ActivityId, PolylineMap } from './activity.ts';
 import type { AthleteId } from './athlete.ts';
-import { StravaLongIntSchema } from './types.ts';
+const StravaLongIntSchema: z.ZodNumber = z.number().int();
 
 /**
  * Zod schema for SegmentName.

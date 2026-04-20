@@ -1,27 +1,32 @@
 /**
- * Stream namespace - Zod schemas and types for Strava activity streams.
+ * Stream namespace - types and guards for Strava streams.
  *
  * @example
  * ```typescript
  * import * as Stream from '@epdoc/strava-schema/stream';
  *
- * const result = Stream.Set.safeParse(apiResponse);
- * if (result.success) {
- *   console.log(result.data.latlng?.data.length);
+ * if (Stream.hasLatLng(streamSet)) {
+ *   const coords = streamSet.latlng.data;
  * }
  * ```
  */
 
-// Zod schemas with short names
-export {
-  LatLngStreamSchema as LatLng,
-  StreamSchema as Data,
-  StreamSetSchema as Set,
-} from './schema/stream.ts';
-
-// TypeScript types
+// Types
 export type {
-  LatLngStream as LatLngType,
-  Stream as DataType,
-  StreamSet as SetType,
-} from './schema/stream.ts';
+  DataStream as Data,
+  DataStreamKey,
+  LatLngStream as LatLng,
+  Stream,
+  StreamKey,
+  StreamKey as StreamKeyType,
+  StreamSet as Set,
+} from './types/stream.ts';
+
+// Type guards
+export {
+  hasLatLngStream as hasLatLng,
+  isDataStream as isData,
+  isLatLngStream as isLatLng,
+  isStream,
+  isStreamSet as isSet,
+} from './guards/stream.ts';

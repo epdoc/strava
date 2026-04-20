@@ -1,17 +1,12 @@
 # @jpravetz/strava-schema
 
-Zod schemas and TypeScript types for the Strava API.
+TypeScript types and type guards for the Strava API.
 
 ## Overview
 
-This package provides runtime validation schemas (using [Zod](https://zod.dev)) and inferred
-TypeScript types for all Strava API data structures. Use this package to validate API responses and
-ensure type safety when working with Strava data.
+This package provides TypeScript interfaces and lightweight runtime type guards for all Strava API data structures. Use this package to ensure type safety when working with Strava data.
 
-The package uses a **hybrid approach**:
-
-- **Zod schemas** for most types, enabling runtime validation and type inference
-- **TypeScript interfaces** for types with circular dependencies (Segment types)
+Unlike the previous Zod-based implementation, this version uses pure TypeScript interfaces with minimal runtime validation for better performance and cleaner code.
 
 ## Installation
 
@@ -36,17 +31,16 @@ Or add to your `deno.json`:
 ```typescript
 import * as Schema from '@jpravetz/strava-schema';
 
-// Validate activity data
-const result = Schema.Activity.Detailed.safeParse(apiResponse);
-if (result.success) {
-  const activity: Schema.Activity.DetailedType = result.data;
+// Type guard for activity data
+if (Schema.Activity.isDetailed(apiResponse)) {
+  const activity: Schema.Activity.Detailed = apiResponse;
   console.log(`Activity: ${activity.name}, Distance: ${activity.distance}m`);
-} else {
-  console.error('Validation failed:', result.error.format());
 }
 
-// Validate athlete data
-const athleteResult = Schema.Athlete.Detailed.safeParse(athleteResponse);
+// Type guard for athlete data
+if (Schema.Athlete.isDetailed(athleteResponse)) {
+  console.log(`Athlete: ${athleteResponse.firstname}`);
+}
 
 // Check activity type
 if (activity.type === Schema.Consts.ActivityName.Ride) {
@@ -59,9 +53,8 @@ if (activity.type === Schema.Consts.ActivityName.Ride) {
 ```typescript
 import * as Activity from '@jpravetz/strava-schema/activity';
 
-const result = Activity.Detailed.safeParse(apiResponse);
-if (result.success) {
-  console.log(result.data.name);
+if (Activity.isDetailed(apiResponse)) {
+  console.log(apiResponse.name);
 }
 ```
 
@@ -69,14 +62,14 @@ if (result.success) {
 
 | Namespace         | Import Path                        | Description                                             |
 | ----------------- | ---------------------------------- | ------------------------------------------------------- |
-| `Schema.Activity` | `@jpravetz/strava-schema/activity` | Activity schemas (Detailed, Summary, Stats, etc.)       |
-| `Schema.Athlete`  | `@jpravetz/strava-schema/athlete`  | Athlete schemas (Detailed, Summary, Club, etc.)         |
+| `Schema.Activity` | `@jpravetz/strava-schema/activity` | Activity types (Detailed, Summary, Stats, etc.)         |
+| `Schema.Athlete`  | `@jpravetz/strava-schema/athlete`  | Athlete types (Detailed, Summary, Club, etc.)           |
 | `Schema.Segment`  | `@jpravetz/strava-schema/segment`  | Segment types (Summary, Detailed, Explorer)             |
-| `Schema.Gear`     | `@jpravetz/strava-schema/gear`     | Gear schemas (Detailed, Summary)                        |
-| `Schema.Stream`   | `@jpravetz/strava-schema/stream`   | Stream schemas (Data, LatLng, Set)                      |
-| `Schema.Zones`    | `@jpravetz/strava-schema/zones`    | Zone schemas (HeartRate, Power, Range)                  |
+| `Schema.Gear`     | `@jpravetz/strava-schema/gear`     | Gear types (Detailed, Summary)                          |
+| `Schema.Stream`   | `@jpravetz/strava-schema/stream`   | Stream types (Data, LatLng, Set)                        |
+| `Schema.Zones`    | `@jpravetz/strava-schema/zones`    | Zone types (HeartRate, Power, Range)                    |
 | `Schema.Consts`   | `@jpravetz/strava-schema/consts`   | Constants and enums (ActivityName, ResourceState, etc.) |
-| `Schema.Types`    | `@jpravetz/strava-schema/types`    | Base types (StravaLongInt, MetaAthlete, etc.)           |
+| `Schema.Types`    | `@jpravetz/strava-schema/types`    | Base types (StravaId, MetaAthlete, etc.)                |
 
 ## Namespace API Reference
 
@@ -85,33 +78,27 @@ if (result.success) {
 ```typescript
 import * as Schema from '@jpravetz/strava-schema';
 
-// Schemas
-Schema.Activity.Detailed; // DetailedActivitySchema
-Schema.Activity.Summary; // SummaryActivitySchema
-Schema.Activity.Id; // ActivityIdSchema
-Schema.Activity.Stats; // ActivityStatsSchema
-Schema.Activity.Total; // ActivityTotalSchema
-Schema.Activity.Zone; // ActivityZoneSchema
-Schema.Activity.Lap; // LapSchema
-Schema.Activity.Split; // SplitSchema
-Schema.Activity.PolylineMap; // PolylineMapSchema
-Schema.Activity.TimedZoneRange; // TimedZoneRangeSchema
-Schema.Activity.ExternalId; // ExternalIdSchema
-Schema.Activity.UploadId; // UploadIdSchema
-
 // Types
-Schema.Activity.DetailedType; // DetailedActivity
-Schema.Activity.SummaryType; // SummaryActivity
-Schema.Activity.IdType; // ActivityId
-Schema.Activity.StatsType; // ActivityStats
-Schema.Activity.TotalType; // ActivityTotal
-Schema.Activity.ZoneType; // ActivityZone
-Schema.Activity.LapType; // Lap
-Schema.Activity.SplitType; // Split
-Schema.Activity.PolylineMapType; // PolylineMap
-Schema.Activity.TimedZoneRangeType; // TimedZoneRange
-Schema.Activity.ExternalIdType; // ExternalId
-Schema.Activity.UploadIdType; // UploadId
+Schema.Activity.Detailed;      // DetailedActivity interface
+Schema.Activity.Summary;       // SummaryActivity interface
+Schema.Activity.Id;            // ActivityId (number alias)
+Schema.Activity.Stats;         // ActivityStats interface
+Schema.Activity.Total;         // ActivityTotal interface
+Schema.Activity.Zone;          // ActivityZone interface
+Schema.Activity.Lap;           // Lap interface
+Schema.Activity.Split;         // Split interface
+Schema.Activity.Photo;         // PhotoSummary interface
+Schema.Activity.ExternalId;    // ExternalId (string)
+Schema.Activity.UploadId;      // UploadId (number | null)
+
+// Type guards
+Schema.Activity.isDetailed;    // (value: unknown) => value is DetailedActivity
+Schema.Activity.isSummary;     // (value: unknown) => value is SummaryActivity
+Schema.Activity.isDetailedArray; // (value: unknown) => value is DetailedActivity[]
+Schema.Activity.isSummaryArray;  // (value: unknown) => value is SummaryActivity[]
+Schema.Activity.isLap;         // (value: unknown) => value is Lap
+Schema.Activity.isSplit;       // (value: unknown) => value is Split
+Schema.Activity.isPhoto;       // (value: unknown) => value is PhotoSummary
 ```
 
 ### Athlete Namespace
@@ -119,49 +106,41 @@ Schema.Activity.UploadIdType; // UploadId
 ```typescript
 import * as Schema from '@jpravetz/strava-schema';
 
-// Schemas
-Schema.Athlete.Detailed; // DetailedAthleteSchema
-Schema.Athlete.Summary; // SummaryAthleteSchema
-Schema.Athlete.Id; // AthleteIdSchema
-Schema.Athlete.Club; // SummaryClubSchema
-Schema.Athlete.Comment; // CommentSchema
-
 // Types
-Schema.Athlete.DetailedType; // DetailedAthlete
-Schema.Athlete.SummaryType; // SummaryAthlete
-Schema.Athlete.IdType; // AthleteId
-Schema.Athlete.ClubType; // SummaryClub
-Schema.Athlete.CommentType; // Comment
+Schema.Athlete.Detailed;       // DetailedAthlete interface
+Schema.Athlete.Summary;        // SummaryAthlete interface
+Schema.Athlete.Id;             // AthleteId (number alias)
+Schema.Athlete.Club;           // SummaryClub interface
+
+// Type guards
+Schema.Athlete.isDetailed;     // (value: unknown) => value is DetailedAthlete
+Schema.Athlete.isSummary;      // (value: unknown) => value is SummaryAthlete
+Schema.Athlete.isSummaryArray; // (value: unknown) => value is SummaryAthlete[]
+Schema.Athlete.isClub;         // (value: unknown) => value is SummaryClub
 ```
 
 ### Segment Namespace
 
-Note: Segment types use TypeScript interfaces due to circular dependencies.
-
 ```typescript
 import * as Schema from '@jpravetz/strava-schema';
 
-// Schemas
-Schema.Segment.Id; // SegmentIdSchema
-Schema.Segment.Name; // SegmentNameSchema
-Schema.Segment.EffortId; // EffortIdSchema
-Schema.Segment.Achievement; // AchievementSchema
-Schema.Segment.Explorer; // ExplorerSegmentSchema
-
-// Types (interfaces)
-Schema.Segment.SummaryType; // SummarySegment
-Schema.Segment.SummaryEffortType; // SummarySegmentEffort
-Schema.Segment.DetailedType; // DetailedSegment
-Schema.Segment.DetailedEffortType; // DetailedSegmentEffort
-Schema.Segment.ExplorerType; // ExplorerSegment
-Schema.Segment.IdType; // SegmentId
-Schema.Segment.NameType; // SegmentName
-Schema.Segment.EffortIdType; // EffortId
-Schema.Segment.AchievementType; // Achievement
+// Types
+Schema.Segment.Detailed;       // DetailedSegment interface
+Schema.Segment.DetailedEffort; // DetailedSegmentEffort interface
+Schema.Segment.Explorer;       // ExplorerSegment interface
+Schema.Segment.Summary;        // SummarySegment interface
+Schema.Segment.SummaryEffort;  // SummarySegmentEffort interface
+Schema.Segment.Name;           // SegmentName (string alias)
+Schema.Segment.Id;             // SegmentId (number alias)
 
 // Type guards
-Schema.Segment.isSummarySegment; // (value: unknown) => value is SummarySegment
-Schema.Segment.isSummarySegmentEffort; // (value: unknown) => value is SummarySegmentEffort
+Schema.Segment.isDetailed;          // (value: unknown) => value is DetailedSegment
+Schema.Segment.isDetailedEffort;    // (value: unknown) => value is DetailedSegmentEffort
+Schema.Segment.isDetailedEffortArray; // (value: unknown) => value is DetailedSegmentEffort[]
+Schema.Segment.isExplorer;          // (value: unknown) => value is ExplorerSegment
+Schema.Segment.isSummary;           // (value: unknown) => value is SummarySegment
+Schema.Segment.isSummaryArray;      // (value: unknown) => value is SummarySegment[]
+Schema.Segment.isSummaryEffort;     // (value: unknown) => value is SummarySegmentEffort
 ```
 
 ### Gear Namespace
@@ -169,15 +148,13 @@ Schema.Segment.isSummarySegmentEffort; // (value: unknown) => value is SummarySe
 ```typescript
 import * as Schema from '@jpravetz/strava-schema';
 
-// Schemas
-Schema.Gear.Detailed; // DetailedGearSchema
-Schema.Gear.Summary; // SummaryGearSchema
-Schema.Gear.Id; // GearIdSchema
-
 // Types
-Schema.Gear.DetailedType; // DetailedGear
-Schema.Gear.SummaryType; // SummaryGear
-Schema.Gear.IdType; // GearId
+Schema.Gear.Detailed;          // DetailedGear interface
+Schema.Gear.Summary;           // SummaryGear interface
+Schema.Gear.Id;                // GearId (string alias)
+
+// Type guards
+Schema.Gear.isId;              // (value: unknown) => value is GearId
 ```
 
 ### Stream Namespace
@@ -185,15 +162,18 @@ Schema.Gear.IdType; // GearId
 ```typescript
 import * as Schema from '@jpravetz/strava-schema';
 
-// Schemas
-Schema.Stream.Data; // StreamSchema
-Schema.Stream.LatLng; // LatLngStreamSchema
-Schema.Stream.Set; // StreamSetSchema
-
 // Types
-Schema.Stream.DataType; // Stream
-Schema.Stream.LatLngType; // LatLngStream
-Schema.Stream.SetType; // StreamSet
+Schema.Stream.Data;            // DataStream interface
+Schema.Stream.LatLng;          // LatLngStream interface
+Schema.Stream.Set;             // StreamSet interface
+Schema.StreamKey;              // Union of stream keys
+
+// Type guards
+Schema.Stream.isData;          // (value: unknown) => value is DataStream
+Schema.Stream.isLatLng;        // (value: unknown) => value is LatLngStream
+Schema.Stream.isStream;        // (value: unknown) => value is Stream
+Schema.Stream.isSet;           // (value: unknown) => value is StreamSet
+Schema.Stream.hasLatLng;       // (value: StreamSet) => value is StreamSet & { latlng: LatLngStream }
 ```
 
 ### Zones Namespace
@@ -201,17 +181,11 @@ Schema.Stream.SetType; // StreamSet
 ```typescript
 import * as Schema from '@jpravetz/strava-schema';
 
-// Schemas
-Schema.Zones.All; // ZonesSchema
-Schema.Zones.HeartRate; // HeartRateZoneRangesSchema
-Schema.Zones.Power; // PowerZoneRangesSchema
-Schema.Zones.Range; // ZoneRangeSchema
-
 // Types
-Schema.Zones.AllType; // Zones
-Schema.Zones.HeartRateType; // HeartRateZoneRanges
-Schema.Zones.PowerType; // PowerZoneRanges
-Schema.Zones.RangeType; // ZoneRange
+Schema.Zones.Zones;            // Zones interface
+Schema.Zones.HeartRate;        // HeartRateZoneRanges interface
+Schema.Zones.Power;            // PowerZoneRanges interface
+Schema.Zones.Range;            // ZoneRange interface
 ```
 
 ### Consts Namespace
@@ -220,40 +194,38 @@ Schema.Zones.RangeType; // ZoneRange
 import * as Schema from '@jpravetz/strava-schema';
 
 // Constants
-Schema.Consts.ActivityName; // { Ride: 'Ride', Run: 'Run', ... }
-Schema.Consts.ActivityZoneDefs; // { Heartrate: 'heartrate', ... }
-Schema.Consts.FollowerStatus; // { Pending: 'pending', ... }
-Schema.Consts.ResourceState; // { Meta: 1, Summary: 2, Detail: 3 }
-Schema.Consts.Sex; // { Female: 'F', Male: 'M' }
-Schema.Consts.SportName; // { Cycling: 'cycling', ... }
-Schema.Consts.StreamKeys; // { Time: 'time', Distance: 'distance', ... }
-Schema.Consts.StreamResolution; // { Low: 'low', Medium: 'medium', High: 'high' }
-Schema.Consts.StreamSeriesType; // { Distance: 'distance', Time: 'time' }
-Schema.Consts.UnitSystem; // { Feet: 'feet', Meters: 'meters' }
-
-// Schemas
-Schema.Consts.ActivityNameSchema; // Zod enum schema
-Schema.Consts.ActivityZoneTypeSchema; // Zod enum schema
-Schema.Consts.FollowerStatusSchema; // Zod enum schema
-Schema.Consts.ResourceStateSchema; // Zod union schema
-Schema.Consts.SexSchema; // Zod enum schema
-Schema.Consts.SportNameSchema; // Zod enum schema
-Schema.Consts.StreamTypeSchema; // Zod enum schema
-Schema.Consts.StreamResolutionSchema; // Zod enum schema
-Schema.Consts.StreamSeriesTypeSchema; // Zod enum schema
-Schema.Consts.UnitSystemSchema; // Zod enum schema
+Schema.Consts.ActivityName;    // { Ride: 'Ride', Run: 'Run', ... }
+Schema.Consts.StreamKeys;      // { Time: 'time', Distance: 'distance', ... }
 
 // Types
-Schema.Consts.ActivityType; // 'Ride' | 'Run' | ...
+Schema.Consts.ActivityType;    // 'Ride' | 'Run' | ...
 Schema.Consts.ActivityZoneType; // 'heartrate' | 'power'
-Schema.Consts.FollowerStatusType; // 'pending' | 'accepted' | 'blocked'
-Schema.Consts.ResourceStateType; // 1 | 2 | 3
-Schema.Consts.SexType; // 'F' | 'M'
-Schema.Consts.SportType; // 'cycling' | 'running' | ...
-Schema.Consts.StreamType; // 'time' | 'distance' | ...
-Schema.Consts.StreamResolutionType; // 'low' | 'medium' | 'high'
-Schema.Consts.StreamSeriesTypeAlias; // 'distance' | 'time'
-Schema.Consts.UnitSystemType; // 'feet' | 'meters'
+Schema.Consts.FollowerStatus;  // 'pending' | 'accepted' | 'blocked'
+Schema.Consts.ResourceState;   // 1 | 2 | 3
+Schema.Consts.Sex;             // 'F' | 'M'
+Schema.Consts.SportType;       // 'cycling' | 'running' | ...
+Schema.Consts.StreamType;      // 'time' | 'distance' | ...
+Schema.Consts.StreamResolution; // 'low' | 'medium' | 'high'
+Schema.Consts.StreamSeriesType; // 'distance' | 'time'
+Schema.Consts.UnitSystem;      // 'feet' | 'meters'
+Schema.Consts.StravaId;        // number
+Schema.Consts.ActivityId;      // number
+Schema.Consts.AthleteId;       // number
+Schema.Consts.SegmentId;       // number
+
+// Type guards
+Schema.Consts.isStravaId;      // (value: unknown) => value is StravaId
+Schema.Consts.isActivityId;    // (value: unknown) => value is ActivityId
+Schema.Consts.isAthleteId;     // (value: unknown) => value is AthleteId
+Schema.Consts.isSegmentId;     // (value: unknown) => value is SegmentId
+Schema.Consts.isGearId;        // (value: unknown) => value is GearId
+Schema.Consts.isActivityType;  // (value: unknown) => value is string
+Schema.Consts.isKnownActivityType; // (value: unknown) => value is known ActivityType
+Schema.Consts.isSex;           // (value: unknown) => value is Sex
+Schema.Consts.isResourceState; // (value: unknown) => value is ResourceState
+Schema.Consts.isSportType;     // (value: unknown) => value is SportType
+Schema.Consts.isStreamType;    // (value: unknown) => value is StreamType
+Schema.Consts.isUnitSystem;    // (value: unknown) => value is UnitSystem
 ```
 
 ### Types Namespace
@@ -261,62 +233,87 @@ Schema.Consts.UnitSystemType; // 'feet' | 'meters'
 ```typescript
 import * as Schema from '@jpravetz/strava-schema';
 
-// Schemas
-Schema.Types.StravaLongIntSchema; // ZodNumber
-Schema.Types.MetaAthleteSchema; // Meta athlete schema
-Schema.Types.MetaActivitySchema; // Meta activity schema
+// Core types
+Schema.Types.StravaId;         // number
+Schema.Types.ActivityId;       // number
+Schema.Types.AthleteId;        // number
+Schema.Types.SegmentId;        // number
+Schema.Types.ActivityType;     // Union of activity types
+Schema.Types.Sex;              // 'F' | 'M'
+Schema.Types.ResourceState;    // 1 | 2 | 3
+Schema.Types.SportType;        // 'cycling' | 'running' | ...
+Schema.Types.StreamType;       // 'time' | 'distance' | ...
+Schema.Types.UnitSystem;       // 'feet' | 'meters'
+Schema.Types.StreamResolution; // 'low' | 'medium' | 'high'
+Schema.Types.StreamSeriesType; // 'distance' | 'time'
 
-// Types
-Schema.Types.StravaLongIntType; // number
-Schema.Types.MetaAthleteType; // MetaAthlete
-Schema.Types.MetaActivityType; // MetaActivity
-Schema.Types.ActivityType; // ActivityType
-Schema.Types.FollowerStatusType; // FollowerStatusType
-Schema.Types.ResourceStateType; // ResourceStateType
-Schema.Types.SexType; // SexType
-Schema.Types.SportType; // SportType
-Schema.Types.StreamKeyType; // StreamKeyType
-Schema.Types.UnitSystemType; // UnitSystemType
+// Common interfaces
+Schema.Types.TimedZoneRange;   // TimedZoneRange interface
+Schema.Types.PolylineMap;      // PolylineMap interface
+Schema.Types.MetaAthlete;      // MetaAthlete interface
+Schema.Types.MetaActivity;     // MetaActivity interface
+Schema.Types.Achievement;      // Achievement interface
 ```
 
 ## Advanced Usage
 
-### Partial Validation
+### Type Guards
+
+Type guards perform lightweight runtime validation to ensure data matches expected shapes:
 
 ```typescript
 import * as Activity from '@jpravetz/strava-schema/activity';
-import { z } from '@zod/zod';
+import * as Consts from '@jpravetz/strava-schema/consts';
 
-// Pick only the fields you need
-const MinimalActivitySchema = Activity.Detailed.pick({
-  id: true,
-  name: true,
-  distance: true,
-});
+// Validate an unknown value
+function processActivity(data: unknown) {
+  if (Activity.isDetailed(data)) {
+    // TypeScript knows data is DetailedActivity here
+    console.log(`Activity: ${data.name}`);
+    console.log(`Calories: ${data.calories}`);
+  } else if (Activity.isSummary(data)) {
+    // TypeScript knows data is SummaryActivity here
+    console.log(`Activity: ${data.name}`);
+  } else {
+    console.error('Invalid activity data');
+  }
+}
 
-type MinimalActivity = z.infer<typeof MinimalActivitySchema>;
+// Validate arrays
+function processActivities(data: unknown[]) {
+  if (Activity.isSummaryArray(data)) {
+    // data is SummaryActivity[]
+    data.forEach(activity => {
+      console.log(activity.name);
+    });
+  }
+}
+
+// Validate core types
+function validateId(id: unknown): number {
+  if (Consts.isStravaId(id)) {
+    return id; // TypeScript knows id is number here
+  }
+  throw new Error('Invalid ID');
+}
 ```
 
-### Custom Validation
+### Combining Type Guards
 
 ```typescript
-import * as Activity from '@jpravetz/strava-schema/activity';
+import * as Schema from '@jpravetz/strava-schema';
 
-// Add custom validation
-const ValidatedActivitySchema = Activity.Detailed.refine(
-  (data) => data.distance >= 0,
-  { message: 'Distance must be non-negative' },
-);
-```
-
-### Type Guards for Segment Types
-
-```typescript
-import * as Segment from '@jpravetz/strava-schema/segment';
-
-if (Segment.isSummarySegment(data)) {
-  // data is now typed as SummarySegment
-  console.log(`Segment: ${data.name}, Distance: ${data.distance}m`);
+function validateStravaData(data: unknown) {
+  if (Schema.Activity.isDetailed(data)) {
+    return { type: 'activity', data };
+  }
+  if (Schema.Athlete.isDetailed(data)) {
+    return { type: 'athlete', data };
+  }
+  if (Schema.Segment.isSummary(data)) {
+    return { type: 'segment', data };
+  }
+  throw new Error('Unknown data type');
 }
 ```
 
@@ -333,23 +330,68 @@ src/
 ├── stream.ts           # Stream namespace exports
 ├── types.ts            # Types namespace exports
 ├── zones.ts            # Zones namespace exports
-└── schema/
-    ├── mod.ts          # Internal re-exports (not for public use)
-    ├── activity.ts     # Activity Zod schemas
-    ├── athlete.ts      # Athlete Zod schemas
-    ├── consts.ts       # Constants and enums
-    ├── gear.ts         # Gear Zod schemas
-    ├── photo.ts        # Photo Zod schemas
-    ├── segment.ts      # Segment types (interfaces)
-    ├── stream.ts       # Stream Zod schemas
-    ├── types.ts        # Base types
-    └── zones.ts        # Zone Zod schemas
+├── types/              # TypeScript interfaces
+│   ├── index.ts
+│   ├── core.ts
+│   ├── activity.ts
+│   ├── athlete.ts
+│   ├── gear.ts
+│   ├── segment.ts
+│   ├── stream.ts
+│   └── zones.ts
+└── guards/             # Type guard functions
+    ├── index.ts
+    ├── core.ts
+    ├── activity.ts
+    ├── athlete.ts
+    ├── segment.ts
+    └── stream.ts
 ```
+
+## Migration from Zod-based Version
+
+If you're migrating from the previous Zod-based version:
+
+### Before (Zod):
+```typescript
+import * as Activity from '@jpravetz/strava-schema/activity';
+
+const result = Activity.Detailed.safeParse(apiResponse);
+if (result.success) {
+  const activity = result.data;
+  console.log(activity.name);
+}
+```
+
+### After (Type guards):
+```typescript
+import * as Activity from '@jpravetz/strava-schema/activity';
+
+if (Activity.isDetailed(apiResponse)) {
+  // apiResponse is typed as Activity.Detailed
+  console.log(apiResponse.name);
+}
+```
+
+### Type Name Changes
+
+| Old Name              | New Name       |
+| --------------------- | -------------- |
+| `Activity.SummaryType` | `Activity.Summary` |
+| `Activity.DetailedType` | `Activity.Detailed` |
+| `Activity.IdType` | `Activity.Id` |
+| `Athlete.SummaryType` | `Athlete.Summary` |
+| `Athlete.DetailedType` | `Athlete.Detailed` |
+| `Athlete.IdType` | `Athlete.Id` |
+| `Segment.SummaryType` | `Segment.Summary` |
+| `Segment.IdType` | `Segment.Id` |
+| `Stream.DataType` | `Stream.Data` |
+| `Stream.LatLngType` | `Stream.LatLng` |
+| `Stream.SetType` | `Stream.Set` |
 
 ## API Reference
 
-All schemas and types are derived from the official
-[Strava API Documentation](https://developers.strava.com/docs/reference/).
+All types are derived from the official [Strava API Documentation](https://developers.strava.com/docs/reference/).
 
 ## Related Packages
 

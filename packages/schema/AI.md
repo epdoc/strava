@@ -2,12 +2,7 @@
 
 ## Package Overview
 
-This package provides **Zod schemas and TypeScript types** for the Strava API. It uses a hybrid
-approach:
-
-- **Zod schemas** for runtime validation and type inference
-- **TypeScript interfaces** for complex types with circular dependencies (e.g., SummarySegment ↔
-  SummarySegmentEffort)
+This package provides **TypeScript types and lightweight type guards** for the Strava API. Unlike the previous Zod-based implementation, this version uses pure TypeScript interfaces with minimal runtime validation for better performance and cleaner code.
 
 ## Architecture
 
@@ -15,44 +10,93 @@ approach:
 
 ```
 src/
-├── mod.ts              # Main exports - re-exports from schema/
-└── schema/
-    ├── mod.ts          # Central export point for all schemas
-    ├── activity.ts     # Activity schemas (SummaryActivity, DetailedActivity, etc.)
-    ├── athlete.ts      # Athlete schemas (SummaryAthlete, DetailedAthlete, etc.)
-    ├── consts.ts       # Constants and enums (ActivityName, ResourceState, etc.)
-    ├── gear.ts         # Gear schemas (SummaryGear, DetailedGear)
-    ├── photo.ts        # Photo schemas (PhotoSummary)
-    ├── segment.ts      # Segment schemas (hybrid approach with interfaces)
-    ├── stream.ts       # Stream schemas (Stream, LatLngStream, StreamSet)
-    ├── types.ts        # Base types (StravaLongInt, MetaAthlete, MetaActivity)
-    └── zones.ts        # Zone schemas (Zones, ZoneRange, etc.)
+├── mod.ts              # Main exports - namespaces
+├── activity.ts         # Activity namespace
+├── athlete.ts          # Athlete namespace
+├── consts.ts           # Constants and enums namespace
+├── gear.ts             # Gear namespace
+├── segment.ts          # Segment namespace
+├── stream.ts           # Stream namespace
+├── types.ts            # Types namespace (flat export)
+├── zones.ts            # Zones namespace
+├── types/              # TypeScript interfaces
+│   ├── index.ts        # Re-export all types
+│   ├── core.ts         # Basic types, enums, common interfaces
+│   ├── activity.ts     # Activity interfaces
+│   ├── athlete.ts      # Athlete interfaces
+│   ├── gear.ts         # Gear interfaces
+│   ├── segment.ts      # Segment interfaces
+│   ├── stream.ts       # Stream interfaces
+│   └── zones.ts        # Zone interfaces
+└── guards/             # Type guard functions
+    ├── index.ts        # Re-export all guards
+    ├── core.ts         # Basic guards (isStravaId, isActivityType, etc.)
+    ├── activity.ts     # Activity guards
+    ├── athlete.ts      # Athlete guards
+    ├── segment.ts      # Segment guards
+    └── stream.ts       # Stream guards
 ```
 
 ### Design Patterns
 
-#### 1. Schema-First with Type Inference
+#### 1. Interface-First Design
 
-All types are inferred from Zod schemas:
+All types are defined as TypeScript interfaces:
 
 ```typescript
-// schema/activity.ts
-export const SummaryActivitySchema = z.object({
-  id: ActivityIdSchema,
-  name: z.string(),
+// types/activity.ts
+export interface SummaryActivity {
+  id: ActivityId;
+  name: string;
+  distance: number;
   // ...
-});
+}
 
-// Type is inferred from schema
-export type SummaryActivity = z.infer<typeof SummaryActivitySchema>;
+export interface DetailedActivity extends SummaryActivity {
+  description: string | null;
+  calories: number;
+  // ...
+}
 ```
 
-#### 2. Hybrid Approach for Circular Dependencies
+#### 2. Type Aliases for ID Types
 
-Segment types have circular references (Segment ↔ SegmentEffort). These use TypeScript interfaces:
+ID types are simple aliases for clarity:
 
 ```typescript
-// schema/segment.ts
+// types/core.ts
+export type StravaId = number;
+export type ActivityId = number;
+export type AthleteId = number;
+export type SegmentId = number;
+export type GearId = string;
+```
+
+#### 3. Lightweight Type Guards
+
+Type guards perform minimal runtime validation:
+
+```typescript
+// guards/activity.ts
+export function isSummaryActivity(value: unknown): value is SummaryActivity {
+  return isDict(value) &&
+    isActivityId(value.id) &&
+    typeof value.name === 'string' &&
+    typeof value.distance === 'number';
+}
+
+export function isDetailedActivity(value: unknown): value is DetailedActivity {
+  return isSummaryActivity(value) &&
+    typeof (value as DetailedActivity).calories === 'number';
+}
+```
+
+#### 4. Circular Dependencies Handled Naturally
+
+TypeScript interfaces handle circular references without issues:
+
+```typescript
+// types/segment.ts
 export interface SummarySegmentEffort {
   id: EffortId;
   segment?: SummarySegment; // Circular reference
@@ -66,80 +110,155 @@ export interface SummarySegment {
 }
 ```
 
-#### 3. Explicit Type Annotations for JSR
+#### 5. Hierarchical Namespaces
 
-All exported schemas have explicit Zod type annotations for JSR publishing:
+Types and guards are organized into namespaces for clean imports:
 
 ```typescript
-export const ActivityNameSchema: z.ZodEnum<[...]> = z.enum([...]);
-export const SummaryActivitySchema: z.ZodObject<...> = z.object({...});
+// activity.ts (namespace file)
+export type {
+  DetailedActivity as Detailed,
+  SummaryActivity as Summary,
+  ActivityId as Id,
+  // ...
+} from './types/activity.ts';
+
+export {
+  isDetailedActivity as isDetailed,
+  isSummaryActivity as isSummary,
+  // ...
+} from './guards/activity.ts';
 ```
 
 ## Usage Examples
 
-### Validating API Responses
+### Type Guard Validation
 
 ```typescript
-import { DetailedActivity, SummaryActivitySchema } from '@jpravetz/strava-schema';
+import * as Activity from '@jpravetz/strava-schema/activity';
 
 const response = await fetch('https://www.strava.com/api/v3/activities/12345', {
   headers: { Authorization: `Bearer ${token}` },
 });
 
 const data = await response.json();
-const result = SummaryActivitySchema.safeParse(data);
 
-if (result.success) {
-  const activity: DetailedActivity = result.data;
-  console.log(`${activity.name}: ${activity.distance}m`);
+if (Activity.isDetailed(data)) {
+  // TypeScript knows data is DetailedActivity here
+  console.log(`${data.name}: ${data.distance}m`);
+  console.log(`Calories: ${data.calories}`);
+} else if (Activity.isSummary(data)) {
+  // TypeScript knows data is SummaryActivity here
+  console.log(`${data.name}: ${data.distance}m`);
 } else {
-  console.error('Validation failed:', result.error.format());
+  console.error('Invalid activity data');
 }
 ```
 
-### Using Types
+### Using Types Directly
 
 ```typescript
-import { ActivityType, SummaryActivity } from '@jpravetz/strava-schema';
+import * as Schema from '@jpravetz/strava-schema';
 
-function processActivity(activity: SummaryActivity): void {
+function processActivity(activity: Schema.Activity.Summary): void {
   console.log(`Activity: ${activity.name}`);
   console.log(`Type: ${activity.type}`);
   console.log(`Distance: ${activity.distance}m`);
 }
+
+// Or import specific namespace
+import * as Activity from '@jpravetz/strava-schema/activity';
+
+function processActivity(activity: Activity.Summary): void {
+  // ...
+}
 ```
 
-### Type Guards
-
-For interface-based types, use the provided type guards:
+### Validating Arrays
 
 ```typescript
-import { isSummarySegment, SummarySegment } from '@jpravetz/strava-schema';
+import * as Activity from '@jpravetz/strava-schema/activity';
 
-if (isSummarySegment(data)) {
-  // data is now typed as SummarySegment
-  console.log(data.name);
+const activities: unknown[] = await fetchActivities();
+
+if (Activity.isSummaryArray(activities)) {
+  // activities is now SummaryActivity[]
+  activities.forEach(activity => {
+    console.log(activity.name); // TypeScript knows this is safe
+  });
+}
+```
+
+### Using Constants
+
+```typescript
+import * as Consts from '@jpravetz/strava-schema/consts';
+
+if (activity.type === Consts.ActivityName.Ride) {
+  // Handle ride
+}
+
+// Or check if it's a known type
+if (Consts.isKnownActivityType(activity.type)) {
+  // activity.type is narrowed to known ActivityType
 }
 ```
 
 ## Key Files
 
-| File          | Purpose                    | Key Exports                                                               |
-| ------------- | -------------------------- | ------------------------------------------------------------------------- |
-| `consts.ts`   | Constants and enums        | `ActivityName`, `ActivityNameSchema`, `ResourceState`, `Sex`, `SportName` |
-| `activity.ts` | Activity types             | `SummaryActivitySchema`, `DetailedActivitySchema`, `ActivityStats`, `Lap` |
-| `athlete.ts`  | Athlete types              | `SummaryAthleteSchema`, `DetailedAthleteSchema`, `SummaryClub`            |
-| `segment.ts`  | Segment types (interfaces) | `SummarySegment`, `SummarySegmentEffort`, `DetailedSegment`               |
-| `gear.ts`     | Gear types                 | `SummaryGearSchema`, `DetailedGearSchema`                                 |
-| `stream.ts`   | Stream types               | `StreamSchema`, `LatLngStreamSchema`, `StreamSetSchema`                   |
-| `zones.ts`    | Zone types                 | `ZonesSchema`, `ZoneRangeSchema`                                          |
+| File | Purpose | Key Exports |
+|------|---------|-------------|
+| `consts.ts` | Constants and enums | `ActivityName`, `StreamKeys`, `isStravaId`, `isActivityType` |
+| `activity.ts` | Activity namespace | `Summary`, `Detailed`, `isSummary`, `isDetailed` |
+| `athlete.ts` | Athlete namespace | `Summary`, `Detailed`, `isSummary`, `isDetailed` |
+| `segment.ts` | Segment namespace | `Summary`, `Detailed`, `isSummary`, `isDetailed` |
+| `gear.ts` | Gear namespace | `Summary`, `Detailed`, `Id` |
+| `stream.ts` | Stream namespace | `Data`, `LatLng`, `Set`, `isData`, `isLatLng` |
+| `zones.ts` | Zones namespace | `Zones`, `HeartRate`, `Power`, `Range` |
 
 ## Dependencies
 
-- `zod` - Runtime validation and type inference
-- `@epdoc/datetime` - ISO date types
-- `@epdoc/duration` - Duration types
-- `@epdoc/type` - Utility types (Integer, Dict, etc.)
+- `@epdoc/type` - Utility types and type guards (isDict, isString, etc.)
+
+## Migration from Zod
+
+If migrating from the previous Zod-based version:
+
+### Before (Zod):
+```typescript
+import * as Activity from '@jpravetz/strava-schema/activity';
+
+const result = Activity.Detailed.safeParse(apiResponse);
+if (result.success) {
+  const activity = result.data;
+}
+```
+
+### After (Type guards):
+```typescript
+import * as Activity from '@jpravetz/strava-schema/activity';
+
+if (Activity.isDetailed(apiResponse)) {
+  // apiResponse is typed as Activity.Detailed
+  console.log(apiResponse.name);
+}
+```
+
+### Type Name Changes
+
+| Old (Zod) | New (TypeScript) |
+|-----------|------------------|
+| `Activity.SummaryType` | `Activity.Summary` |
+| `Activity.DetailedType` | `Activity.Detailed` |
+| `Activity.IdType` | `Activity.Id` |
+| `Athlete.SummaryType` | `Athlete.Summary` |
+| `Athlete.DetailedType` | `Athlete.Detailed` |
+| `Athlete.IdType` | `Athlete.Id` |
+| `Segment.SummaryType` | `Segment.Summary` |
+| `Segment.IdType` | `Segment.Id` |
+| `Stream.DataType` | `Stream.Data` |
+| `Stream.LatLngType` | `Stream.LatLng` |
+| `Stream.SetType` | `Stream.Set` |
 
 ## Development
 
@@ -169,7 +288,8 @@ deno task ok  # Runs fmt, lint, check, test, docs
 
 ## Notes
 
-- This package is for **schemas only** - no API client implementation
-- All Zod schemas have explicit type annotations for JSR publishing
-- Circular dependencies in segment types use TypeScript interfaces
-- Types are always inferred from schemas (single source of truth)
+- This package is for **types only** - no API client implementation
+- Type guards validate only critical fields (fast, minimal overhead)
+- All types are plain TypeScript interfaces (no Zod dependency)
+- Circular dependencies in segment types work naturally with interfaces
+- JSR-publishable with no "slow types" warnings

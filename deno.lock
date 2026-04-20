@@ -12,7 +12,8 @@
     "jsr:@epdoc/msgbuilder@~0.1.20": "0.1.20",
     "jsr:@epdoc/progress@~0.1.3": "0.1.3",
     "jsr:@epdoc/string@~0.1.28": "0.1.28",
-    "jsr:@epdoc/type@^1.2.11": "1.2.11",
+    "jsr:@epdoc/type@^1.2.11": "1.2.12",
+    "jsr:@epdoc/type@^1.2.12": "1.2.12",
     "jsr:@oak/commons@1": "1.0.1",
     "jsr:@oak/oak@^17.2.0": "17.2.0",
     "jsr:@opensrc/deno-open@1": "1.0.0",
@@ -52,7 +53,7 @@
         "jsr:@epdoc/loglevels",
         "jsr:@epdoc/msgbuilder",
         "jsr:@epdoc/progress",
-        "jsr:@epdoc/type",
+        "jsr:@epdoc/type@^1.2.11",
         "jsr:@std/assert@^1.0.19",
         "jsr:@std/fmt",
         "npm:commander"
@@ -68,26 +69,26 @@
       "integrity": "b3c597c3f02bd8f1504a9e944dad5f50cd4b89255fd97ac21add9c3a35bfb9c1",
       "dependencies": [
         "jsr:@epdoc/datetime",
-        "jsr:@epdoc/type"
+        "jsr:@epdoc/type@^1.2.11"
       ]
     },
     "@epdoc/datetime@3.2.6": {
       "integrity": "d4239f5712311d8915550b8a6fa0412e01449dabc1c23d08e859e3b7d02666f1",
       "dependencies": [
-        "jsr:@epdoc/type"
+        "jsr:@epdoc/type@^1.2.11"
       ]
     },
     "@epdoc/duration@0.3.10": {
       "integrity": "0ad3d0099beb0e900d383484484dfb90c688b9fa0006c81bade8c0c188c7f828",
       "dependencies": [
-        "jsr:@epdoc/type"
+        "jsr:@epdoc/type@^1.2.11"
       ]
     },
     "@epdoc/fs@1.3.5": {
       "integrity": "5e84efd0fbf5bcd1bcbd431e6a3a15a74a52a20e57e30031e8c807f390d64e12",
       "dependencies": [
         "jsr:@epdoc/datetime",
-        "jsr:@epdoc/type",
+        "jsr:@epdoc/type@^1.2.11",
         "jsr:@std/assert@^1.0.19",
         "jsr:@std/bytes@^1.0.6",
         "jsr:@std/encoding@^1.0.10",
@@ -104,7 +105,7 @@
         "jsr:@epdoc/loglevels",
         "jsr:@epdoc/msgbuilder",
         "jsr:@epdoc/string",
-        "jsr:@epdoc/type",
+        "jsr:@epdoc/type@^1.2.11",
         "jsr:@std/assert@^1.0.19",
         "jsr:@std/fmt"
       ]
@@ -112,7 +113,7 @@
     "@epdoc/loglevels@1.0.2": {
       "integrity": "13a744c3203965a89e5adbf554fb58330b698bdabbaff3eafb3f5132b8200d1c",
       "dependencies": [
-        "jsr:@epdoc/type",
+        "jsr:@epdoc/type@^1.2.11",
         "jsr:@std/assert@^1.0.19"
       ]
     },
@@ -123,25 +124,25 @@
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/duration",
         "jsr:@epdoc/string",
-        "jsr:@epdoc/type",
+        "jsr:@epdoc/type@^1.2.11",
         "jsr:@std/fmt"
       ]
     },
     "@epdoc/progress@0.1.3": {
       "integrity": "80dc0336b0ec0a73df0006a9c416dd9e2468a4aad408441a22aefbdd179d48eb",
       "dependencies": [
-        "jsr:@epdoc/type",
+        "jsr:@epdoc/type@^1.2.11",
         "jsr:@std/fmt"
       ]
     },
     "@epdoc/string@0.1.28": {
       "integrity": "5ebbc8b83cf013ec5ac87bf894056eee98e890fd3c8e31130b7315e5556c726b",
       "dependencies": [
-        "jsr:@epdoc/type"
+        "jsr:@epdoc/type@^1.2.11"
       ]
     },
-    "@epdoc/type@1.2.11": {
-      "integrity": "13c9c8c2e555a7adc904b82bc80c4586fa10f03111b22299cbb62c747464b18f",
+    "@epdoc/type@1.2.12": {
+      "integrity": "32d6c1cc487993f76d42104328fa46df05f1f68e07301fea427600fcf27448ad",
       "dependencies": [
         "jsr:@std/encoding@^1.0.10"
       ]
@@ -383,7 +384,7 @@
           "jsr:@epdoc/duration@~0.3.10",
           "jsr:@epdoc/fs@^1.3.5",
           "jsr:@epdoc/logger@^1003.3.12",
-          "jsr:@epdoc/type@^1.2.11",
+          "jsr:@epdoc/type@^1.2.12",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
@@ -400,7 +401,7 @@
           "jsr:@epdoc/duration@~0.3.10",
           "jsr:@epdoc/fs@^1.3.5",
           "jsr:@epdoc/logger@^1003.3.12",
-          "jsr:@epdoc/type@^1.2.11",
+          "jsr:@epdoc/type@^1.2.12",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
@@ -417,7 +418,7 @@
           "jsr:@epdoc/duration@~0.3.10",
           "jsr:@epdoc/fs@^1.3.5",
           "jsr:@epdoc/logger@^1003.3.12",
-          "jsr:@epdoc/type@^1.2.11",
+          "jsr:@epdoc/type@^1.2.12",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
@@ -432,7 +433,7 @@
           "jsr:@epdoc/daterange@^2.1.7",
           "jsr:@epdoc/fs@^1.3.5",
           "jsr:@epdoc/logger@^1003.3.12",
-          "jsr:@epdoc/type@^1.2.11",
+          "jsr:@epdoc/type@^1.2.12",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/testing@^1.0.18"
         ]
@@ -445,7 +446,7 @@
           "jsr:@epdoc/duration@~0.3.10",
           "jsr:@epdoc/fs@^1.3.5",
           "jsr:@epdoc/logger@^1003.3.12",
-          "jsr:@epdoc/type@^1.2.11",
+          "jsr:@epdoc/type@^1.2.12",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
@@ -462,7 +463,7 @@
           "jsr:@epdoc/duration@~0.3.10",
           "jsr:@epdoc/fs@^1.3.5",
           "jsr:@epdoc/logger@^1003.3.12",
-          "jsr:@epdoc/type@^1.2.11",
+          "jsr:@epdoc/type@^1.2.12",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/testing@^1.0.18"
@@ -470,7 +471,7 @@
       },
       "packages/schema": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.2.11",
+          "jsr:@epdoc/type@^1.2.12",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/testing@^1.0.18"

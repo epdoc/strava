@@ -4,21 +4,24 @@
  * These are basic type aliases and enum constants used throughout the API.
  */
 
+import type { Integer } from '@epdoc/type';
+import type { EncodedPolyline, Seconds } from './units.ts';
+
 // ============================================================================
 // ID Types
 // ============================================================================
 
 /** A unique identifier for a Strava object (integer). */
-export type StravaId = number;
+export type StravaId = Integer;
 
 /** Activity ID type */
-export type ActivityId = number;
+export type ActivityId = Integer;
 
 /** Athlete ID type */
-export type AthleteId = number;
+export type AthleteId = Integer;
 
 /** Segment ID type */
-export type SegmentId = number;
+export type SegmentId = Integer;
 
 // ============================================================================
 // Enum Types
@@ -158,14 +161,16 @@ export type StreamSeriesType = 'distance' | 'time';
 export interface TimedZoneRange {
   min: number;
   max: number;
-  time: number;
+  time: Seconds;
 }
 
 /** Map data with polyline encoding. */
 export interface PolylineMap {
   id: string;
-  polyline: string | null;
-  summary_polyline: string;
+  /** Full encoded polyline of the route */
+  polyline: EncodedPolyline | null;
+  /** Simplified encoded polyline for summary display */
+  summary_polyline: EncodedPolyline;
   resource_state?: ResourceState;
 }
 
@@ -184,5 +189,6 @@ export interface MetaActivity {
 /** Achievement earned during an activity. */
 export interface Achievement {
   type?: string;
-  rank?: number;
+  /** Achievement rank (e.g., 1 for 1st place) */
+  rank?: Integer;
 }

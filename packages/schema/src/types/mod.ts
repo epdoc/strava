@@ -5,6 +5,9 @@
 // Core types and enums
 export * from './core.ts';
 
+// Semantic unit types for self-documenting code
+export * from './units.ts';
+
 // Domain-specific types
 export * from './activity.ts';
 export * from './athlete.ts';

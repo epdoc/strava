@@ -2,7 +2,9 @@
  * Gear types for Strava API.
  */
 
+import type { Integer } from '@epdoc/type';
 import type { ResourceState } from './core.ts';
+import type { Kilometres, Metres } from './units.ts';
 
 // ============================================================================
 // Gear IDs
@@ -10,6 +12,9 @@ import type { ResourceState } from './core.ts';
 
 /** Gear ID type (string identifier) */
 export type GearId = string;
+
+/** Bike frame type (1 = Mountain, 2 = Cross, 3 = Road, 4 = Time Trial) */
+export type FrameType = Integer;
 
 // ============================================================================
 // Gear Main Types
@@ -23,12 +28,12 @@ export interface DetailedGear {
   resource_state: ResourceState;
   primary: boolean;
   name: string;
-  distance: number;
+  distance: Metres;
   brand_name: string;
   model_name: string;
-  frame_type: number;
+  frame_type: FrameType;
   description: string;
-  converted_distance?: number;
+  converted_distance?: Kilometres;
 }
 
 /**
@@ -39,5 +44,5 @@ export interface SummaryGear {
   resource_state: ResourceState;
   primary: boolean;
   name: string;
-  distance: number;
+  distance: Metres;
 }

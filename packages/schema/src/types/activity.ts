@@ -2,6 +2,7 @@
  * Activity types for Strava API.
  */
 
+import type { Integer, WholeNumber } from '@epdoc/type';
 import type {
   ActivityId,
   ActivityType,
@@ -12,12 +13,12 @@ import type {
   ResourceState,
   TimedZoneRange,
 } from './core.ts';
+import type { GearId, SummaryGear } from './gear.ts';
+import type { DetailedSegmentEffort, SummarySegmentEffort } from './segment.ts';
+import type * as Unit from './units.ts';
 
 // Re-export ActivityId from core
 export type { ActivityId } from './core.ts';
-import type { GearId } from './gear.ts';
-import type { DetailedSegmentEffort, SummarySegmentEffort } from './segment.ts';
-import type { SummaryGear } from './gear.ts';
 
 // ============================================================================
 // Activity IDs
@@ -33,67 +34,72 @@ export type UploadId = number | null;
 // Activity Components
 // ============================================================================
 
+/** Lap ID type */
+export type LapId = Integer;
+
 /** A lap within an activity. */
 export interface Lap {
-  id: number;
+  id: LapId;
   resource_state: ResourceState;
   name: string;
   activity: MetaActivity;
   athlete: MetaAthlete;
-  elapsed_time: number;
-  moving_time: number;
-  start_date: string;
-  start_date_local: string;
-  distance: number;
-  start_index: number;
-  end_index: number;
-  total_elevation_gain: number;
-  average_speed: number;
-  max_speed: number;
-  average_cadence?: number;
+  elapsed_time: Unit.Seconds;
+  moving_time: Unit.Seconds;
+  /** ISO 8601 datetime when lap started (UTC) */
+  start_date: Unit.ISODateTime;
+  /** Local datetime when lap started (no timezone - use with `timezone` field) */
+  start_date_local: Unit.LocalDateTime;
+  distance: Unit.Metres;
+  start_index: Integer;
+  end_index: Integer;
+  total_elevation_gain: Unit.Metres;
+  average_speed: Unit.MetresPerSecond;
+  max_speed: Unit.MetresPerSecond;
+  average_cadence?: Unit.RPM;
   device_watts?: boolean;
-  average_watts?: number;
-  lap_index: number;
+  average_watts?: Unit.Watts;
+  lap_index: Integer;
   split: number;
   pace_zone?: number;
 }
 
 /** A split within an activity (metric or standard). */
 export interface Split {
-  average_speed: number;
-  distance: number;
-  elapsed_time: number;
-  elevation_difference: number;
+  average_speed: Unit.MetresPerSecond;
+  distance: Unit.Metres;
+  elapsed_time: Unit.Seconds;
+  elevation_difference: Unit.Metres;
   pace_zone: number;
-  moving_time: number;
+  moving_time: Unit.Seconds;
   split: number;
 }
 
 /** Activity zone data (heartrate or power). */
 export interface ActivityZone {
-  score: number;
+  score: Integer;
   distribution_buckets: TimedZoneRange[];
   type: ActivityZoneType;
   sensor_based: boolean;
-  points: number;
+  points: Integer;
   custom_zones: boolean;
-  max: number;
+  max: Integer;
 }
 
 /** Activity total statistics. */
 export interface ActivityTotal {
-  count: number;
-  distance: number;
-  moving_time: number;
-  elapsed_time: number;
-  elevation_gain: number;
-  achievement_count?: number;
+  count: WholeNumber;
+  distance: Unit.Metres;
+  moving_time: Unit.Seconds;
+  elapsed_time: Unit.Seconds;
+  elevation_gain: Unit.Metres;
+  achievement_count?: WholeNumber;
 }
 
 /** Activity statistics for an athlete. */
 export interface ActivityStats {
-  biggest_ride_distance: number;
-  biggest_climb_elevation_gain: number;
+  biggest_ride_distance: Unit.Metres;
+  biggest_climb_elevation_gain: Unit.Metres;
   recent_ride_totals: ActivityTotal;
   recent_run_totals: ActivityTotal;
   recent_swim_totals: ActivityTotal;
@@ -109,17 +115,20 @@ export interface ActivityStats {
 // Photo Types
 // ============================================================================
 
+/** Photo ID type */
+export type PhotoId = Integer;
+
 /** Primary photo for an activity. */
 export interface PhotoSummaryPrimary {
-  id: number | null;
-  source: number;
+  id: PhotoId | null;
+  source: Integer;
   unique_id: string;
-  urls: Record<string, string>;
+  urls: Record<string, Unit.Url>;
 }
 
 /** Photo summary for an activity. */
 export interface PhotoSummary {
-  count: number;
+  count: Integer;
   primary: PhotoSummaryPrimary;
 }
 
@@ -137,40 +146,45 @@ export interface SummaryActivity {
   upload_id: UploadId;
   athlete: MetaAthlete;
   name: string;
-  distance: number;
-  moving_time: number;
-  elapsed_time: number;
-  total_elevation_gain: number;
-  elev_high: number;
-  elev_low: number;
+  distance: Unit.Metres;
+  moving_time: Unit.Seconds;
+  elapsed_time: Unit.Seconds;
+  total_elevation_gain: Unit.Metres;
+  elev_high: Unit.Metres;
+  elev_low: Unit.Metres;
   type: ActivityType | string; // Can be any string for custom types
   sport_type?: string;
-  start_date: string;
-  start_date_local: string;
-  timezone: string;
-  utc_offset?: number;
-  start_latlng?: number[];
-  end_latlng?: number[];
-  achievement_count: number;
-  kudos_count: number;
-  comment_count: number;
-  athlete_count: number;
-  photo_count: number;
-  total_photo_count: number;
+  /** ISO 8601 datetime when activity started (UTC) */
+  start_date: Unit.ISODateTime;
+  /** Local datetime when activity started (no timezone - use with `timezone` field) */
+  start_date_local: Unit.LocalDateTime;
+  /** Timezone in display format (e.g., "(GMT-06:00) America/Chicago") */
+  timezone: Unit.Timezone;
+  utc_offset?: Unit.Seconds;
+  /** Start point as [latitude, longitude] */
+  start_latlng?: [Unit.Latitude, Unit.Longitude];
+  /** End point as [latitude, longitude] */
+  end_latlng?: [Unit.Latitude, Unit.Longitude];
+  achievement_count: WholeNumber;
+  kudos_count: WholeNumber;
+  comment_count: WholeNumber;
+  athlete_count: WholeNumber;
+  photo_count: WholeNumber;
+  total_photo_count: WholeNumber;
   map: PolylineMap;
   trainer: boolean;
   commute: boolean;
   manual: boolean;
   private: boolean;
   flagged: boolean;
-  workout_type?: number | null;
-  average_speed: number;
-  max_speed: number;
+  workout_type?: Integer | null;
+  average_speed: Unit.MetresPerSecond;
+  max_speed: Unit.MetresPerSecond;
   has_kudoed: boolean;
   gear_id?: GearId | null;
-  average_temp?: number;
+  average_temp?: Unit.Celsius;
   device_name?: string;
-  pr_count?: number;
+  pr_count?: WholeNumber;
   from_accepted_tag?: boolean;
 }
 
@@ -192,12 +206,12 @@ export interface DetailedActivity extends SummaryActivity {
   device_watts?: boolean;
   has_heartrate?: boolean;
   heartrate_mode?: string;
-  max_watts?: number;
-  weighted_average_watts?: number;
+  max_watts?: Unit.Watts;
+  weighted_average_watts?: Unit.Watts;
   kilojoules?: number;
-  average_watts?: number;
-  max_heartrate?: number;
-  average_heartrate?: number;
+  average_watts?: Unit.Watts;
+  max_heartrate?: Unit.BPM;
+  average_heartrate?: Unit.BPM;
   suffer_score?: number | null;
   segment_leaderboard_opt_out?: boolean;
   leaderboard_opt_out?: boolean;

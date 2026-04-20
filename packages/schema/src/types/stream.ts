@@ -5,6 +5,7 @@
  */
 
 import type { StreamResolution, StreamSeriesType, StreamType } from './core.ts';
+import type { Latitude, Longitude } from './units.ts';
 
 // ============================================================================
 // Base Stream Types
@@ -29,7 +30,7 @@ export interface LatLngStream {
   original_size: number;
   resolution: StreamResolution;
   series_type: StreamSeriesType;
-  data: [number, number][];
+  data: [Latitude, Longitude][];
 }
 
 /**

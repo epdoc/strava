@@ -2,8 +2,18 @@
  * Athlete types for Strava API.
  */
 
+import type { Integer, WholeNumber } from '@epdoc/type';
 import type { AthleteId, ResourceState, Sex, SportType, UnitSystem } from './core.ts';
 import type { SummaryGear } from './gear.ts';
+import type {
+  CountryCode2,
+  Email,
+  ISODateTime,
+  Kilograms,
+  StateCode,
+  Url,
+  Watts,
+} from './units.ts';
 
 // Re-export AthleteId from core
 export type { AthleteId } from './core.ts';
@@ -12,9 +22,12 @@ export type { AthleteId } from './core.ts';
 // Club Types
 // ============================================================================
 
+/** Club ID type */
+export type ClubId = Integer;
+
 /** Summary information about a club. */
 export interface SummaryClub {
-  id: number;
+  id: ClubId;
   resource_state: ResourceState;
   name: string;
   profile_medium: string;
@@ -22,13 +35,13 @@ export interface SummaryClub {
   cover_photo_small: string;
   sport_type: SportType;
   city: string;
-  state: string;
-  country: string;
+  state: StateCode;
+  country: CountryCode2;
   private: boolean;
-  member_count: number;
+  member_count: WholeNumber;
   featured: boolean;
   verified: boolean;
-  url: string;
+  url: Url;
 }
 
 // ============================================================================
@@ -43,43 +56,51 @@ export interface SummaryAthlete {
   resource_state: ResourceState;
   firstname: string;
   lastname: string;
-  profile_medium: string;
-  profile: string;
+  profile_medium: Url;
+  profile: Url;
   city: string;
-  state: string;
-  country: string;
+  state: StateCode;
+  country: CountryCode2;
   sex: Sex;
   summit: boolean;
-  created_at: string;
-  updated_at: string;
-  weight?: number;
-  badge_type_id?: number;
+  /** ISO 8601 datetime when athlete account was created */
+  created_at: ISODateTime;
+  /** ISO 8601 datetime when athlete data was last updated */
+  updated_at: ISODateTime;
+  /** Weight in kilograms */
+  weight?: Kilograms;
+  badge_type_id?: Integer;
 }
 
 /**
  * Detailed athlete - full athlete information.
  */
 export interface DetailedAthlete extends SummaryAthlete {
-  follower_count: number;
-  friend_count: number;
+  follower_count: WholeNumber;
+  friend_count: WholeNumber;
   measurement_preference: UnitSystem;
-  ftp: number | null;
+  /** Functional Threshold Power in watts */
+  ftp: Watts | null;
   clubs: SummaryClub[];
   bikes: SummaryGear[];
   shoes: SummaryGear[];
-  email?: string;
-  athlete_type?: number;
+  email?: Email;
+  athlete_type?: Integer;
 }
 
 // ============================================================================
 // Comment Types
 // ============================================================================
 
+/** Comment ID type */
+export type CommentId = Integer;
+
 /** A comment on an activity. */
 export interface Comment {
-  id: number;
-  activity_id: number;
+  id: CommentId;
+  activity_id: Integer;
   text: string;
   athlete: SummaryAthlete;
-  created_at: string;
+  /** ISO 8601 datetime when comment was posted */
+  created_at: ISODateTime;
 }

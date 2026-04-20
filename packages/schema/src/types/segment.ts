@@ -2,6 +2,7 @@
  * Segment types for Strava API.
  */
 
+import type { Integer, WholeNumber } from '@epdoc/type';
 import type {
   Achievement,
   ActivityId,
@@ -10,6 +11,21 @@ import type {
   PolylineMap,
   SegmentId,
 } from './core.ts';
+import type {
+  BPM,
+  CountryCode2,
+  EncodedPolyline,
+  ISODateTime,
+  Latitude,
+  LocalDateTime,
+  Longitude,
+  Metres,
+  Percent,
+  RPM,
+  Seconds,
+  StateCode,
+  Watts,
+} from './units.ts';
 
 // Re-export SegmentId from core
 export type { SegmentId } from './core.ts';
@@ -38,21 +54,25 @@ export interface SummarySegmentEffort {
   athlete_id?: AthleteId;
   segment_id?: SegmentId;
   name?: string;
-  elapsed_time: number;
-  moving_time?: number;
-  start_date: string;
-  start_date_local: string;
-  distance: number;
-  start_index?: number;
-  end_index?: number;
-  average_cadence?: number;
-  average_watts?: number;
+  elapsed_time: Seconds;
+  moving_time?: Seconds;
+  /** ISO 8601 datetime when effort started (UTC) */
+  start_date: ISODateTime;
+  /** Local datetime when effort started (no timezone - use with `timezone` field) */
+  start_date_local: LocalDateTime;
+  distance: Metres;
+  start_index?: Integer;
+  end_index?: Integer;
+  average_cadence?: RPM;
+  average_watts?: Watts;
   device_watts?: boolean;
-  average_heartrate?: number;
-  max_heartrate?: number;
+  average_heartrate?: BPM;
+  max_heartrate?: BPM;
   segment?: SummarySegment;
-  kom_rank?: number | null;
-  pr_rank?: number | null;
+  /** KOM (King of Mountain) rank on segment leaderboards */
+  kom_rank?: Integer | null;
+  /** PR (Personal Record) rank */
+  pr_rank?: Integer | null;
   hidden?: boolean;
   is_kom: boolean;
   has_heartrate?: boolean;
@@ -77,27 +97,33 @@ export interface SummarySegment {
   id: SegmentId;
   name: SegmentName;
   activity_type: ActivityType | string;
-  distance: number;
-  average_grade: number;
-  maximum_grade: number;
-  elevation_high: number;
-  elevation_low: number;
+  distance: Metres;
+  average_grade: Percent;
+  maximum_grade: Percent;
+  elevation_high: Metres;
+  elevation_low: Metres;
   start_latlng: number[];
   end_latlng: number[];
-  climb_category: number;
+  /** Climb difficulty category (0-5, where 5 is hardest) */
+  climb_category: Integer;
   city: string;
-  state: string;
-  country: string;
+  state: StateCode;
+  country: CountryCode2;
   private: boolean;
   athlete_pr_effort?: SummarySegmentEffort;
-  created_at?: string;
-  updated_at?: string;
-  total_elevation_gain?: number;
+  /** ISO 8601 datetime when segment was created */
+  created_at?: ISODateTime;
+  /** ISO 8601 datetime when segment was last updated */
+  updated_at?: ISODateTime;
+  total_elevation_gain?: Metres;
   map?: PolylineMap;
-  effort_count?: number;
-  athlete_count?: number;
+  /** Number of recorded efforts on this segment */
+  effort_count?: WholeNumber;
+  /** Number of unique athletes who have attempted this segment */
+  athlete_count?: WholeNumber;
   hazardous?: boolean;
-  star_count?: number;
+  /** Number of athletes who have starred this segment */
+  star_count?: WholeNumber;
   starred?: boolean;
 }
 
@@ -106,8 +132,9 @@ export interface SummarySegment {
  */
 export interface DetailedSegment extends SummarySegment {
   created_by?: string;
-  athletes_pr_time?: number;
-  starred_date?: string;
+  athletes_pr_time?: Seconds;
+  /** ISO 8601 datetime when segment was starred by athlete */
+  starred_date?: ISODateTime;
 }
 
 // ============================================================================
@@ -118,12 +145,16 @@ export interface DetailedSegment extends SummarySegment {
 export interface ExplorerSegment {
   id: SegmentId;
   name: SegmentName;
-  climb_category: number;
+  /** Climb difficulty category (0-5, where 5 is hardest) */
+  climb_category: Integer;
   climb_category_desc: string;
-  avg_grade: number;
-  start_latlng: number[];
-  end_latlng: number[];
-  elev_difference: number;
-  distance: number;
-  points: string;
+  avg_grade: Percent;
+  /** Start point as [latitude, longitude] */
+  start_latlng: [Latitude, Longitude];
+  /** End point as [latitude, longitude] */
+  end_latlng: [Latitude, Longitude];
+  elev_difference: Metres;
+  distance: Metres;
+  /** Encoded polyline of segment points */
+  points: EncodedPolyline;
 }

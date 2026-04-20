@@ -1,5 +1,6 @@
 import type { Seconds } from '@epdoc/duration';
-import type { Metres, Schema } from '@epdoc/strava-api';
+import type { Metres } from '@epdoc/strava-api';
+import type * as Schema from '@epdoc/strava-schema';
 
 /**
  * Base class for Strava segment data with core timing and distance metrics.
@@ -18,9 +19,9 @@ import type { Metres, Schema } from '@epdoc/strava-api';
  * ```
  */
 export class SegmentBase {
-  data: Schema.SummarySegment = {} as Schema.SummarySegment;
-  id: Schema.SegmentId = 0;
-  name: Schema.SegmentName = '';
+  data: Schema.Segment.Summary = {} as Schema.Segment.Summary;
+  id: Schema.Segment.Id = 0;
+  name: Schema.Segment.Name = '';
   elapsed_time: Seconds = 0;
   moving_time: Seconds = 0;
   distance: Metres = 0;

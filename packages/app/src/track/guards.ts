@@ -1,10 +1,10 @@
-import * as Strava from '@epdoc/strava-api';
+import * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import type { ActivityExType, KmlLineStyle } from './types.ts';
 
 export function isValidActivityType(name: string): name is ActivityExType {
   // Allow standard activity types, plus custom style names (Default, Commute, Moto, Segment, etc.)
-  return (Strava.Schema.ActivityName && name in Strava.Schema.ActivityName) ||
+  return (Schema.Consts.ActivityName && name in Schema.Consts.ActivityName) ||
     name === 'Default' ||
     name === 'Commute' ||
     name === 'Moto' ||

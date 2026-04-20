@@ -1,5 +1,6 @@
 import type { Seconds } from '@epdoc/duration';
 import type * as Strava from '@epdoc/strava-api';
+import type * as Schema from '@epdoc/strava-schema';
 import { SegmentBase } from './base.ts';
 import type * as Segment from './types.ts';
 
@@ -22,15 +23,15 @@ import type * as Segment from './types.ts';
  * ```
  */
 export class SegmentData implements Segment.IData {
-  id: Strava.Schema.SegmentId = 0;
-  name: Strava.Schema.SegmentName = '';
+  id: Schema.Segment.Id = 0;
+  name: Schema.Segment.Name = '';
   elapsedTime: Seconds = 0;
   movingTime: Seconds = 0;
   distance: Strava.Metres = 0;
   coordinates: Partial<Strava.TrackPoint>[] = [];
   country: string = '';
   state: string = '';
-  efforts?: Strava.Schema.DetailedSegmentEffort[] = [];
+  efforts?: Schema.Segment.DetailedEffort[] = [];
 
   constructor(data: SegmentBase) {
     if (data instanceof SegmentBase) {

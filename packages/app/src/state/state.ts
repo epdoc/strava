@@ -131,7 +131,11 @@ export class StateFile extends BaseClass {
     // Find the most recent activity by startDatetimeLocal
     let mostRecent: Strava.Activity | undefined;
     for (const activity of activities) {
-      if (!mostRecent || activity.startDate.getTime() > mostRecent.startDate.getTime()) {
+      if (
+        !mostRecent ||
+        activity.startDateAsDateTime.epochMilliseconds >
+          mostRecent.startDateAsDateTime.epochMilliseconds
+      ) {
         mostRecent = activity;
       }
     }
@@ -143,7 +147,9 @@ export class StateFile extends BaseClass {
       }
 
       // Update the lastUpdated timestamp to the start date + 1 minute
-      this.#state[type]!.lastUpdated = new DateTime(mostRecent.startDate.getTime() + 60 * 1000)
+      this.#state[type]!.lastUpdated = new DateTime(
+        mostRecent.startDateAsDateTime.epochMilliseconds + 60 * 1000,
+      )
         .setTz('local').toISOString() as ISODate;
 
       this.log.info.text('Updated').value(type).text('last updated to')

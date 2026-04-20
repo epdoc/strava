@@ -1,5 +1,6 @@
 import type * as FS from '@epdoc/fs/fs';
 import type * as Strava from '@epdoc/strava-api';
+import type * as Schema from '@epdoc/strava-schema';
 import type { Dict, Integer } from '@epdoc/type';
 import type { KmlLineStyle as LineStyle } from './track/types.ts';
 
@@ -55,7 +56,7 @@ export type UserSettings = {
    * A user will manually add entries to this file when they do not like the name that
    * Strava uses for a segment.
    */
-  aliases?: Record<Strava.Schema.SegmentName, string>;
+  aliases?: Record<Schema.Segment.Name, string>;
 };
 
 /**
@@ -86,5 +87,5 @@ export type CredsFile = {
   expires_in: Integer;
   refresh_token: Strava.RefreshToken;
   access_token: Strava.AccessToken;
-  athlete: Strava.Schema.SummaryAthlete;
+  athlete: Schema.Athlete.Summary;
 };

@@ -1,5 +1,6 @@
 import * as FS from '@epdoc/fs/fs';
-import * as Strava from '@epdoc/strava-api';
+import type * as Strava from '@epdoc/strava-api';
+import * as Schema from '@epdoc/strava-schema';
 import { _, type Integer } from '@epdoc/type';
 import pkg from '../../deno.json' with { type: 'json' };
 import type * as Segment from '../segment/mod.ts';
@@ -36,11 +37,11 @@ const REG = {
  * ```
  */
 export class GpxWriter extends TrackWriter {
-  override streamTypes(): Strava.Schema.StreamType[] {
+  override streamTypes(): Schema.Stream.StreamKey[] {
     return [
-      Strava.Schema.StreamKeys.LatLng,
-      Strava.Schema.StreamKeys.Altitude,
-      Strava.Schema.StreamKeys.Time,
+      Schema.Consts.StreamKeys.LatLng,
+      Schema.Consts.StreamKeys.Altitude,
+      Schema.Consts.StreamKeys.Time,
     ];
   }
 
@@ -300,7 +301,7 @@ export class GpxWriter extends TrackWriter {
       return 0;
     }
 
-    const laps = activity.data.laps as Strava.Schema.Lap[];
+    const laps = activity.data.laps as Schema.Activity.Lap[];
     if (!laps || laps.length <= 1) {
       return 0;
     }

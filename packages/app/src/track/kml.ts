@@ -1,5 +1,6 @@
 import * as FS from '@epdoc/fs/fs';
-import * as Strava from '@epdoc/strava-api';
+import type * as StravaApi from '@epdoc/strava-api';
+import * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import { escapeHtml, Fmt } from '../fmt.ts';
 import type * as Segment from '../segment/mod.ts';
@@ -42,13 +43,13 @@ export class KmlWriter extends TrackWriter {
   private lineStyles: Stream.KmlLineStyleDefs = defaultKmlLineStyles;
   private trackIndex: number = 0;
 
-  override streamTypes(): Strava.Schema.StreamType[] {
-    const types: Strava.Schema.StreamType[] = [Strava.Schema.StreamKeys.LatLng];
+  override streamTypes(): Schema.Stream.StreamKey[] {
+    const types: Schema.Stream.StreamKey[] = [Schema.Consts.StreamKeys.LatLng];
 
     // Request time and altitude streams if lap waypoints are enabled
     if (this.opts.laps === true) {
-      types.push(Strava.Schema.StreamKeys.Time);
-      types.push(Strava.Schema.StreamKeys.Altitude);
+      types.push(Schema.Consts.StreamKeys.Time);
+      types.push(Schema.Consts.StreamKeys.Altitude);
     }
 
     return types;
@@ -59,7 +60,7 @@ export class KmlWriter extends TrackWriter {
    * @returns `true` if imperial units should be used, `false` otherwise.
    */
   get imperial(): boolean {
-    return this.opts && this.opts.imperial === true;
+    return this.ctx.imperial === true;
   }
 
   /**
@@ -136,7 +137,7 @@ export class KmlWriter extends TrackWriter {
    */
   async outputData(
     filepath: FS.FilePath,
-    activities: Strava.Activity[],
+    activities: StravaApi.Activity[],
     segments: SegmentData[],
   ): Promise<void> {
     const m0 = this.log.mark();
@@ -220,7 +221,7 @@ export class KmlWriter extends TrackWriter {
    * @param ctx - The application context.
    * @param activities - An array of activities to include.
    */
-  async #addActivities(activities: Strava.Activity[]): Promise<void> {
+  async #addActivities(activities: StravaApi.Activity[]): Promise<void> {
     if (activities && activities.length) {
       const dateString = this.#dateString();
 
@@ -372,7 +373,7 @@ export class KmlWriter extends TrackWriter {
    * @param indent Indentation level for KML output
    * @param activity Strava activity with track points and metadata
    */
-  async outputActivity(indent: number, activity: Strava.Activity): Promise<void> {
+  async outputActivity(indent: number, activity: StravaApi.Activity): Promise<void> {
     // Get the YYYY-MM-DD string with which to label the date. And always put it in the context of where we are at the time. Trust me.
     const t0 = activity.startDatetimeLocal.slice(0, 10);
     let styleName = 'Default';
@@ -419,7 +420,7 @@ export class KmlWriter extends TrackWriter {
    * @param activity - The activity for which to build the description.
    * @returns The formatted HTML description, or `undefined` if there is no content.
    */
-  async #buildActivityDescription(activity: Strava.Activity): Promise<string | undefined> {
+  async #buildActivityDescription(activity: StravaApi.Activity): Promise<string | undefined> {
     const arr: string[] = [];
 
     // Always add the activity's text description first (if it exists)
@@ -569,12 +570,12 @@ export class KmlWriter extends TrackWriter {
    * @param indent - Indentation level for KML output.
    * @param activity - Strava activity with laps array and track points.
    */
-  #outputLapMarkers(indent: number, activity: Strava.Activity): void {
+  #outputLapMarkers(indent: number, activity: StravaApi.Activity): void {
     if (!('laps' in activity.data) || !_.isArray(activity.data.laps)) {
       return;
     }
 
-    const laps = activity.data.laps as Strava.Schema.Lap[];
+    const laps = activity.data.laps as Schema.Activity.Lap[];
     const coords = activity.coordinates;
 
     if (!coords || coords.length === 0 || laps.length < 2) {
@@ -635,9 +636,9 @@ export class KmlWriter extends TrackWriter {
    * @returns The track point closest to the given time, or undefined
    */
   #findCoordinateAtTime(
-    activity: Strava.Activity,
+    activity: StravaApi.Activity,
     elapsedTime: number,
-  ): Partial<Strava.TrackPoint> | undefined {
+  ): Partial<StravaApi.TrackPoint> | undefined {
     if (!activity.coordinates || activity.coordinates.length === 0) {
       return undefined;
     }
@@ -691,7 +692,7 @@ export class KmlWriter extends TrackWriter {
   #outputLapPoint(
     indent: number,
     lapNumber: number,
-    coord: Partial<Strava.TrackPoint>,
+    coord: Partial<StravaApi.TrackPoint>,
     distanceKm: string,
     elevation: number,
     elevDelta: number,

@@ -1,4 +1,5 @@
 import * as Strava from '@epdoc/strava-api';
+import type * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import type * as Segment from './types.ts';
 
@@ -11,7 +12,7 @@ import type * as Segment from './types.ts';
  * @param data SummarySegment from Strava API
  * @returns CacheEntry with segment metadata for caching
  */
-export function asCacheEntry(data: Strava.Schema.SummarySegment): Segment.CacheEntry | undefined {
+export function asCacheEntry(data: Schema.Segment.Summary): Segment.CacheEntry | undefined {
   if (
     data && Strava.isSegmentId(data.id) && _.isNonEmptyString(data.name) &&
     _.isNumber(data.elevation_high) &&

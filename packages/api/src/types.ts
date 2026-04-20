@@ -81,7 +81,7 @@ export type AuthUrlOpts = {
 
 /** Options for retrieving activities. */
 export type ActivityOpts = {
-  athleteId: StravaSchema.Athlete.IdType;
+  athleteId: StravaSchema.Athlete.Id;
   query: {
     after: EpochSeconds;
     before: EpochSeconds;
@@ -102,7 +102,7 @@ export type StravaCredsData = {
   refresh_token?: string;
   access_token?: string;
   athlete: {
-    id?: StravaSchema.Athlete.IdType;
+    id?: StravaSchema.Athlete.Id;
     username?: string;
     [key: string]: unknown;
   };
@@ -125,8 +125,8 @@ export type ActivityFilter = {
 };
 
 /** Data for a segment effort, as returned by the Strava API. */
-export type SegmentData = StravaSchema.Segment.DetailedEffortType; // Changed to DetailedSegmentEffort
+export type SegmentData = StravaSchema.Segment.DetailedEffort; // Changed to DetailedSegmentEffort
 /** A segment effort. */
-export type SegmentEffort = StravaSchema.Segment.DetailedEffortType;
+export type SegmentEffort = StravaSchema.Segment.DetailedEffort;
 
-export type StarredSegmentDict = Record<StravaSchema.Segment.IdType, string>;
+export type StarredSegmentDict = Record<StravaSchema.Segment.Id, string>;

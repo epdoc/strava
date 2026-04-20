@@ -1,4 +1,4 @@
-import type { IANATZ, ISODate } from '@epdoc/datetime';
+import type { IANATZ } from '@epdoc/datetime';
 import { DateEx, DateTime } from '@epdoc/datetime'; // Import DateEx
 import type { EpochMilliseconds, Seconds } from '@epdoc/duration';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
@@ -28,13 +28,13 @@ const REGEX = {
  * that data.
  */
 export class Activity extends BaseClass {
-  public data: StravaSchema.Activity.SummaryType | StravaSchema.Activity.DetailedType;
+  public data: StravaSchema.Activity.Summary | StravaSchema.Activity.Detailed;
   api?: Api;
   #detailed = false;
   #trackPoints: TrackPoint[] = []; // will contain the latlng coordinates for the activity
   #segments: SegmentData[] = []; // Will be declared here
   #aliases?: Record<string, string>; // Private property for aliases
-  #segmentProvider?: { getSegment(name: string): StravaSchema.Segment.SummaryType | undefined }; // Private property for segment provider
+  #segmentProvider?: { getSegment(name: string): StravaSchema.Segment.Summary | undefined }; // Private property for segment provider
 
   /**
    * Constructs a new `Activity` instance.
@@ -46,10 +46,10 @@ export class Activity extends BaseClass {
    */
   constructor(
     ctx: Ctx.Context,
-    data: StravaSchema.Activity.SummaryType | StravaSchema.Activity.DetailedType,
+    data: StravaSchema.Activity.Summary | StravaSchema.Activity.Detailed,
     opts?: {
       aliases?: Record<string, string>;
-      segmentProvider?: { getSegment(name: string): StravaSchema.Segment.SummaryType | undefined };
+      segmentProvider?: { getSegment(name: string): StravaSchema.Segment.Summary | undefined };
     },
   ) {
     super(ctx);
@@ -65,7 +65,7 @@ export class Activity extends BaseClass {
    *
    * @param data The new activity data.
    */
-  update(data: StravaSchema.Activity.SummaryType | StravaSchema.Activity.DetailedType) {
+  update(data: StravaSchema.Activity.Summary | StravaSchema.Activity.Detailed) {
     this.data = data;
   }
 
@@ -105,7 +105,7 @@ export class Activity extends BaseClass {
   /**
    * The unique identifier of the activity.
    */
-  public get id(): StravaSchema.Activity.IdType {
+  public get id(): StravaSchema.Activity.Id {
     return this.data.id;
   }
 

@@ -319,7 +319,6 @@ export class AuthService extends BaseClass {
         this.log.info.h2('Failed to refresh access token').err(err).emit();
         throw err;
       }
-    } else {
     }
     return Promise.resolve();
   }

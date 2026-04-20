@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from '@zod/zod';
 
 /**
  * Zod schema for ZoneRange.

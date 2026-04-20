@@ -1,31 +1,28 @@
 /**
- * Athlete namespace - Zod schemas and types for Strava athletes.
+ * Athlete namespace - types and guards for Strava athletes.
  *
  * @example
  * ```typescript
  * import * as Athlete from '@epdoc/strava-schema/athlete';
  *
- * const result = Athlete.Detailed.safeParse(apiResponse);
- * if (result.success) {
- *   console.log(result.data.firstname);
+ * if (Athlete.isDetailed(apiResponse)) {
+ *   console.log(apiResponse.firstname);
  * }
  * ```
  */
 
-// Zod schemas with short names
-export {
-  AthleteIdSchema as Id,
-  CommentSchema as Comment,
-  DetailedAthleteSchema as Detailed,
-  SummaryAthleteSchema as Summary,
-  SummaryClubSchema as Club,
-} from './schema/athlete.ts';
-
-// TypeScript types
+// Types
 export type {
-  AthleteId as IdType,
-  Comment as CommentType,
-  DetailedAthlete as DetailedType,
-  SummaryAthlete as SummaryType,
-  SummaryClub as ClubType,
-} from './schema/athlete.ts';
+  AthleteId as Id,
+  DetailedAthlete as Detailed,
+  SummaryAthlete as Summary,
+  SummaryClub as Club,
+} from './types/athlete.ts';
+
+// Type guards
+export {
+  isDetailedAthlete as isDetailed,
+  isSummaryAthlete as isSummary,
+  isSummaryAthleteArray as isSummaryArray,
+  isSummaryClub as isClub,
+} from './guards/athlete.ts';

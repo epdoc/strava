@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { StravaLongIntSchema } from './types.ts';
+import { z } from '@zod/zod';
+const StravaLongIntSchema: z.ZodNumber = z.number().int();
 
 /**
  * Zod schema for PhotoSummary_primary.
@@ -13,7 +13,7 @@ export const PhotoSummaryPrimarySchema: z.ZodObject<{
   id: StravaLongIntSchema.nullable(),
   source: z.number(),
   unique_id: z.string(),
-  urls: z.record(z.string()),
+  urls: z.record(z.string(), z.string()),
 });
 
 /** PhotoSummary_primary type inferred from PhotoSummaryPrimarySchema */

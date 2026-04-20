@@ -1,6 +1,4 @@
-import { z } from 'zod';
-import { ActivityIdSchema } from './activity.ts';
-import { AthleteIdSchema } from './athlete.ts';
+import { z } from '@zod/zod';
 import {
   type ActivityNameSchema,
   type FollowerStatusSchema,
@@ -47,9 +45,9 @@ export type UnitSystemType = z.infer<typeof UnitSystemSchema>;
  * Zod schema for MetaAthlete.
  */
 export const MetaAthleteSchema: z.ZodObject<
-  { id: typeof AthleteIdSchema; resource_state: typeof ResourceStateSchema }
+  { id: z.ZodNumber; resource_state: typeof ResourceStateSchema }
 > = z.object({
-  id: AthleteIdSchema,
+  id: z.number().int(),
   resource_state: ResourceStateSchema,
 });
 
@@ -60,9 +58,9 @@ export type MetaAthlete = z.infer<typeof MetaAthleteSchema>;
  * Zod schema for MetaActivity.
  */
 export const MetaActivitySchema: z.ZodObject<
-  { id: typeof ActivityIdSchema; resource_state: typeof ResourceStateSchema }
+  { id: z.ZodNumber; resource_state: typeof ResourceStateSchema }
 > = z.object({
-  id: ActivityIdSchema,
+  id: z.number().int(),
   resource_state: ResourceStateSchema,
 });
 

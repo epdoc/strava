@@ -1,9 +1,11 @@
-import { z } from 'zod';
+import { z } from '@zod/zod';
 import { ActivityZoneTypeSchema, ResourceStateSchema } from './consts.ts';
 import { GearIdSchema, SummaryGearSchema } from './gear.ts';
 import { PhotoSummarySchema } from './photo.ts';
 import type { DetailedSegmentEffort } from './segment.ts';
-import { MetaActivitySchema, MetaAthleteSchema, StravaLongIntSchema } from './types.ts';
+import { MetaActivitySchema, MetaAthleteSchema } from './types.ts';
+
+const StravaLongIntSchema: z.ZodNumber = z.number().int();
 
 /**
  * Zod schema for ActivityId.
@@ -311,46 +313,17 @@ export type Lap = z.infer<typeof LapSchema>;
  * Zod schema for DetailedActivity.
  * Extends SummaryActivity with additional fields.
  */
-export const DetailedActivitySchema: z.ZodObject<
-  z.objectUtil.extendShape<
-    typeof SummaryActivitySchema.shape,
-    {
-      description: z.ZodNullable<z.ZodString>;
-      photos: z.ZodOptional<typeof PhotoSummarySchema>;
-      gear: z.ZodOptional<typeof SummaryGearSchema>;
-      calories: z.ZodNumber;
-      segment_efforts: z.ZodOptional<z.ZodArray<z.ZodType<DetailedSegmentEffort>>>;
-      embed_token: z.ZodOptional<z.ZodString>;
-      splits_metric: z.ZodOptional<z.ZodArray<typeof SplitSchema>>;
-      splits_standard: z.ZodOptional<z.ZodArray<typeof SplitSchema>>;
-      laps: z.ZodOptional<z.ZodArray<typeof LapSchema>>;
-      best_efforts: z.ZodOptional<z.ZodArray<z.ZodType<DetailedSegmentEffort>>>;
-      device_watts: z.ZodOptional<z.ZodBoolean>;
-      has_heartrate: z.ZodOptional<z.ZodBoolean>;
-      heartrate_mode: z.ZodOptional<z.ZodString>;
-      max_watts: z.ZodOptional<z.ZodNumber>;
-      weighted_average_watts: z.ZodOptional<z.ZodNumber>;
-      kilojoules: z.ZodOptional<z.ZodNumber>;
-      average_watts: z.ZodOptional<z.ZodNumber>;
-      max_heartrate: z.ZodOptional<z.ZodNumber>;
-      average_heartrate: z.ZodOptional<z.ZodNumber>;
-      suffer_score: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
-      segment_leaderboard_opt_out: z.ZodOptional<z.ZodBoolean>;
-      leaderboard_opt_out: z.ZodOptional<z.ZodBoolean>;
-      private_note: z.ZodOptional<z.ZodString>;
-    }
-  >
-> = SummaryActivitySchema.extend({
+export const DetailedActivitySchema = SummaryActivitySchema.extend({
   description: z.string().nullable(),
   photos: PhotoSummarySchema.optional(),
   gear: SummaryGearSchema.optional(),
   calories: z.number(),
-  segment_efforts: z.array(z.any() as z.ZodType<DetailedSegmentEffort>).optional(),
+  segment_efforts: z.array(z.custom<DetailedSegmentEffort>()).optional(),
   embed_token: z.string().optional(),
   splits_metric: z.array(SplitSchema).optional(),
   splits_standard: z.array(SplitSchema).optional(),
   laps: z.array(LapSchema).optional(),
-  best_efforts: z.array(z.any() as z.ZodType<DetailedSegmentEffort>).optional(),
+  best_efforts: z.array(z.custom<DetailedSegmentEffort>()).optional(),
   device_watts: z.boolean().optional(),
   has_heartrate: z.boolean().optional(),
   heartrate_mode: z.string().optional(),

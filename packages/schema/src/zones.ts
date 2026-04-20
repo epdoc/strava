@@ -1,29 +1,21 @@
 /**
- * Zones namespace - Zod schemas and types for Strava activity zones.
+ * Zones namespace - types for heart rate and power zones.
  *
  * @example
  * ```typescript
  * import * as Zones from '@epdoc/strava-schema/zones';
  *
- * const result = Zones.HeartRate.safeParse(apiResponse);
- * if (result.success) {
- *   console.log(result.data.zones.length);
- * }
+ * const hrZones: Zones.HeartRate = {
+ *   custom_zones: false,
+ *   zones: [{ min: 0, max: 120 }, { min: 120, max: 140 }],
+ * };
  * ```
  */
 
-// Zod schemas with short names
-export {
-  HeartRateZoneRangesSchema as HeartRate,
-  PowerZoneRangesSchema as Power,
-  ZoneRangeSchema as Range,
-  ZonesSchema as All,
-} from './schema/zones.ts';
-
-// TypeScript types
+// Types
 export type {
-  HeartRateZoneRanges as HeartRateType,
-  PowerZoneRanges as PowerType,
-  ZoneRange as RangeType,
-  Zones as AllType,
-} from './schema/zones.ts';
+  HeartRateZoneRanges as HeartRate,
+  PowerZoneRanges as Power,
+  ZoneRange as Range,
+  Zones,
+} from './types/zones.ts';

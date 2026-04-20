@@ -1,30 +1,16 @@
 /**
- * Types namespace - Base types for Strava API.
+ * Types namespace - all TypeScript types for Strava API.
+ *
+ * This is a flat export of all types for convenience.
+ * For hierarchical organization, use the specific namespace imports.
  *
  * @example
  * ```typescript
  * import * as Types from '@epdoc/strava-schema/types';
  *
- * const id: Types.StravaLongInt = 12345678;
+ * const activity: Types.ActivitySummary = { ... };
  * ```
  */
 
-// Export schemas
-export { MetaActivitySchema, MetaAthleteSchema, StravaLongIntSchema } from './schema/types.ts';
-
-// Export types separately
-export type {
-  ActivityType,
-  FollowerStatusType,
-  MetaActivity,
-  MetaActivity as MetaActivityType,
-  MetaAthlete,
-  MetaAthlete as MetaAthleteType,
-  ResourceStateType,
-  SexType,
-  SportType,
-  StravaLongInt,
-  StravaLongInt as StravaLongIntType,
-  StreamKeyType,
-  UnitSystemType,
-} from './schema/types.ts';
+// Re-export all types
+export * from './types/index.ts';

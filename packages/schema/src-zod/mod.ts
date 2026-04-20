@@ -1,26 +1,26 @@
 /**
  * @jpravetz/strava-schema
  *
- * TypeScript types and type guards for the Strava API.
+ * Zod schemas and TypeScript types for the Strava API.
  *
- * This package provides TypeScript interfaces and lightweight type guards
- * for all Strava API data structures. Use this package to ensure type safety
- * when working with Strava data.
- *
- * Unlike the original Zod-based implementation, this version uses pure
- * TypeScript interfaces with minimal runtime type guards for better
- * performance and simpler code.
+ * This package provides runtime validation schemas (using Zod) and inferred TypeScript types
+ * for all Strava API data structures. Use this package to validate API responses and ensure
+ * type safety when working with Strava data.
  *
  * @example
  * Import everything as a namespace:
  * ```typescript
  * import * as Schema from '@jpravetz/strava-schema';
  *
- * // Type guard for activity data
- * if (Schema.Activity.isDetailed(apiResponse)) {
- *   const activity: Schema.Activity.Detailed = apiResponse;
+ * // Validate activity data
+ * const result = Schema.Activity.Detailed.safeParse(apiResponse);
+ * if (result.success) {
+ *   const activity: Schema.Activity.DetailedType = result.data;
  *   console.log(activity.name);
  * }
+ *
+ * // Validate athlete data
+ * const athlete = Schema.Athlete.Detailed.safeParse(athleteResponse);
  *
  * // Check activity type
  * if (activity.type === Schema.Consts.ActivityName.Ride) {
@@ -33,9 +33,7 @@
  * ```typescript
  * import * as Activity from '@jpravetz/strava-schema/activity';
  *
- * if (Activity.isDetailed(apiResponse)) {
- *   console.log(apiResponse.name);
- * }
+ * const result = Activity.Detailed.safeParse(apiResponse);
  * ```
  */
 
@@ -48,6 +46,3 @@ export * as Segment from './segment.ts';
 export * as Stream from './stream.ts';
 export * as Types from './types.ts';
 export * as Zones from './zones.ts';
-
-// Also export all guards at top level for convenience
-export * from './guards/mod.ts';

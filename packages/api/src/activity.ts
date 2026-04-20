@@ -1,11 +1,11 @@
 import type { IANATZ } from '@epdoc/datetime';
-import { DateEx, DateTime } from '@epdoc/datetime'; // Import DateEx
-import type { EpochMilliseconds, Seconds } from '@epdoc/duration';
+import { DateTime } from '@epdoc/datetime';
+import type { Seconds } from '@epdoc/duration';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
+import type * as StravaSchema from '@epdoc/strava-schema';
 import { _, type CompareResult, type Dict, type Integer } from '@epdoc/type';
 import { assert } from '@std/assert';
 import type { Api } from './api.ts';
-import type * as StravaSchema from '@epdoc/strava-schema';
 import type {
   ActivityFilter,
   Kilometres,
@@ -70,10 +70,30 @@ export class Activity extends BaseClass {
   }
 
   /**
-   * The start date of the activity as a `Date` object.
+   * Extracts the IANA timezone name from the Strava timezone string.
+   * Strava format: "(GMT±HH:MM) IANA/Timezone_Name"
+   * @returns The IANA timezone name (e.g., "America/Chicago") or undefined
    */
-  get startDateAsDate(): Date {
-    return new Date(this.data.start_date);
+  get ianaTimezone(): IANATZ | undefined {
+    if (this.data.timezone) {
+      const tzMatch = this.data.timezone.match(/\)\s*(.+)$/);
+      if (tzMatch) {
+        return tzMatch[1] as IANATZ;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * The start date of the activity as a `DateTime` object with timezone set.
+   */
+  get startDateAsDateTime(): DateTime {
+    const dt = DateTime.from(this.data.start_date);
+    const tz = this.ianaTimezone;
+    if (tz) {
+      dt.setTz(tz);
+    }
+    return dt;
   }
 
   /**
@@ -172,8 +192,12 @@ export class Activity extends BaseClass {
     return this.data.gear_id;
   }
 
-  get startDate(): Date {
-    return new Date(this.data.start_date);
+  /**
+   * The start date of the activity as a `DateTime` object (UTC).
+   * @deprecated Use `startDateAsDateTime` instead
+   */
+  get startDate(): DateTime {
+    return this.startDateAsDateTime;
   }
 
   /**
@@ -211,14 +235,11 @@ export class Activity extends BaseClass {
    * ```
    */
   startDateEx(delta: Seconds = 0): DateTime {
-    const ms: EpochMilliseconds = new Date(this.data.start_date).getTime() + delta * 1000;
-    const dateEx = new DateTime(ms);
-    if (this.data.timezone) {
-      const tzMatch = this.data.timezone.match(/\)\s*(.+)$/);
-      if (tzMatch) {
-        const tz = tzMatch[1];
-        dateEx.setTz(tz as IANATZ);
-      }
+    const startMs = DateTime.from(this.data.start_date).epochMilliseconds;
+    const dateEx = new DateTime(startMs + delta * 1000);
+    const tz = this.ianaTimezone;
+    if (tz) {
+      dateEx.setTz(tz);
     }
     return dateEx;
   }
@@ -532,7 +553,7 @@ export class Activity extends BaseClass {
       name = aliases[name];
       segEffort.name = name;
     }
-    const sd: string = new DateEx(segEffort.elapsed_time * 1000).format('HH:mm:ss'); // Replaced dateutil.formatMS
+    const sd: string = DateTime.from(segEffort.elapsed_time * 1000).format('HH:mm:ss'); // Replaced dateutil.formatMS
     console.log(`  Adding segment '${name}, elapsed time ${sd}`);
     // Add segment to this activity
     this.#segments.push(segEffort); // Removed redundant cast
@@ -619,14 +640,11 @@ export class Activity extends BaseClass {
    * @param b The second activity.
    * @returns -1 if `a` is before `b`, 1 if `a` is after `b`, and 0 if they are at the same time.
    */
-  public static compareStartDate(a: { startDate: Date }, b: { startDate: Date }): CompareResult {
-    if (a.startDate < b.startDate) {
-      return -1;
-    }
-    if (a.startDate > b.startDate) {
-      return 1;
-    }
-    return 0;
+  public static compareStartDate(
+    a: { startDate: DateTime },
+    b: { startDate: DateTime },
+  ): CompareResult {
+    return DateTime.compare(a.startDate, b.startDate);
   }
 }
 

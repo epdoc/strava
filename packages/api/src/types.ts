@@ -1,7 +1,7 @@
-import type { EpochSeconds, Seconds } from '@epdoc/duration';
+import type { EpochSeconds } from '@epdoc/duration';
 import type * as FS from '@epdoc/fs/fs';
+import type * as Schema from '@epdoc/strava-schema';
 import type { Dict, Integer } from '@epdoc/type';
-import type * as StravaSchema from '@epdoc/strava-schema';
 
 /** An authorization code obtained from the Strava OAuth2 flow. */
 export type Code = string;
@@ -10,29 +10,15 @@ export type AccessToken = string;
 /** A refresh token for obtaining a new access token. */
 export type RefreshToken = string;
 
-/** A distance in kilometers. */
-export type Kilometres = number;
-/** A distance in meters. */
-export type Metres = number;
-
 /** A dictionary of query parameters. */
 export type Query = Dict;
-
-export type Latitude = number;
-export type Longitude = number;
-
-/** A geographical coordinate, represented as a [latitude, longitude] pair. */
-export type LatLngPoint = [number, number];
-/** A geographical rectangle */
-export type LatLngRect = [LatLngPoint, LatLngPoint];
-
 /** Data for a track point. */
 export type TrackPoint = {
-  lat: Latitude;
-  lng: Longitude;
-  altitude?: Metres;
+  lat: Schema.Types.Latitude;
+  lng: Schema.Types.Longitude;
+  altitude?: Schema.Types.Metres;
   /** Offset from start time */
-  time?: Seconds;
+  time?: Schema.Types.Seconds;
 };
 
 /** The client ID for a Strava application. */
@@ -81,7 +67,7 @@ export type AuthUrlOpts = {
 
 /** Options for retrieving activities. */
 export type ActivityOpts = {
-  athleteId: StravaSchema.Athlete.Id;
+  athleteId: Schema.Athlete.Id;
   query: {
     after: EpochSeconds;
     before: EpochSeconds;
@@ -102,7 +88,7 @@ export type StravaCredsData = {
   refresh_token?: string;
   access_token?: string;
   athlete: {
-    id?: StravaSchema.Athlete.Id;
+    id?: Schema.Athlete.Id;
     username?: string;
     [key: string]: unknown;
   };
@@ -125,8 +111,23 @@ export type ActivityFilter = {
 };
 
 /** Data for a segment effort, as returned by the Strava API. */
-export type SegmentData = StravaSchema.Segment.DetailedEffort; // Changed to DetailedSegmentEffort
+export type SegmentData = Schema.Segment.DetailedEffort; // Changed to DetailedSegmentEffort
 /** A segment effort. */
-export type SegmentEffort = StravaSchema.Segment.DetailedEffort;
+export type SegmentEffort = Schema.Segment.DetailedEffort;
 
-export type StarredSegmentDict = Record<StravaSchema.Segment.Id, string>;
+export type StarredSegmentDict = Record<Schema.Segment.Id, string>;
+
+// Re-export semantic unit types for convenience
+export type {
+  Kilometres,
+  Latitude,
+  Longitude,
+  Metres,
+  Seconds,
+} from '@epdoc/strava-schema/types/units';
+
+/** A geographical coordinate, represented as a [latitude, longitude] pair. */
+export type LatLngPoint = [number, number];
+
+/** A geographical rectangle defined by two corner points. */
+export type LatLngRect = [LatLngPoint, LatLngPoint];

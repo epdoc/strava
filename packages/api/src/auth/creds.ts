@@ -1,3 +1,4 @@
+import { DateTime } from '@epdoc/datetime';
 import type { EpochSeconds, Seconds } from '@epdoc/duration';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
@@ -86,11 +87,12 @@ export class StravaCreds {
    * An access token is considered valid if it has not expired and its `token_type` is 'Bearer'.
    *
    * @param t A buffer time in seconds. The token will be considered expired if it expires within this buffer time.
-   * @param now The current time in epoch seconds. Defaults to `Date.now() / 1000`.
+   * @param now The current time in epoch seconds.
    * @returns `true` if the token is valid, `false` otherwise.
    */
-  isValid(t: Seconds = 0, now: EpochSeconds = Date.now() / 1000): boolean {
-    const tLimit: EpochSeconds = now + t;
+  isValid(t: Seconds = 0, now?: EpochSeconds): boolean {
+    const currentTime: EpochSeconds = now ?? DateTime.now().toEpochSeconds();
+    const tLimit: EpochSeconds = currentTime + t;
     return this.#data && this.#data.token_type === 'Bearer' && this.#data.expires_at > tLimit;
   }
 
@@ -100,10 +102,10 @@ export class StravaCreds {
    * An access token needs to be refreshed if it is not valid or if it will expire within the specified refresh window.
    *
    * @param t The refresh window in seconds. Defaults to 2 hours.
-   * @param now The current time in epoch seconds. Defaults to `Date.now() / 1000`.
+   * @param now The current time in epoch seconds.
    * @returns `true` if the token needs to be refreshed, `false` otherwise.
    */
-  needsRefresh(t: Seconds = 2 * 60 * 60, now: EpochSeconds = Date.now() / 1000): boolean {
+  needsRefresh(t: Seconds = 2 * 60 * 60, now?: EpochSeconds): boolean {
     return !this.isValid(t, now);
   }
 

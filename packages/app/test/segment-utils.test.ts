@@ -1,4 +1,4 @@
-import type * as Strava from '@epdoc/strava-api';
+import type * as Schema from '@epdoc/strava-schema';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 import * as App from '../src/mod.ts';
@@ -6,7 +6,7 @@ import * as App from '../src/mod.ts';
 describe('segment utils', () => {
   describe('asCacheEntry', () => {
     it('should convert valid SummarySegment to CacheEntry', () => {
-      const summarySegment: Strava.Schema.SummarySegment = {
+      const summarySegment: Schema.Segment.Summary = {
         id: 12345,
         name: 'Test Segment',
         distance: 1500,
@@ -40,7 +40,7 @@ describe('segment utils', () => {
     });
 
     it('should trim segment name', () => {
-      const summarySegment: Strava.Schema.SummarySegment = {
+      const summarySegment: Schema.Segment.Summary = {
         id: 67890,
         name: '  Padded Segment Name  ',
         distance: 1000,
@@ -74,7 +74,7 @@ describe('segment utils', () => {
         average_grade: 5.2,
         elevation_high: 200,
         elevation_low: 150,
-      } as unknown as Strava.Schema.SummarySegment;
+      } as unknown as Schema.Segment.Summary;
 
       const cacheEntry = App.Segment.asCacheEntry(invalidSegment);
 
@@ -82,7 +82,7 @@ describe('segment utils', () => {
     });
 
     it('should calculate elevation correctly', () => {
-      const summarySegment: Strava.Schema.SummarySegment = {
+      const summarySegment: Schema.Segment.Summary = {
         id: 11111,
         name: 'Steep Hill',
         distance: 500,

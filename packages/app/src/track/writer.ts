@@ -1,6 +1,6 @@
 import type * as FS from '@epdoc/fs/fs';
-import * as Strava from '@epdoc/strava-api';
 import type { Ctx } from '@epdoc/strava-core';
+import * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import { BaseClass } from '../base.ts';
 import type * as Stream from './types.ts';
@@ -38,8 +38,8 @@ export class TrackWriter extends BaseClass {
    * Lists the stream types we will need to retrieve from Strava for the output stream we are generating.
    * @returns
    */
-  streamTypes(): Strava.Schema.StreamType[] {
-    return [Strava.Schema.StreamKeys.LatLng];
+  streamTypes(): Schema.Stream.StreamKey[] {
+    return [Schema.Consts.StreamKeys.LatLng];
   }
 
   /**

@@ -1,7 +1,7 @@
 import { DateTime } from '@epdoc/datetime';
 import type { FileSpec } from '@epdoc/fs';
-import type * as Strava from '@epdoc/strava-api';
 import type { Ctx } from '@epdoc/strava-core';
+import type * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import { BaseClass } from '../base.ts';
 import type * as Segment from './types.ts';
@@ -52,7 +52,7 @@ export class SegmentFile extends BaseClass {
 
   async #getFromServer(): Promise<void> {
     // this.starredSegments = [];
-    const summarySegments: Strava.Schema.SummarySegment[] = [];
+    const summarySegments: Schema.Segment.Summary[] = [];
     this.log.info.h2('Retrieving Strava starred segments from server ...').emit();
     const m0 = this.log.mark();
     try {
@@ -123,7 +123,7 @@ export class SegmentFile extends BaseClass {
    * @param id Segment ID
    * @returns CacheEntry if found, undefined otherwise
    */
-  getSegment(id: Strava.Schema.SegmentId): Segment.CacheEntry | undefined {
+  getSegment(id: Schema.Segment.Id): Segment.CacheEntry | undefined {
     return this.#segments.get(id);
   }
 

@@ -1,3 +1,4 @@
+import type { DateTime } from '@epdoc/datetime';
 import type { Seconds } from '@epdoc/duration';
 import * as FS from '@epdoc/fs/fs';
 import type * as Strava from '@epdoc/strava-api';
@@ -18,8 +19,8 @@ const REGEX = {
 type BikelogEntry = {
   /** Julian date number used as the unique identifier for the day */
   jd: number;
-  /** JavaScript Date object for the entry */
-  date: Date;
+  /** DateTime object for the entry (with activity's local timezone) */
+  date: DateTime;
   /** Array of ride events for the day (maximum 2 tracked) */
   events: Array<{
     /** Distance in kilometers, rounded to 2 decimal places */
@@ -211,25 +212,21 @@ export class Bikelog {
     activities.forEach((activity) => {
       // Calculate Julian date from the local date components (YYYY-MM-DD).
       //
-      // Background: Strava's start_date_local field has a misleading 'Z' suffix.
-      // Although it appears to be UTC (e.g., "2025-11-22T07:40:29Z"), the time
-      // components (07:40:29) actually represent the LOCAL time in the activity's
-      // timezone (from the 'timezone' field, e.g., "America/Costa_Rica").
+      // Background: Strava's start_date_local has the local time but no timezone suffix.
+      // The 'timezone' field provides the IANA timezone (e.g., "America/Costa_Rica").
       //
       // For PDF bikelog forms, we need a Julian date that corresponds to the
       // LOCAL calendar date (e.g., Nov 22 in Costa Rica), not the UTC date.
+      // This determines which PDF form field the activity is placed in.
       //
-      // Solution: Extract just the date portion (YYYY-MM-DD) from start_date_local
-      // and calculate the Julian date directly from those components using the
-      // proper formula (Math.round instead of Math.floor to account for the 0.5
-      // offset in Julian date calculations).
-      const localDateStr = activity.startDatetimeLocal.split('T')[0]; // e.g., "2025-11-22"
-      const [year, month, day] = localDateStr.split('-').map(Number);
-      const localDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
-      const jd = Math.round(localDate.getTime() / 86400000 + 2440587.5);
-      const entry: BikelogEntry = result[jd] || {
+      // Solution: Use the activity's local DateTime (which has the proper timezone
+      // set) and calculate the Julian date. This ensures activities are grouped
+      // by the calendar date in the location where they occurred.
+      const localDateTime = activity.startDateEx();
+      const jd = localDateTime.julianDate();
+      const entry: BikelogEntry = result[jd] ?? {
         jd: jd,
-        date: new Date(activity.startDatetimeLocal),
+        date: localDateTime,
         events: [],
       };
       if (activity.isRide()) {

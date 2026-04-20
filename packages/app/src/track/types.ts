@@ -1,6 +1,7 @@
 import type { DateRanges } from '@epdoc/daterange';
 import type * as FS from '@epdoc/fs/fs';
 import type * as Strava from '@epdoc/strava-api';
+import type * as Schema from '@epdoc/strava-schema';
 import type { Dict } from '@epdoc/type';
 
 export type KmlLineStyle = {
@@ -9,7 +10,7 @@ export type KmlLineStyle = {
 };
 
 export type ActivityExType =
-  | Strava.Schema.ActivityType
+  | Schema.Types.ActivityType
   | 'Segment'
   | 'Commute'
   | 'Moto'
@@ -25,7 +26,7 @@ export type ActivityOpts = {
   activities?: boolean;
   efforts?: boolean; // include starred segment efforts in activity descriptions
   commute?: 'yes' | 'no' | 'all'; // filter by commute status
-  type?: Strava.Schema.ActivityType[]; // filter by activity type (empty=all, string[]=filtered by types)
+  type?: Schema.Types.ActivityType[]; // filter by activity type (empty=all, string[]=filtered by types)
 };
 
 /**

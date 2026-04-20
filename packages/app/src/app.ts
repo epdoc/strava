@@ -3,6 +3,7 @@ import type { DateRanges } from '@epdoc/daterange';
 import type { ISODate } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import * as Strava from '@epdoc/strava-api';
+import * as Schema from '@epdoc/strava-schema';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
@@ -22,7 +23,7 @@ const configPaths = config.paths;
 
 type GetActivitiesOpts = {
   detailed?: boolean;
-  streams?: Strava.Schema.StreamType[];
+  streams?: Schema.Stream.StreamKey[];
   coordinates?: boolean;
   starredSegments?: boolean;
   filter?: Strava.ActivityFilter;
@@ -59,7 +60,7 @@ type GetActivitiesOpts = {
 export class Main extends BaseClass {
   #api: Strava.Api;
   #stateFile?: State.StateFile;
-  athlete?: Strava.Schema.DetailedAthlete;
+  athlete?: Schema.Athlete.Detailed;
   userSettings?: App.UserSettings;
   notifyOffline = false;
 
@@ -175,7 +176,7 @@ export class Main extends BaseClass {
    * @param _id - The athlete ID to set.
    * @todo Implement athlete ID storage and usage.
    */
-  setAthleteId(_id: Strava.Schema.AthleteId): Promise<void> {
+  setAthleteId(_id: Schema.Athlete.Id): Promise<void> {
     // TODO: Implement athlete ID storage and usage
     return Promise.resolve();
   }
@@ -200,7 +201,7 @@ export class Main extends BaseClass {
    * console.log(app.athlete?.firstname, app.athlete?.bikes);
    * ```
    */
-  async getAthlete(athleteId?: Strava.Schema.AthleteId): Promise<void> {
+  async getAthlete(athleteId?: Schema.Athlete.Id): Promise<void> {
     try {
       this.log.info.text('Retrieving athlete information').start();
       this.athlete = await this.api.getAthlete(athleteId);
@@ -242,7 +243,7 @@ export class Main extends BaseClass {
 
     this.log.info.text('Fetching activities for').dateRange(date).start();
 
-    const athleteId: Strava.Schema.AthleteId = (this.athlete && Strava.isStravaId(this.athlete.id))
+    const athleteId: Schema.Athlete.Id = (this.athlete && Strava.isStravaId(this.athlete.id))
       ? this.athlete.id
       : 0;
 
@@ -492,11 +493,11 @@ export class Main extends BaseClass {
     );
 
     // Prepare bikes dict from athlete data
-    const bikes: Record<string, Strava.Schema.SummaryGear> = {};
+    const bikes: Record<string, Schema.Gear.Summary> = {};
     if (this.athlete && 'bikes' in this.athlete) {
       const athleteBikes = this.athlete.bikes;
       if (_.isArray(athleteBikes)) {
-        athleteBikes.forEach((bike: Strava.Schema.SummaryGear) => {
+        athleteBikes.forEach((bike: Schema.Gear.Summary) => {
           if (bike && bike.id) {
             bikes[bike.id] = bike;
           }
@@ -667,7 +668,7 @@ export class Main extends BaseClass {
           try {
             const coords = await this.api.getStreamCoords(
               'segments',
-              [Strava.Schema.StreamKeys.LatLng, Strava.Schema.StreamKeys.Altitude],
+              [Schema.Consts.StreamKeys.LatLng, Schema.Consts.StreamKeys.Altitude],
               segment.id,
               segment.name,
             );
@@ -703,7 +704,7 @@ export class Main extends BaseClass {
       const athleteId = this.athlete.id;
 
       for (const segment of segments) {
-        const allEfforts: Strava.Schema.DetailedSegmentEffort[] = [];
+        const allEfforts: Schema.Segment.DetailedEffort[] = [];
 
         // Get efforts for each date range
         for (const dateRange of opts.dateRanges.ranges) {

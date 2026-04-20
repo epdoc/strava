@@ -1,6 +1,7 @@
 import type { ISOTzDate } from '@epdoc/datetime';
 import type { Seconds } from '@epdoc/duration';
 import type * as Strava from '@epdoc/strava-api';
+import type * as Schema from '@epdoc/strava-schema';
 
 export type GpsDegrees = number;
 
@@ -12,8 +13,8 @@ export type GpsDegrees = number;
  * if they've been fetched for KML generation.
  */
 export type CacheEntry = {
-  id: Strava.Schema.SegmentId;
-  name: Strava.Schema.SegmentName;
+  id: Schema.Segment.Id;
+  name: Schema.Segment.Name;
   distance: Strava.Metres;
   gradient: number;
   elevation: Strava.Metres;
@@ -22,8 +23,8 @@ export type CacheEntry = {
 };
 
 export interface IData {
-  id: Strava.Schema.SegmentId;
-  name: Strava.Schema.SegmentName;
+  id: Schema.Segment.Id;
+  name: Schema.Segment.Name;
   elapsedTime: Seconds;
   movingTime: Seconds;
   distance: Strava.Metres;
@@ -33,7 +34,7 @@ export interface IData {
 }
 
 export type Base = Partial<{
-  id: Strava.Schema.SegmentId;
+  id: Schema.Segment.Id;
   elapsedTime: Seconds;
   movingTime: number;
   distance: Strava.Metres;
@@ -48,7 +49,7 @@ export type Base = Partial<{
 export type CacheFile = {
   description?: string;
   lastModified?: ISOTzDate;
-  segments: Record<Strava.Schema.SegmentId, CacheEntry>; // Keyed by segment ID as string
+  segments: Record<Schema.Segment.Id, CacheEntry>; // Keyed by segment ID as string
 };
 
-export type CacheMap = Map<Strava.Schema.SegmentId, CacheEntry>;
+export type CacheMap = Map<Schema.Segment.Id, CacheEntry>;

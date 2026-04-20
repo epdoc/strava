@@ -4,13 +4,13 @@ import { type EpochMilliseconds, type EpochSeconds, humanize } from '@epdoc/dura
 import * as FS from '@epdoc/fs/fs';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import { _ } from '@epdoc/type';
-import type { ClientCreds } from '../types.ts';
 import type { Context as OakContext } from '@oak/oak';
 import { Application } from '@oak/oak/application';
 import { Router } from '@oak/oak/router';
 import { open } from '@opensrc/deno-open';
 import { assert } from '@std/assert';
 import type * as Strava from '../types.ts';
+import type { ClientCreds } from '../types.ts';
 import { StravaCreds } from './creds.ts';
 import type { Oauth2Code } from './types.ts';
 
@@ -218,11 +218,20 @@ export class AuthService extends BaseClass {
    * Logs the current authentication status, including token expiration.
    * @private
    */
-  #logAuthStatus(): Promise<boolean> {
+  #logAuthStatus(willRefresh = false): Promise<boolean> {
     const delta = this.#creds.expiresAt * 1000 - DateTime.now().epochMilliseconds;
-    this.log.info.icheck().text('Authorization')
-      .if(delta < 0).text('is still valid, expires in').else().text('has expired').endif()
-      .value(humanize(delta)).emit();
+    const line = this.log.info.icheck().text('Authorization');
+    if (delta <= 0) {
+      line.text('has expired and needs to be refreshed').emit();
+      return Promise.resolve(false);
+    }
+    if (willRefresh) {
+      line.text('is still valid, however it will expire in').value(humanize(delta))
+        .text('and will be refreshed');
+    } else {
+      line.text('will remain valid for').value(humanize(delta));
+    }
+    line.emit();
     return Promise.resolve(true);
   }
 
@@ -280,7 +289,7 @@ export class AuthService extends BaseClass {
       if (force) {
         this.log.info.warn('Forcing token refresh').emit();
       } else {
-        this.#logAuthStatus();
+        this.#logAuthStatus(true);
       }
       const payload = {
         client_id: this.client.id,
@@ -310,10 +319,11 @@ export class AuthService extends BaseClass {
         }
         // this.#data.expires_at;
         const data: Strava.StravaCredsData = await resp.json();
-        this.log.info.icheck().text('Refreshed Access Token.').stop();
+        this.log.info.icheck().text('Refreshed Access Token').stop();
         this.log.info.text('Saving Access Token').start();
         await this.creds.write(data);
-        this.log.info.text('Saved Access Token').relative(this.creds.path).stop();
+        this.log.info.icheck().text('Saved new Access Token in')
+          .relative(this.creds.path).stop();
       } catch (error: unknown) {
         const err = _.asError(error);
         this.log.info.h2('Failed to refresh access token').err(err).emit();

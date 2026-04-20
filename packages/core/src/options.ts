@@ -2,6 +2,7 @@ import type * as CliApp from '@epdoc/cliapp';
 import { type DateRanges, dateRanges } from '@epdoc/daterange';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
+import type { OutputFormat } from './context.ts';
 
 export type CmdOptions = CliApp.LogCmdOptions & {
   date: DateRanges;
@@ -10,6 +11,7 @@ export type CmdOptions = CliApp.LogCmdOptions & {
   blackout: boolean;
   allowDups: boolean;
   imperial?: boolean;
+  format?: OutputFormat;
 };
 
 /** Region code for filtering activities by geographic region (e.g., 'CR' for Costa Rica, 'EU' for Europe) */
@@ -126,9 +128,9 @@ EXAMPLES:
     short: 'f',
     name: 'format',
     params: '<format>',
-    description: 'Output format. Default: table. Options: table, csv, json, yaml',
-    choices: ['table', 'csv', 'json', 'yaml'],
-    defVal: 'table',
+    description: 'Output format',
+    choices: ['table', 'csv', 'json', 'yaml', 'text', 'table', 'auto'],
+    defVal: 'auto',
   },
   kml: {
     short: 'k',

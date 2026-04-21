@@ -1,0 +1,428 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "InfoCommand",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/cmd.ts",
+                "line": 12,
+                "col": 0,
+                "byteIndex": 385
+              },
+              "declarationKind": "export",
+              "kind": "class",
+              "def": {
+                "methods": [
+                  {
+                    "isOverride": true,
+                    "name": "defineMetadata",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/cmd.ts",
+                      "line": 13,
+                      "col": 2,
+                      "byteIndex": 455
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "defineOptions",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/cmd.ts",
+                      "line": 18,
+                      "col": 2,
+                      "byteIndex": 574
+                    }
+                  },
+                  {
+                    "name": "helpText",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/cmd.ts",
+                      "line": 25,
+                      "col": 2,
+                      "byteIndex": 844
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "execute",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "options",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "InfoCmdOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "InfoCmdOptions",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "_args",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "CliApp.CmdArgs",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "CliApp.CmdArgs",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/cliapp"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "Promise",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "void",
+                              "kind": "keyword",
+                              "value": "void"
+                            }
+                          ],
+                          "typeName": "Promise"
+                        }
+                      },
+                      "hasBody": true,
+                      "isAsync": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/cmd.ts",
+                      "line": 41,
+                      "col": 2,
+                      "byteIndex": 1504
+                    }
+                  }
+                ],
+                "extends": "BaseRootCmdClass",
+                "superTypeParams": [
+                  {
+                    "repr": "InfoCmdOptions",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "InfoCmdOptions",
+                      "resolution": {
+                        "kind": "local"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "InfoOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/info.ts",
+                "line": 8,
+                "col": 0,
+                "byteIndex": 228
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for info queries"
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "athleteId",
+                        "jsDoc": {
+                          "doc": "Athlete ID (optional, defaults to authenticated user)"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/info.ts",
+                          "line": 10,
+                          "col": 2,
+                          "byteIndex": 321
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "date",
+                        "jsDoc": {
+                          "doc": "Date range for activities (required)"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/info.ts",
+                          "line": 12,
+                          "col": 2,
+                          "byteIndex": 389
+                        },
+                        "tsType": {
+                          "repr": "DateRanges",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "DateRanges",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/daterange",
+                              "name": "DateRanges"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "imperial",
+                        "jsDoc": {
+                          "doc": "Use imperial units"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/info.ts",
+                          "line": 14,
+                          "col": 2,
+                          "byteIndex": 437
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "boolean",
+                          "kind": "keyword",
+                          "value": "boolean"
+                        }
+                      },
+                      {
+                        "name": "format",
+                        "jsDoc": {
+                          "doc": "Output format"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/info.ts",
+                          "line": 16,
+                          "col": 2,
+                          "byteIndex": 482
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "kind": "union",
+                          "value": [
+                            {
+                              "repr": "json",
+                              "kind": "literal",
+                              "value": {
+                                "kind": "string",
+                                "string": "json"
+                              }
+                            },
+                            {
+                              "repr": "yaml",
+                              "kind": "literal",
+                              "value": {
+                                "kind": "string",
+                                "string": "yaml"
+                              }
+                            },
+                            {
+                              "repr": "text",
+                              "kind": "literal",
+                              "value": {
+                                "kind": "string",
+                                "string": "text"
+                              }
+                            },
+                            {
+                              "repr": "table",
+                              "kind": "literal",
+                              "value": {
+                                "kind": "string",
+                                "string": "table"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "InfoTool",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/info.ts",
+                "line": 57,
+                "col": 0,
+                "byteIndex": 1531
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Tool for querying Strava activity information.\n\nThis tool provides information about:\n- Regions where activities took place\n- Activity statistics by region\n- Date ranges for different regions\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "```bash\nstrava-info --date 20240101-20241231\n\nstrava-info --date 20240101-20241231 --imperial\n```"
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "ctx",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "Ctx.Context",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Ctx.Context",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/strava-core",
+                              "name": "Ctx"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "opts",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "InfoOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "InfoOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/info.ts",
+                      "line": 60,
+                      "col": 2,
+                      "byteIndex": 1609
+                    }
+                  }
+                ],
+                "properties": [
+                  {
+                    "tsType": {
+                      "repr": "InfoOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "InfoOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    "accessibility": "private",
+                    "name": "opts",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/info.ts",
+                      "line": 58,
+                      "col": 2,
+                      "byteIndex": 1579
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "jsDoc": {
+                      "doc": "Executes the info query.\n\nThis method:\n1. Validates required options (date)\n2. Initializes the app with Strava API\n3. Fetches activities for the date range\n4. Extracts and displays region information"
+                    },
+                    "name": "run",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Promise",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "void",
+                              "kind": "keyword",
+                              "value": "void"
+                            }
+                          ],
+                          "typeName": "Promise"
+                        }
+                      },
+                      "hasBody": true,
+                      "isAsync": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/info.ts",
+                      "line": 74,
+                      "col": 2,
+                      "byteIndex": 1951
+                    }
+                  }
+                ],
+                "extends": "App.BaseClass"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

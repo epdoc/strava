@@ -1,13 +1,13 @@
-import type * as CliApp from '@epdoc/cliapp';
-import type { DateRanges } from '@epdoc/daterange';
+import * as CliApp from '@epdoc/cliapp';
+import { buildDateHelp, DateRanges, rangeOptionDef } from '@epdoc/daterange';
+import { DateTime } from '@epdoc/datetime';
 import { BaseRootCmdClass, Ctx, Options } from '@epdoc/strava-core';
-import { InfoOptions, InfoTool } from './info.ts';
+import { type InfoOptions, InfoTool } from './info.ts';
 
 type InfoCmdOptions = CliApp.LogCmdOptions & {
   athleteId?: string;
   date: DateRanges;
-  imperial?: boolean;
-  format?: 'json' | 'yaml' | 'text' | 'table';
+  format?: Ctx.OutputFormat;
 };
 
 export class InfoCommand extends BaseRootCmdClass<InfoCmdOptions> {
@@ -17,9 +17,8 @@ export class InfoCommand extends BaseRootCmdClass<InfoCmdOptions> {
   }
 
   override defineOptions(): void {
-    this.option('--athleteId <id>', 'Athlete ID (defaults to authenticated user)').emit();
-    this.option(Options.optionDefs.date).emit();
-    this.option(Options.optionDefs.imperial).emit();
+    const help = buildDateHelp(new Ctx.CustomMsgBuilder()).format();
+    this.option({ ...rangeOptionDef, help: help } as CliApp.OptionDef).emit();
     this.option(Options.optionDefs.format).emit();
     this.addHelpText(this.helpText());
   }
@@ -45,11 +44,16 @@ export class InfoCommand extends BaseRootCmdClass<InfoCmdOptions> {
     _args: CliApp.CmdArgs,
   ): Promise<void> {
     // Convert options to InfoOptions
+    if (options.format) {
+      this.ctx.format = options.format;
+    }
+
+    const defaultDate = DateTime.now().setTz().subtract({ days: 7 });
+    const date = options.date ? options.date : new DateRanges([{ after: defaultDate }]);
+
     const infoOpts: InfoOptions = {
       athleteId: options.athleteId,
-      date: options.date,
-      imperial: options.imperial,
-      format: options.format,
+      date,
     };
 
     const tool = new InfoTool(this.ctx, infoOpts);

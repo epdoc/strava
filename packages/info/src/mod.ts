@@ -1,2 +1,2 @@
 export { InfoCommand } from './cmd.ts';
-export { InfoTool, type InfoOptions } from './info.ts';
+export { type InfoOptions, InfoTool } from './info.ts';

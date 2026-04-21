@@ -1,12 +1,22 @@
-import * as CliApp from '@epdoc/cliapp';
-import { BaseRootCmdClass, Ctx } from '@epdoc/strava-core';
-import type { Api } from '../dep.ts';
-import { SubCommand } from './sub.ts';
+import * as CliApp from "@epdoc/cliapp";
+import type { DateRanges } from "@epdoc/daterange";
+import { AthleteCommand } from "@epdoc/strava-athlete";
+import {
+  BaseRootCmdClass,
+  Ctx,
+  Options,
+  type OutputFormat,
+} from "@epdoc/strava-core";
+import { GpxCommand } from "@epdoc/strava-gpx";
+import { InfoCommand } from "@epdoc/strava-info";
+import type { Api } from "../dep.ts";
 
 type RootCmdOpts = CliApp.CmdOptions & {
+  date: DateRanges;
   imperial?: boolean;
   offline: boolean;
   athleteId?: Api.Schema.AthleteId;
+  format?: OutputFormat;
 };
 
 export class RootCommand extends BaseRootCmdClass<RootCmdOpts> {
@@ -15,49 +25,31 @@ export class RootCommand extends BaseRootCmdClass<RootCmdOpts> {
   }
 
   override defineOptions(): void {
-    this.option('--happy-mode', 'Enable special happy mode on the RootCommand').emit();
-    this.option('--name <name>', 'Name to use for greeting').emit();
-    this.addHelpText('\nThis is help text for the root command.');
-    this.addHelpText('This is more help text for the root command.');
-    ctx.log.info.section().emit();
-  }
-
-  override createContext(parent?: Ctx.RootContext): Ctx.RootContext {
-    const ctx = this.ctx || this.parentContext;
-    ctx.log.info.section('RootCommand createContext').emit();
-    const result = parent ?? this.ctx;
-    result.log.info.context(result).emit();
-    result.log.info.section().emit();
-    return result;
+    this.option(Options.optionDef.format).emit();
+    // this.option(Options.optionDef.date).emit();
+    this.option(Options.optionDef.imperial).emit();
+    this.option(Options.optionDef.offline).emit();
+    this.addHelpText("\nThis is help text for the root command.");
+    this.addHelpText("This is more help text for the root command.");
   }
 
   override hydrateContext(opts: RootOpts, _args: CliApp.CmdArgs): void {
-    this.info.section('RootCommand hydrateContext').emit();
+    const ctx = this.activeCtx();
     // We can apply the options to the context here, or in the action method
-    this.ctx.name = opts.name ? opts.name : undefined;
-    this.ctx.happyMode = opts.happyMode ? true : false;
-    this.info.label('name').value(this.ctx.name).emit();
-    this.info.happy(this.ctx).emit();
-    this.info.context(this.ctx).emit();
-    this.info.h2('Our AppContext is now hydrated.').emit();
-    this.info.h2(
-      'For a root command, this is the only place where the context is hydrated when calling a subcommand',
-    ).emit();
-    this.info.section().emit();
+    ctx.format = opts.format ?? "auto";
+    ctx.imperial = opts.imperial ?? false;
+    ctx.offline = opts.offline ?? false;
   }
 
   override execute(_opts: RootOpts, _args: CliApp.CmdArgs): void {
-    this.info.section('Root command execute').emit();
-    this.ctx.log.indent();
-    // Demonstrate using the custom params() method from CustomMsgBuilder
-    this.info.happy(this.ctx).emit();
-    this.info.label('dryRun').value(this.ctx.dryRun).emit();
-    this.ctx.log.outdent();
-    this.ctx.log.info.section().emit();
     this.commander.help();
   }
 
-  protected override getSubCommands(): CliApp.Cmd.AbstractBase<Ctx.RootContext, Ctx.RootContext>[] {
-    return [new SubCommand()];
+  protected override getSubCommands(): BaseRootCmdClass<RootCmdOpts>[] {
+    return [
+      new InfoCommand(this.ctx),
+      new GpxCommand(this.ctx),
+      new AthleteCommand(this.ctx),
+    ];
   }
 }

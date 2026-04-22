@@ -1,4 +1,5 @@
 import type { DateRanges } from '@epdoc/daterange';
+import * as FS from '@epdoc/fs/fs';
 import type * as Strava from '@epdoc/strava-api';
 import * as App from '@epdoc/strava-app';
 import type { Ctx } from '@epdoc/strava-core';
@@ -86,19 +87,21 @@ export class InfoTool extends App.BaseClass {
       this.ctx.app = app;
       await app.init({ strava: true, userSettings: false });
 
-      // Fetch activities
-      this.log.info.h2('Retrieving Data ...').dateRange(this.opts.date).emit();
-      const activities = await app.getActivitiesForDateRange(this.opts.date, {});
+      const activities: Strava.Activity[] = await app.getActivitiesForDateRange(this.opts.date, {
+        detailed: true,
+      });
       if (activities.length === 0) {
         return;
       }
 
       // Extract and display region information
-      const regions = this.#extractRegions(activities);
+      const regions = await this.#extractRegions(activities);
       this.#displayRegions(regions);
 
-      if (this.opts.format === 'json') {
-        console.log(JSON.stringify(activities, null, 2));
+      if (this.ctx.format === 'json') {
+        for (const activity of activities) {
+          this.log.info.text(JSON.stringify(activity.data, null, 2)).emit();
+        }
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);
@@ -110,27 +113,23 @@ export class InfoTool extends App.BaseClass {
   /**
    * Extracts region information from activities.
    *
-   * This is a placeholder implementation that groups activities by
-   * the country/region inferred from activity coordinates or names.
+   * Groups activities by their geographic region based on start coordinates.
+   * Activities that don't match any defined region are grouped under "WORLD".
    *
    * @param activities The activities to analyze
    * @returns Array of region information
    */
-  #extractRegions(activities: Strava.Activity[]): RegionInfo[] {
-    // Group activities by location
-    // For now, we'll use a simple placeholder that groups by activity name patterns
-    // In the future, this could use reverse geocoding of coordinates
-
+  async #extractRegions(activities: Strava.Activity[]): Promise<RegionInfo[]> {
+    const regions = await this.#loadRegions();
     const regionMap = new Map<string, RegionInfo>();
 
     for (const activity of activities) {
-      // Try to extract region from activity name or location
-      const regionCode = this.#detectRegion(activity);
+      const regionCode = this.#detectRegion(activity, regions);
 
       if (!regionMap.has(regionCode)) {
         regionMap.set(regionCode, {
           code: regionCode,
-          name: this.#getRegionName(regionCode),
+          name: this.#getRegionName(regionCode, regions),
           activityCount: 0,
           dateRange: { start: activity.startDateLocal, end: activity.startDateLocal },
           totalDistance: 0,
@@ -160,64 +159,55 @@ export class InfoTool extends App.BaseClass {
   }
 
   /**
-   * Attempts to detect the region for an activity.
-   * This is a placeholder that uses simple heuristics.
-   * Future implementation could use coordinate-based geocoding.
+   * Loads regions from the user.regions.json configuration file.
+   * Returns empty array if file doesn't exist or fails to load.
+   *
+   * @returns Array of active regions
+   */
+  async #loadRegions(): Promise<App.Region.Region[]> {
+    const regionsFile = FS.File.config('epdoc', 'strava', 'user.regions.json');
+    try {
+      const isFile = await regionsFile.isFile();
+      if (!isFile) {
+        this.log.warn.text('Regions file not found:').fs(regionsFile).emit();
+        return [];
+      }
+      const data = await regionsFile.readJson<App.Region.RegionsFile>();
+      return App.Region.loadRegions(data);
+    } catch (err) {
+      this.log.warn.text('Failed to load regions file:').fs(regionsFile).emit();
+      return [];
+    }
+  }
+
+  /**
+   * Detects the region for an activity based on its start coordinates.
+   * Uses the user.regions.json configuration to determine region membership.
+   * Falls back to "WORLD" if no matching region is found.
    *
    * @param activity The activity to analyze
+   * @param regions Array of regions to check against
    * @returns Region code
    */
-  #detectRegion(activity: Strava.Activity): string {
-    const name = activity.name.toLowerCase();
-
-    // Simple heuristics based on common activity name patterns
-    // These would be replaced with proper geocoding in a real implementation
-    if (name.includes('costa rica') || name.includes('cr:') || name.includes('(cr)')) {
-      return 'CR';
-    }
-    if (name.includes('europe') || name.includes('eu:') || name.includes('(eu)')) {
-      return 'EU';
-    }
-    if (
-      name.includes('ontario') || name.includes('on:') || name.includes('(on)') ||
-      name.includes('toronto')
-    ) {
-      return 'ON';
-    }
-    if (
-      name.includes('british columbia') || name.includes('bc:') || name.includes('(bc)') ||
-      name.includes('vancouver')
-    ) {
-      return 'BC';
-    }
-    if (name.includes('california') || name.includes('ca:') || name.includes('(ca)')) {
-      return 'CA';
-    }
-    if (name.includes('colorado') || name.includes('co:') || name.includes('(co)')) {
-      return 'CO';
-    }
-
-    // Default: unknown region
-    return 'UNKNOWN';
+  #detectRegion(activity: Strava.Activity, regions: App.Region.Region[]): string {
+    const regionResult = App.Region.getRegionForActivity(activity, regions);
+    return regionResult.id;
   }
 
   /**
    * Gets a friendly name for a region code.
+   * Looks up in loaded regions, falls back to WORLD default.
    *
    * @param code The region code
+   * @param regions Array of loaded regions
    * @returns The region name
    */
-  #getRegionName(code: string): string {
-    const names: Record<string, string> = {
-      'CR': 'Costa Rica',
-      'EU': 'Europe',
-      'ON': 'Ontario, Canada',
-      'BC': 'British Columbia, Canada',
-      'CA': 'California, USA',
-      'CO': 'Colorado, USA',
-      'UNKNOWN': 'Unknown Region',
-    };
-    return names[code] || code;
+  #getRegionName(code: string, regions: App.Region.Region[]): string {
+    if (code === App.Region.WORLD_REGION.id) {
+      return App.Region.WORLD_REGION.name;
+    }
+    const region = regions.find((r) => r.id === code);
+    return region?.name || code;
   }
 
   /**
@@ -229,8 +219,8 @@ export class InfoTool extends App.BaseClass {
     this.log.info.h2('\nRegions found:').emit();
     this.log.indent();
 
-    const unit = this.opts.imperial ? 'mi' : 'km';
-    const distanceMultiplier = this.opts.imperial ? 1 / 1.609344 : 0.001;
+    const unit = this.ctx.imperial ? 'mi' : 'km';
+    const distanceMultiplier = this.ctx.imperial ? 1 / 1.609344 : 0.001;
 
     for (const region of regions) {
       const distance = (region.totalDistance * distanceMultiplier).toFixed(1);

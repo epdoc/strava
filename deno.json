@@ -12,11 +12,12 @@
   "workspace": [
     "./packages/schema",
     "./packages/core",
+    "./packages/api",
     "./packages/app",
     "./packages/athlete",
-    "./packages/gpx",
     "./packages/info",
-    "./packages/api"
+    "./packages/gpx",
+    "./packages/strava"
   ],
   "fmt": {
     "singleQuote": true,

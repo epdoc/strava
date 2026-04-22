@@ -1,9 +1,9 @@
 import type { DateRanges } from '@epdoc/daterange';
 import { DateTime } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
-import type { Ctx, RegionCode } from '@epdoc/strava-core';
-import * as App from '@epdoc/strava-app';
 import * as Strava from '@epdoc/strava-api';
+import * as App from '@epdoc/strava-app';
+import type { Ctx, RegionCode } from '@epdoc/strava-core';
 
 /**
  * Options for GPX generation
@@ -107,7 +107,7 @@ export class GpxTool extends App.BaseClass {
         );
       }
 
-      this.log.info.h2('Generating GPX file').fs(outputPath).emit();
+      this.log.info.h1('GPX File Generator').emit();
 
       // Build track options
       const trackOpts: App.Track.Opts = {

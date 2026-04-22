@@ -391,8 +391,8 @@ export class Activity extends BaseClass {
       );
       if (coords && coords.length > 0) {
         this.#trackPoints = coords;
-        this.log.info.h2('Retrieved').count(coords.length)
-          .h2('track point').h2('for').value(this.toString()).ewt(m0);
+        this.log.info.text('Retrieved').count(coords.length)
+          .text('track point').text('for').value(this.toString()).ewt(m0);
       }
     } catch (_e) {
       // const err = _.asError(_e);
@@ -532,7 +532,7 @@ export class Activity extends BaseClass {
       const detailedActivity = await this.api.getDetailedActivity(this.data);
       this.data = detailedActivity;
       this.#detailed = true;
-      this.log.info.h2('Retrieved detailed activity data for').value(this.toString()).ewt(m0);
+      this.log.info.text('Retrieved detailed activity data for').value(this.toString()).ewt(m0);
     } catch (_e) {
       this.log.warn.warn('Failed to fetch detailed data for').value(this.name).emit();
     }

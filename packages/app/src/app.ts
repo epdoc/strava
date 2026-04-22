@@ -275,12 +275,12 @@ export class Main extends BaseClass {
       activities = activities.filter((activity) => activity.include(opts.filter!));
     }
 
-    this.log.info.icheck().text('Retrieved').count(activities.length)
-      .text('activity', 'activities').text('for').dateRange(date).stop();
+    this.log.info.icheck().text('Retrieved a list of').count(activities.length)
+      .text('activity', 'activities').text('from Strava:').dateRange(date).stop();
 
     if (activities.length) {
       if (opts.detailed || opts.starredSegments) {
-        this.log.info.text('Retrieving activity details:').emit();
+        this.log.info.h2('Retrieving activity details from Strava:').emit();
         this.log.indent();
         const jobs: Promise<void>[] = [];
         activities.forEach((activity) => {
@@ -290,25 +290,29 @@ export class Main extends BaseClass {
         this.log.outdent();
       }
       if (_.isNonEmptyArray(opts.streams)) {
-        this.log.info.text('Retrieving track points for').count(activities.length)
-          .text('activity', 'activities').start();
+        this.log.info.h2('Retrieving track points from Strava:').emit();
         const jobs: Promise<void>[] = [];
         const streams = opts.streams; // Extract to non-null variable
+        this.log.indent();
         activities.forEach((activity) => {
           jobs.push(activity.getTrackPoints(streams));
         });
         await Promise.all(jobs);
+        this.log.outdent();
+        this.log.info.h2('Filtering redundant track points:').emit();
+        this.log.indent();
         activities.forEach((activity) => {
           activity.filterTrackPoints(opts.dedup === true, opts.blackoutZones);
         });
-        this.log.info.text('Retrieved track points for').count(activities.length)
-          .text('activity', 'activities').stop();
+        this.log.outdent();
+        // this.log.info.text('Retrieved track points for').count(activities.length)
+        //   .text('activity', 'activities').emit();
       }
 
       if (opts.starredSegments) {
         const starredSegmentDict = await this.getStarredSegmentDict();
         this.log.info.text('Processing segment efforts for').count(activities.length)
-          .text('activity', 'activities').emit();
+          .text('activity:', 'activities:').emit();
         this.log.indent();
         activities.forEach((activity) => {
           const count = activity.attachStarredSegments(starredSegmentDict);

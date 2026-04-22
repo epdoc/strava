@@ -3,6 +3,8 @@ import * as FS from '@epdoc/fs/fs';
 import type * as Strava from '@epdoc/strava-api';
 import * as App from '@epdoc/strava-app';
 import type { Ctx } from '@epdoc/strava-core';
+import * as Table from '@epdoc/table';
+import { bold, rgb24 } from '@std/fmt/colors';
 
 /**
  * Options for info queries
@@ -16,6 +18,7 @@ export type InfoOptions = {
   imperial?: boolean;
   /** Output format */
   format?: 'json' | 'yaml' | 'text' | 'table';
+  region?: boolean;
 };
 
 /**
@@ -86,6 +89,13 @@ export class InfoTool extends App.BaseClass {
       const app = new App.Main(this.ctx);
       this.ctx.app = app;
       await app.init({ strava: true, userSettings: false });
+
+      if (this.opts.region) {
+        this.log.debug.text('Listing regions').emit();
+        const regions = await this.#loadRegions();
+        this.#outputRegions(regions);
+        return;
+      }
 
       const activities: Strava.Activity[] = await app.getActivitiesForDateRange(this.opts.date, {
         detailed: true,
@@ -211,52 +221,128 @@ export class InfoTool extends App.BaseClass {
   }
 
   /**
-   * Displays region information in a formatted table.
+   * Displays region information from activities in a formatted table.
    *
-   * @param regions The regions to display
+   * @param regions The region info to display
    */
   #displayRegions(regions: RegionInfo[]): void {
-    this.log.info.h2('\nRegions found:').emit();
-    this.log.indent();
+    if (regions.length === 0) {
+      this.log.info.text('No regions found.').emit();
+      return;
+    }
 
     const unit = this.ctx.imperial ? 'mi' : 'km';
     const distanceMultiplier = this.ctx.imperial ? 1 / 1.609344 : 0.001;
 
-    for (const region of regions) {
-      const distance = (region.totalDistance * distanceMultiplier).toFixed(1);
-      const types = region.activityTypes.join(', ');
+    type RegionStatsRow = {
+      code: string;
+      name: string;
+      activities: number;
+      distance: string;
+      dateRange: string;
+      types: string;
+    };
 
-      this.log.info
-        .label('•')
-        .value(region.code)
-        .text('-')
-        .text(region.name || 'Unknown')
-        .emit();
+    const rows: RegionStatsRow[] = regions.map((region) => ({
+      code: region.code,
+      name: region.name || 'Unknown',
+      activities: region.activityCount,
+      distance: `${(region.totalDistance * distanceMultiplier).toFixed(1)} ${unit}`,
+      dateRange: `${region.dateRange.start} to ${region.dateRange.end}`,
+      types: region.activityTypes.join(', '),
+    }));
 
-      this.log.indent();
-      this.log.info
-        .text('  Activities:')
-        .count(region.activityCount)
-        .text('  Distance:')
-        .value(`${distance} ${unit}`)
-        .emit();
-      this.log.info
-        .text('  Date range:')
-        .value(`${region.dateRange.start} to ${region.dateRange.end}`)
-        .emit();
-      this.log.info
-        .text('  Types:')
-        .value(types)
-        .emit();
-      this.log.outdent();
+    const columns: Table.ColumnRegistry<RegionStatsRow> = {
+      code: { header: 'Code', align: 'left' },
+      name: { header: 'Name', align: 'left', maxWidth: 25 },
+      activities: { header: 'Activities', align: 'right' },
+      distance: { header: 'Distance', align: 'right' },
+      dateRange: { header: 'Date Range', align: 'left', maxWidth: 28 },
+      types: { header: 'Types', align: 'left', maxWidth: 30 },
+    };
+
+    const table = new Table.Renderer({
+      columns: Table.buildColumns(['code', 'name', 'activities', 'distance', 'dateRange', 'types'], columns),
+      data: rows,
+      padding: 2,
+      headerStyle: (s) => bold(rgb24(s, 0x58d1eb)),
+      rowStyles: [(s) => rgb24(s, 0xcccccc), null],
+      borders: {
+        enabled: true,
+        style: 'light',
+        color: 0x666666,
+      },
+    });
+
+    this.log.info.emit();
+    this.log.info.h2('Activity Regions:').emit();
+    table.print();
+    this.log.info.emit();
+  }
+
+  /**
+   * Outputs configured regions in a formatted table.
+   *
+   * @param regions The regions to display
+   */
+  #outputRegions(regions: App.Region.Region[]): void {
+    if (regions.length === 0) {
+      this.log.info.text('No regions configured.').emit();
+      return;
     }
 
-    this.log.outdent();
+    // Flatten regions with multiple rectangles into rows
+    type RegionRow = {
+      id: string;
+      name: string;
+      minLat: number;
+      maxLat: number;
+      minLng: number;
+      maxLng: number;
+    };
 
-    // Summary
-    this.log.info.h2('\nSummary:').emit();
-    this.log.indent();
-    this.log.info.text('Total regions:').count(regions.length).emit();
-    this.log.outdent();
+    const rows: RegionRow[] = [];
+    for (const region of regions) {
+      for (const rect of region.rectangles) {
+        rows.push({
+          id: region.id,
+          name: region.name,
+          minLat: rect.minLat,
+          maxLat: rect.maxLat,
+          minLng: rect.minLng,
+          maxLng: rect.maxLng,
+        });
+      }
+    }
+
+    const columns: Table.ColumnRegistry<RegionRow> = {
+      id: { header: 'ID', align: 'left' },
+      name: { header: 'Name', align: 'left', maxWidth: 30 },
+      minLat: { header: 'Min Lat', align: 'right', formatter: (v) => (v as number).toFixed(2) },
+      maxLat: { header: 'Max Lat', align: 'right', formatter: (v) => (v as number).toFixed(2) },
+      minLng: { header: 'Min Lng', align: 'right', formatter: (v) => (v as number).toFixed(2) },
+      maxLng: { header: 'Max Lng', align: 'right', formatter: (v) => (v as number).toFixed(2) },
+    };
+
+    const table = new Table.Renderer({
+      columns: Table.buildColumns(['id', 'name', 'minLat', 'maxLat', 'minLng', 'maxLng'], columns),
+      data: rows,
+      padding: 2,
+      headerStyle: (s) => bold(rgb24(s, 0x58d1eb)),
+      rowStyles: [(s) => rgb24(s, 0xcccccc), null],
+      borders: {
+        enabled: true,
+        style: 'light',
+        color: 0x666666,
+      },
+    });
+
+    this.log.info.emit();
+    this.log.info.h2('Configured Regions:').emit();
+    table.print();
+    this.log.info.emit();
+    this.log.info.text('Total:').count(regions.length).text('region').text('with')
+      .count(rows.length).text('rectangle').emit();
+    this.log.info.emit();
   }
 }

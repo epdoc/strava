@@ -2,6 +2,7 @@ import * as CliApp from '@epdoc/cliapp';
 import { DateRanges } from '@epdoc/daterange';
 import type * as FS from '@epdoc/fs/fs';
 import type * as Log from '@epdoc/logger';
+import { DateTime } from 'jsr:@epdoc/datetime@^3.2.9';
 
 export type OutputFormat = 'auto' | 'json' | 'yaml' | 'table' | 'csv' | 'text';
 
@@ -46,8 +47,15 @@ export class CustomMsgBuilder extends CliApp.Progress.MsgBuilder {
 
   dateRange(dateRanges: DateRanges | undefined): this {
     if (dateRanges instanceof DateRanges) {
-      const intervals = dateRanges.toISOInterval();
-      this.value(intervals.join(', '));
+      dateRanges.ranges.forEach((range) => {
+        const bBefore = (range.before instanceof DateTime) && range.before < DateTime.now() ? true : false;
+        this.label(bBefore ? 'from' : 'after').date(
+          range.after ? range.after.format('yyyy/MM/dd HH:mm:ss') : '2000',
+        );
+        if (bBefore) {
+          this.label('to').date(range.before.format('yyyy/MM/dd HH:mm:ss'));
+        }
+      });
     }
     return this;
   }

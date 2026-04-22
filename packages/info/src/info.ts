@@ -176,6 +176,7 @@ export class InfoTool extends App.BaseClass {
    */
   async #loadRegions(): Promise<App.Region.Region[]> {
     const regionsFile = FS.File.config('epdoc', 'strava', 'user.regions.json');
+    this.log.info.text('Loading regions ...').relative(regionsFile.path).start();
     try {
       const isFile = await regionsFile.isFile();
       if (!isFile) {
@@ -183,9 +184,11 @@ export class InfoTool extends App.BaseClass {
         return [];
       }
       const data = await regionsFile.readJson<App.Region.RegionsFile>();
+      this.log.info.icheck().text('Loaded regions from').relative(regionsFile.path).stop();
       return App.Region.loadRegions(data);
     } catch (err) {
-      this.log.warn.text('Failed to load regions file:').fs(regionsFile).emit();
+      this.log.info.ierror().text('Failed to load regions file:').fs(regionsFile).stop();
+      this.log.error.err(err).emit();
       return [];
     }
   }
@@ -262,7 +265,10 @@ export class InfoTool extends App.BaseClass {
     };
 
     const table = new Table.Renderer({
-      columns: Table.buildColumns(['code', 'name', 'activities', 'distance', 'dateRange', 'types'], columns),
+      columns: Table.buildColumns(
+        ['code', 'name', 'activities', 'distance', 'dateRange', 'types'],
+        columns,
+      ),
       data: rows,
       padding: 2,
       headerStyle: (s) => bold(rgb24(s, 0x58d1eb)),

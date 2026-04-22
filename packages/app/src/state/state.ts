@@ -2,8 +2,8 @@ import { DateTime, type ISODate } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import type * as Strava from '@epdoc/strava-api';
 import type { Ctx } from '@epdoc/strava-core';
-import { BaseClass } from '../base.ts';
 import { _ } from '@epdoc/type';
+import { BaseClass } from '../base.ts';
 import type * as State from './types.ts';
 
 /**
@@ -97,7 +97,7 @@ export class StateFile extends BaseClass {
   /**
    * Gets the last updated timestamp for a specific output type.
    *
-   * @param type Output type ('kml' or 'pdf')
+   * @param type Output type ('kml', 'gpx' or 'pdf')
    * @returns ISO date string of last update, or undefined if never updated
    */
   getLastUpdated(type: State.OutputType): ISODate | undefined {
@@ -116,7 +116,7 @@ export class StateFile extends BaseClass {
    * uses local dates for Julian date calculations.
    *
    * @param ctx Application context for logging
-   * @param type Output type ('kml' or 'pdf')
+   * @param type Output type ('kml', 'gpx' or 'pdf')
    * @param activities Array of activities that were processed
    */
   async updateLastUpdated(

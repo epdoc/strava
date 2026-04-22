@@ -13,6 +13,11 @@ export type UserState = {
     /** ISO date of the most recent activity included in the last KML generation */
     lastUpdated?: ISODate;
   };
+  /** State for KML file generation */
+  gpx?: {
+    /** ISO date of the most recent activity included in the last KML generation */
+    lastUpdated?: ISODate;
+  };
   /** State for PDF/Acroforms XML file generation */
   pdf?: {
     /** ISO date of the most recent activity included in the last PDF generation */
@@ -23,4 +28,4 @@ export type UserState = {
 /**
  * Type of output being generated (kml or pdf)
  */
-export type OutputType = 'kml' | 'pdf';
+export type OutputType = 'kml' | 'pdf' | 'gpx';

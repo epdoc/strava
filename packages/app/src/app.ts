@@ -1,10 +1,10 @@
 import { SilentError } from '@epdoc/cliapp';
 import type { DateRanges } from '@epdoc/daterange';
-import type { ISODate } from '@epdoc/datetime';
+import { DateTime, type ISODate } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import * as Strava from '@epdoc/strava-api';
-import * as Schema from '@epdoc/strava-schema';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
+import * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import * as BikeLog from './bikelog/mod.ts';
@@ -241,7 +241,9 @@ export class Main extends BaseClass {
   ): Promise<Strava.Activity[]> {
     let activities: Strava.Activity[] = [];
 
-    this.log.info.text('Fetching activities for').dateRange(date).start();
+    await this.api.refreshToken();
+
+    this.log.info.text('Retrieving activities for').dateRange(date).start();
 
     const athleteId: Schema.Athlete.Id = (this.athlete && Strava.isStravaId(this.athlete.id))
       ? this.athlete.id
@@ -254,11 +256,15 @@ export class Main extends BaseClass {
         query: {
           per_page: 200,
           after: Math.floor(
-            (dateRange.after ? dateRange.after.epochMilliseconds : new Date(1975, 0, 1).getTime()) /
+            (dateRange.after
+              ? dateRange.after.epochMilliseconds
+              : new DateTime(0).epochMilliseconds) /
               1000,
           ),
           before: Math.floor(
-            (dateRange.before ? dateRange.before.epochMilliseconds : new Date().getTime()) / 1000,
+            (dateRange.before
+              ? dateRange.before.epochMilliseconds
+              : DateTime.now().epochMilliseconds) / 1000,
           ),
         },
       };
@@ -269,20 +275,23 @@ export class Main extends BaseClass {
       activities = activities.filter((activity) => activity.include(opts.filter!));
     }
 
-    this.log.info.icheck().text('Retrieved').count(activities.length).text('activity', 'activities')
-      .stop();
+    this.log.info.icheck().text('Retrieved').count(activities.length)
+      .text('activity', 'activities').text('for').dateRange(date).stop();
 
     if (activities.length) {
       if (opts.detailed || opts.starredSegments) {
+        this.log.info.text('Retrieving activity details:').emit();
+        this.log.indent();
         const jobs: Promise<void>[] = [];
         activities.forEach((activity) => {
           jobs.push(activity.getDetailed());
         });
         await Promise.all(jobs);
+        this.log.outdent();
       }
       if (_.isNonEmptyArray(opts.streams)) {
-        this.log.info.text('Fetching track points for').count(activities.length)
-          .text('activity', 'activities').emit();
+        this.log.info.text('Retrieving track points for').count(activities.length)
+          .text('activity', 'activities').start();
         const jobs: Promise<void>[] = [];
         const streams = opts.streams; // Extract to non-null variable
         activities.forEach((activity) => {
@@ -292,12 +301,15 @@ export class Main extends BaseClass {
         activities.forEach((activity) => {
           activity.filterTrackPoints(opts.dedup === true, opts.blackoutZones);
         });
+        this.log.info.text('Retrieved track points for').count(activities.length)
+          .text('activity', 'activities').stop();
       }
 
       if (opts.starredSegments) {
         const starredSegmentDict = await this.getStarredSegmentDict();
         this.log.info.text('Processing segment efforts for').count(activities.length)
           .text('activity', 'activities').emit();
+        this.log.indent();
         activities.forEach((activity) => {
           const count = activity.attachStarredSegments(starredSegmentDict);
           if (count > 0) {
@@ -305,6 +317,7 @@ export class Main extends BaseClass {
               .text('starred segment effort').text('for').activity(activity).emit();
           }
         });
+        this.log.outdent();
       }
     }
     return activities;

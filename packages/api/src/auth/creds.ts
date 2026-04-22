@@ -101,11 +101,11 @@ export class StravaCreds {
    *
    * An access token needs to be refreshed if it is not valid or if it will expire within the specified refresh window.
    *
-   * @param t The refresh window in seconds. Defaults to 2 hours.
+   * @param t The refresh window in seconds. Defaults to 30 minutes.
    * @param now The current time in epoch seconds.
    * @returns `true` if the token needs to be refreshed, `false` otherwise.
    */
-  needsRefresh(t: Seconds = 2 * 60 * 60, now?: EpochSeconds): boolean {
+  needsRefresh(t: Seconds = 30 * 60, now?: EpochSeconds): boolean {
     return !this.isValid(t, now);
   }
 

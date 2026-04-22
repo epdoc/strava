@@ -1,5 +1,6 @@
 import type * as FS from '@epdoc/fs/fs';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
+import type * as StravaSchema from '@epdoc/strava-schema';
 import { _, type Dict } from '@epdoc/type';
 import { Activity } from './activity.ts';
 import type { StravaCreds } from './auth/creds.ts';
@@ -16,7 +17,6 @@ import {
   isSummarySegment,
   isSummarySegmentArray,
 } from './guards.ts';
-import type * as StravaSchema from '@epdoc/strava-schema';
 import type * as Strava from './types.ts';
 
 const STRAVA_URL_PREFIX = Deno.env.get('STRAVA_URL_PREFIX') || 'https://www.strava.com';
@@ -115,7 +115,7 @@ export class Api extends BaseClass {
     return this.#auth.creds;
   }
 
-  async #refreshToken(force = false): Promise<void> {
+  async refreshToken(force = false): Promise<void> {
     await this.#auth.refreshToken(force);
   }
 
@@ -132,7 +132,7 @@ export class Api extends BaseClass {
   public async getAthlete(
     athleteId?: StravaSchema.Athlete.Id,
   ): Promise<StravaSchema.Athlete.Detailed> {
-    await this.#refreshToken();
+    await this.refreshToken();
     let url = STRAVA_URL.athlete;
     if (isStravaId(athleteId)) {
       url = url + '/' + athleteId;
@@ -173,7 +173,9 @@ export class Api extends BaseClass {
   public async getActivities(
     options: Strava.ActivityOpts,
   ): Promise<this['Activity'][]> {
-    await this.#refreshToken();
+    // Do not refresh the token here. That should be done before calling this method.
+    // await this.refreshToken();
+
     const url = new URL(STRAVA_URL.activities);
     // if (_.isPosInteger(options.athleteId)) {
     //   url = new URL(url.toString() + '/' + options.athleteId);
@@ -236,7 +238,7 @@ export class Api extends BaseClass {
     accum: StravaSchema.Segment.Summary[],
     page: number = 1,
   ): Promise<void> {
-    await this.#refreshToken();
+    await this.refreshToken();
     const perPage = 200;
     const url = new URL(STRAVA_URL.starred);
     url.searchParams.append('per_page', String(perPage));
@@ -286,7 +288,7 @@ export class Api extends BaseClass {
   public async getDetailedActivity(
     activity: StravaSchema.Activity.Summary,
   ): Promise<StravaSchema.Activity.Detailed> {
-    await this.#refreshToken();
+    await this.refreshToken();
     const url = STRAVA_URL.detailedActivity + '/' + activity.id;
 
     const reqOpts: RequestInit = {
@@ -440,7 +442,7 @@ export class Api extends BaseClass {
     objId: StravaSchema.Activity.Id | StravaSchema.Segment.Id,
     options: Strava.Query,
   ): Promise<Partial<StravaSchema.Stream.Set>> {
-    await this.#refreshToken();
+    await this.refreshToken();
     const url = new URL(`${STRAVA_API_PREFIX}/${source}/${objId}/streams`);
 
     if (options) {
@@ -493,7 +495,7 @@ export class Api extends BaseClass {
   public async getSegment(
     segmentId: StravaSchema.Segment.Id,
   ): Promise<StravaSchema.Segment.Summary> {
-    await this.#refreshToken();
+    await this.refreshToken();
     const url = STRAVA_API_PREFIX + '/' + 'segments/' + segmentId;
 
     const reqOpts: RequestInit = {
@@ -531,7 +533,7 @@ export class Api extends BaseClass {
     segmentId: StravaSchema.Segment.Id,
     params: Strava.Query,
   ): Promise<StravaSchema.Segment.DetailedEffort[]> {
-    await this.#refreshToken();
+    await this.refreshToken();
     const url = new URL(STRAVA_API_PREFIX + '/' + 'segments/' + segmentId + '/' + 'all_efforts');
 
     if (params) {

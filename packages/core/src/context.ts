@@ -2,7 +2,7 @@ import * as CliApp from '@epdoc/cliapp';
 import { DateRanges } from '@epdoc/daterange';
 import type * as FS from '@epdoc/fs/fs';
 import type * as Log from '@epdoc/logger';
-import { DateTime } from 'jsr:@epdoc/datetime@^3.2.9';
+import { DateTime } from '@epdoc/datetime';
 
 export type OutputFormat = 'auto' | 'json' | 'yaml' | 'table' | 'csv' | 'text';
 

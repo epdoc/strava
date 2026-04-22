@@ -16,8 +16,7 @@
     "./packages/app",
     "./packages/athlete",
     "./packages/info",
-    "./packages/gpx",
-    "./packages/strava"
+    "./packages/gpx"
   ],
   "fmt": {
     "singleQuote": true,

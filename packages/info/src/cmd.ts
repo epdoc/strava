@@ -8,6 +8,7 @@ type InfoCmdOptions = CliApp.LogCmdOptions & {
   athleteId?: string;
   date: DateRanges;
   format?: Ctx.OutputFormat;
+  region?: boolean;
 };
 
 export class InfoCommand extends BaseRootCmdClass<InfoCmdOptions> {
@@ -20,6 +21,9 @@ export class InfoCommand extends BaseRootCmdClass<InfoCmdOptions> {
     const help = buildDateHelp(new Ctx.CustomMsgBuilder()).format();
     this.option({ ...dateOptionDef, help: help } as CliApp.OptionDef).emit();
     this.option(Options.optionDefs.format).emit();
+    this.option('--region', 'List available regions from configuration')
+      .default(false)
+      .emit();
     this.addHelpText(this.helpText());
   }
 
@@ -54,6 +58,7 @@ export class InfoCommand extends BaseRootCmdClass<InfoCmdOptions> {
     const infoOpts: InfoOptions = {
       athleteId: options.athleteId,
       date,
+      region: options.region,
     };
 
     const tool = new InfoTool(this.ctx, infoOpts);

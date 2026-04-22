@@ -1,6 +1,7 @@
 import type * as CliApp from '@epdoc/cliapp';
 import type { DateRanges } from '@epdoc/daterange';
-import { Options, BaseRootCmdClass, Ctx } from '@epdoc/strava-core';
+import { buildDateHelp, dateOptionDef } from '@epdoc/daterange';
+import { BaseRootCmdClass, Ctx, Options } from '@epdoc/strava-core';
 import { GpxOptions, GpxTool } from './gpx.ts';
 
 type GpxCmdOptions = CliApp.LogCmdOptions & {
@@ -25,7 +26,8 @@ export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
 
   override defineOptions(): void {
     this.option('--athleteId <id>', 'Athlete ID (defaults to authenticated user)').emit();
-    this.option(Options.optionDefs.date).emit();
+    const help = buildDateHelp(new Ctx.CustomMsgBuilder()).format();
+    this.option({ ...dateOptionDef, help: help } as CliApp.OptionDef).emit();
     this.option(Options.optionDefs.output).emit();
     this.option(Options.optionDefs.laps).emit();
     this.option(Options.optionDefs.noTracks).emit();
@@ -40,12 +42,16 @@ export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
   helpText(): string {
     const msg = new Ctx.CustomMsgBuilder();
     msg.h1('\nGPX Generation\n');
-    msg.text('Generate GPX files from Strava activities for use in GPS devices and mapping software.\n\n');
+    msg.text(
+      'Generate GPX files from Strava activities for use in GPS devices and mapping software.\n\n',
+    );
 
     msg.h2('Output Behavior:\n');
     msg.label('  •').text('By default, all activities are combined into a single GPX file\n');
     msg.label('  •').text('Default filename is based on date range (YYYYMMDD-YYYYMMDD.gpx)\n');
-    msg.label('  •').text('Files are saved to gpxFolder from user settings (~/.strava/user.settings.json)\n');
+    msg.label('  •').text(
+      'Files are saved to gpxFolder from user settings (~/.strava/user.settings.json)\n',
+    );
     msg.label('  •').text('Use --output to specify a custom filename (relative to gpxFolder)\n\n');
 
     msg.h2('Examples:\n');

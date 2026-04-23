@@ -1,6 +1,5 @@
 import type { DateRanges } from '@epdoc/daterange';
-import * as FS from '@epdoc/fs/fs';
-import type * as Strava from '@epdoc/strava-api';
+import type { DateTime } from '@epdoc/datetime';
 import * as App from '@epdoc/strava-app';
 import type { Ctx } from '@epdoc/strava-core';
 import * as Table from '@epdoc/table';
@@ -92,24 +91,24 @@ export class InfoTool extends App.BaseClass {
 
       if (this.opts.region) {
         this.log.debug.text('Listing regions').emit();
-        const regions = await this.#loadRegions();
-        this.#outputRegions(regions);
+        await this.#outputRegions();
         return;
       }
 
-      const activities: Strava.Activity[] = await app.getActivitiesForDateRange(this.opts.date, {
-        detailed: true,
-      });
-      if (activities.length === 0) {
+      const activities = new App.Activity.Collection(this.ctx);
+      await activities.getForDateRange(this.opts.date);
+
+      if (activities.activities.length === 0) {
+        this.log.info.text('No activities found for the specified date range.').emit();
         return;
       }
 
       // Extract and display region information
-      const regions = await this.#extractRegions(activities);
-      this.#displayRegions(regions);
+      activities.getRegions();
+      await this.#displayRegions(activities);
 
       if (this.ctx.format === 'json') {
-        for (const activity of activities) {
+        for (const activity of activities.activities) {
           this.log.info.text(JSON.stringify(activity.data, null, 2)).emit();
         }
       }
@@ -121,121 +120,66 @@ export class InfoTool extends App.BaseClass {
   }
 
   /**
-   * Extracts region information from activities.
-   *
-   * Groups activities by their geographic region based on start coordinates.
-   * Activities that don't match any defined region are grouped under "WORLD".
-   *
-   * @param activities The activities to analyze
-   * @returns Array of region information
-   */
-  async #extractRegions(activities: Strava.Activity[]): Promise<RegionInfo[]> {
-    const regions = await this.#loadRegions();
-    const regionMap = new Map<string, RegionInfo>();
-
-    for (const activity of activities) {
-      const regionCode = this.#detectRegion(activity, regions);
-
-      if (!regionMap.has(regionCode)) {
-        regionMap.set(regionCode, {
-          code: regionCode,
-          name: this.#getRegionName(regionCode, regions),
-          activityCount: 0,
-          dateRange: { start: activity.startDateLocal, end: activity.startDateLocal },
-          totalDistance: 0,
-          activityTypes: [],
-        });
-      }
-
-      const region = regionMap.get(regionCode)!;
-      region.activityCount++;
-      region.totalDistance += activity.distance;
-
-      // Update date range
-      if (activity.startDateLocal < region.dateRange.start) {
-        region.dateRange.start = activity.startDateLocal;
-      }
-      if (activity.startDateLocal > region.dateRange.end) {
-        region.dateRange.end = activity.startDateLocal;
-      }
-
-      // Track activity types
-      if (!region.activityTypes.includes(activity.type)) {
-        region.activityTypes.push(activity.type);
-      }
-    }
-
-    return Array.from(regionMap.values()).sort((a, b) => a.code.localeCompare(b.code));
-  }
-
-  /**
-   * Loads regions from the user.regions.json configuration file.
-   * Returns empty array if file doesn't exist or fails to load.
-   *
-   * @returns Array of active regions
-   */
-  async #loadRegions(): Promise<App.Region.Region[]> {
-    const regionsFile = FS.File.config('epdoc', 'strava', 'user.regions.json');
-    this.log.info.text('Loading regions ...').relative(regionsFile.path).start();
-    try {
-      const isFile = await regionsFile.isFile();
-      if (!isFile) {
-        this.log.warn.text('Regions file not found:').fs(regionsFile).emit();
-        return [];
-      }
-      const data = await regionsFile.readJson<App.Region.RegionsFile>();
-      this.log.info.icheck().text('Loaded regions from').relative(regionsFile.path).stop();
-      return App.Region.loadRegions(data);
-    } catch (err) {
-      this.log.info.ierror().text('Failed to load regions file:').fs(regionsFile).stop();
-      this.log.error.err(err).emit();
-      return [];
-    }
-  }
-
-  /**
-   * Detects the region for an activity based on its start coordinates.
-   * Uses the user.regions.json configuration to determine region membership.
-   * Falls back to "WORLD" if no matching region is found.
-   *
-   * @param activity The activity to analyze
-   * @param regions Array of regions to check against
-   * @returns Region code
-   */
-  #detectRegion(activity: Strava.Activity, regions: App.Region.Region[]): string {
-    const regionResult = App.Region.getRegionForActivity(activity, regions);
-    return regionResult.id;
-  }
-
-  /**
-   * Gets a friendly name for a region code.
-   * Looks up in loaded regions, falls back to WORLD default.
-   *
-   * @param code The region code
-   * @param regions Array of loaded regions
-   * @returns The region name
-   */
-  #getRegionName(code: string, regions: App.Region.Region[]): string {
-    if (code === App.Region.WORLD_REGION.id) {
-      return App.Region.WORLD_REGION.name;
-    }
-    const region = regions.find((r) => r.id === code);
-    return region?.name || code;
-  }
-
-  /**
    * Displays region information from activities in a formatted table.
    *
-   * @param regions The region info to display
+   * @param activities The activities collection to extract region info from
    */
-  #displayRegions(regions: RegionInfo[]): void {
-    if (regions.length === 0) {
-      this.log.info.text('No regions found.').emit();
+  async #displayRegions(activities: App.Activity.Collection): Promise<void> {
+    if (activities.length === 0) {
+      this.log.info.text('No activities found.').emit();
       return;
     }
 
     const unit = this.ctx.imperial ? 'mi' : 'km';
     const distanceMultiplier = this.ctx.imperial ? 1 / 1.609344 : 0.001;
+
+    type RegionStats = {
+      code: string;
+      name: string;
+      activityCount: number;
+      totalDistance: number;
+      minDate: DateTime;
+      maxDate: DateTime;
+      activityTypes: Set<string>;
+    };
+
+    // Aggregate statistics per region
+    const regionStatsMap: Map<string, RegionStats> = new Map();
+
+    for (const activity of activities.activities) {
+      const region = await activity.getRegion();
+      const regionCode = region.id;
+      const regionName = region.name;
+
+      const existingStats = regionStatsMap.get(regionCode);
+      const activityDate = activity.startDateAsDateTime;
+      const activityDistance = activity.distance;
+      const activityType = activity.type;
+
+      if (existingStats) {
+        // Update existing stats
+        existingStats.activityCount++;
+        existingStats.totalDistance += activityDistance;
+        if (activityDate.epochMilliseconds < existingStats.minDate.epochMilliseconds) {
+          existingStats.minDate = activityDate;
+        }
+        if (activityDate.epochMilliseconds > existingStats.maxDate.epochMilliseconds) {
+          existingStats.maxDate = activityDate;
+        }
+        existingStats.activityTypes.add(activityType);
+      } else {
+        // Create new stats entry
+        regionStatsMap.set(regionCode, {
+          code: regionCode,
+          name: regionName,
+          activityCount: 1,
+          totalDistance: activityDistance,
+          minDate: activityDate,
+          maxDate: activityDate,
+          activityTypes: new Set([activityType]),
+        });
+      }
+    }
 
     type RegionStatsRow = {
       code: string;
@@ -246,13 +190,16 @@ export class InfoTool extends App.BaseClass {
       types: string;
     };
 
-    const rows: RegionStatsRow[] = regions.map((region) => ({
-      code: region.code,
-      name: region.name || 'Unknown',
-      activities: region.activityCount,
-      distance: `${(region.totalDistance * distanceMultiplier).toFixed(1)} ${unit}`,
-      dateRange: `${region.dateRange.start} to ${region.dateRange.end}`,
-      types: region.activityTypes.join(', '),
+    // Build rows from aggregated stats
+    const rows: RegionStatsRow[] = Array.from(regionStatsMap.values()).map((stats) => ({
+      code: stats.code,
+      name: stats.name || 'Unknown',
+      activities: stats.activityCount,
+      distance: `${(stats.totalDistance * distanceMultiplier).toFixed(1)} ${unit}`,
+      dateRange: stats.minDate.toISOString() === stats.maxDate.toISOString()
+        ? stats.minDate.toISOString()
+        : `${stats.minDate.toISOString()} to ${stats.maxDate.toISOString()}`,
+      types: Array.from(stats.activityTypes).join(', '),
     }));
 
     const columns: Table.ColumnRegistry<RegionStatsRow> = {
@@ -291,7 +238,8 @@ export class InfoTool extends App.BaseClass {
    *
    * @param regions The regions to display
    */
-  #outputRegions(regions: App.Region.Region[]): void {
+  async #outputRegions(): Promise<void> {
+    const regions = await App.Activity.Region.db.regions();
     if (regions.length === 0) {
       this.log.info.text('No regions configured.').emit();
       return;

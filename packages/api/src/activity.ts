@@ -4,10 +4,9 @@ import type { Seconds } from '@epdoc/duration';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import type * as StravaSchema from '@epdoc/strava-schema';
 import { _, type CompareResult, type Dict, type Integer } from '@epdoc/type';
-import { assert } from '@std/assert';
+import { assert } from '@std/assert/assert';
 import type { Api } from './api.ts';
 import type {
-  ActivityFilter,
   Kilometres,
   LatLngRect,
   Metres,
@@ -557,35 +556,6 @@ export class Activity extends BaseClass {
     console.log(`  Adding segment '${name}, elapsed time ${sd}`);
     // Add segment to this activity
     this.#segments.push(segEffort); // Removed redundant cast
-  }
-
-  /**
-   * Checks if the activity should be included based on the provided filter.
-   *
-   * This method is useful for filtering a list of activities based on various criteria.
-   *
-   * @param filter The filter to apply.
-   * @returns `true` if the activity should be included, `false` otherwise.
-   */
-  public include(filter: ActivityFilter): boolean { // Updated type to Filter
-    if (
-      (!filter.commuteOnly && !filter.nonCommuteOnly) ||
-      (filter.commuteOnly && this.commute) ||
-      (filter.nonCommuteOnly && !this.commute)
-    ) {
-      if (Array.isArray(filter.exclude)) {
-        if (filter.exclude.indexOf(this.type) >= 0) {
-          return false;
-        }
-      }
-      if (Array.isArray(filter.include)) {
-        if (filter.include.indexOf(this.type) < 0) {
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
   }
 
   /**

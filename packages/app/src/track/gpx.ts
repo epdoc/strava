@@ -1,8 +1,8 @@
 import * as FS from '@epdoc/fs/fs';
-import type * as Strava from '@epdoc/strava-api';
 import * as Schema from '@epdoc/strava-schema';
 import { _, type Integer } from '@epdoc/type';
 import pkg from '../../deno.json' with { type: 'json' };
+import type * as Activity from '../activity/mod.ts';
 import type * as Segment from '../segment/mod.ts';
 import type * as Stream from './types.ts';
 import { TrackWriter } from './writer.ts';
@@ -72,7 +72,7 @@ export class GpxWriter extends TrackWriter {
    */
   async outputData(
     folderpath: FS.FolderPath,
-    activities: Strava.Activity[],
+    activities: Activity.Item[],
   ): Promise<void> {
     if (REG.isGpx.test(folderpath)) {
       const fsFile = new FS.File(folderpath);
@@ -95,7 +95,7 @@ export class GpxWriter extends TrackWriter {
 
   async #outputActivitiesFile(
     fsFile: FS.File,
-    activities: Strava.Activity[],
+    activities: Activity.Item[],
   ): Promise<void> {
     this.writer = await fsFile.writer();
     this.log.info.h2('Generating GPX file').fs(fsFile).emit();
@@ -145,7 +145,7 @@ export class GpxWriter extends TrackWriter {
 
   async #outputActivityFile(
     folderpath: FS.Folder,
-    activity: Strava.Activity,
+    activity: Activity.Item,
   ): Promise<void> {
     const m0 = this.log.mark();
     // Generate filename: YYYYMMDD_Activity_Name.gpx
@@ -188,7 +188,7 @@ export class GpxWriter extends TrackWriter {
     }
   }
 
-  async outputActivityTrack(activity: Strava.Activity): Promise<Integer> {
+  async outputActivityTrack(activity: Activity.Item): Promise<Integer> {
     await this.#openTrackSegment(activity);
     // Output track points
     for (const coord of activity.coordinates) {
@@ -207,8 +207,8 @@ export class GpxWriter extends TrackWriter {
    */
   #outputCoordinate(
     indent: number,
-    coord: Partial<Strava.TrackPoint>,
-    activity: Strava.Activity,
+    coord: Partial<Activity.Item['coordinates'][number]>,
+    activity: Activity.Item,
   ): void {
     const lines: string[] = [`<trkpt lat="${coord.lat}" lon="${coord.lng}">`];
 
@@ -261,7 +261,7 @@ export class GpxWriter extends TrackWriter {
   /**
    * Closes the current track segment.
    */
-  async #openTrackSegment(activity: Strava.Activity): Promise<void> {
+  async #openTrackSegment(activity: Activity.Item): Promise<void> {
     const name = [activity.startDateLocal, activity.name].join(' ');
     const lines = [
       '  <trk>',
@@ -296,7 +296,7 @@ export class GpxWriter extends TrackWriter {
    *
    * @param activity The activity with lap and coordinate data
    */
-  async #outputLapWaypoints(activity: Strava.Activity): Promise<Integer> {
+  async #outputLapWaypoints(activity: Activity.Item): Promise<Integer> {
     if (!('laps' in activity.data) || !_.isArray(activity.data.laps)) {
       return 0;
     }
@@ -387,9 +387,9 @@ export class GpxWriter extends TrackWriter {
    * @returns The track point closest to the given time, or undefined
    */
   #findCoordinateAtTime(
-    activity: Strava.Activity,
+    activity: Activity.Item,
     elapsedTime: number,
-  ): Partial<Strava.TrackPoint> | undefined {
+  ): Partial<Activity.Item['coordinates'][number]> | undefined {
     if (!activity.coordinates || activity.coordinates.length === 0) {
       return undefined;
     }
@@ -435,6 +435,11 @@ export class GpxWriter extends TrackWriter {
   }
 }
 
+/**
+ * Calculate the date range of the given activities
+ * @param activities Array of activities with startDateLocal field
+ * @returns Tuple of [startDate, endDate] in ISO 8601 format
+ */
 function getDateRange(activities: { startDateLocal: string }[]): [string, string] {
   if (!activities || activities.length === 0) {
     return ['', '']; // Return empty strings if no activities

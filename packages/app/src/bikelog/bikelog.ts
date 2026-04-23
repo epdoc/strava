@@ -1,10 +1,10 @@
 import type { DateTime } from '@epdoc/datetime';
 import type { Seconds } from '@epdoc/duration';
 import * as FS from '@epdoc/fs/fs';
-import type * as Strava from '@epdoc/strava-api';
 import type { Ctx } from '@epdoc/strava-core';
 import { _ } from '@epdoc/type';
 import * as builder from 'xmlbuilder';
+import type * as Activity from '../activity/mod.ts';
 import { Fmt, formatMS } from '../fmt.ts';
 import type * as BikeLog from './types.ts';
 
@@ -88,7 +88,7 @@ export class Bikelog {
    * ```
    */
   private parseActivityText(
-    activity: Strava.Activity,
+    activity: Activity.Item,
   ): { description?: string; [key: string]: unknown } {
     const result: { description?: string; [key: string]: unknown } = {};
 
@@ -207,7 +207,7 @@ export class Bikelog {
    * // Returns: { "2460234": { jd: 2460234, date: Date, events: [...], note0: "..." } }
    * ```
    */
-  private combineActivities(activities: Strava.Activity[]): Record<string, BikelogEntry> {
+  private combineActivities(activities: Activity.Item[]): Record<string, BikelogEntry> {
     const result: Record<string, BikelogEntry> = {};
     activities.forEach((activity) => {
       // Calculate Julian date from the local date components (YYYY-MM-DD).
@@ -461,7 +461,7 @@ export class Bikelog {
   public async outputData(
     ctx: Ctx.Context,
     filepath: string,
-    stravaActivities: Strava.Activity[],
+    stravaActivities: Activity.Item[],
   ): Promise<void> {
     filepath = filepath || 'bikelog.xml';
 

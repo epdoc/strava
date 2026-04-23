@@ -1,6 +1,7 @@
 import type * as CliApp from '@epdoc/cliapp';
 import { type DateRanges, dateRanges } from '@epdoc/daterange';
 import * as FS from '@epdoc/fs/fs';
+import type * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import type { OutputFormat } from './context.ts';
 
@@ -16,9 +17,6 @@ export type CmdOptions = CliApp.LogCmdOptions & {
 
 /** Region code for filtering activities by geographic region (e.g., 'CR' for Costa Rica, 'EU' for Europe) */
 export type RegionCode = string;
-
-/** Activity type strings for filtering */
-export type ActivityType = string;
 
 export const optionDefs: CliApp.OptionDefMap = {
   date: {
@@ -147,10 +145,10 @@ EXAMPLES:
     params: '[types]',
     description:
       'Include activity types (default when no flags specified). Optional: comma-separated activity types (e.g., Ride,Run,Hike)',
-    argParser: (str: string | boolean): ActivityType[] => {
+    argParser: (str: string | boolean): Schema.Types.ActivityType[] => {
       if (str === true || str === '') return []; // All activities
       if (_.isString(str)) {
-        return str.split(',').map((s) => s.trim());
+        return str.split(',').map((s) => s.trim() as Schema.Types.ActivityType);
       }
       return [];
     },

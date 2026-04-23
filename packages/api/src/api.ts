@@ -2,7 +2,7 @@ import type * as FS from '@epdoc/fs/fs';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import type * as StravaSchema from '@epdoc/strava-schema';
 import { _, type Dict } from '@epdoc/type';
-import { Activity } from './activity.ts';
+import { Activity, type ActivityConstructor } from './activity.ts';
 import type { StravaCreds } from './auth/creds.ts';
 import * as Auth from './auth/mod.ts';
 import {
@@ -67,7 +67,6 @@ export type TokenUrlOpts = {
  * ```
  */
 export class Api extends BaseClass {
-  public Activity!: Activity;
   #auth: Auth.Service;
 
   /**
@@ -170,9 +169,11 @@ export class Api extends BaseClass {
    * @param options Options for retrieving activities.
    * @returns A promise that resolves to an array of activities.
    */
-  public async getActivities(
+  public async getActivities<T extends Activity = Activity>(
     options: Strava.ActivityOpts,
-  ): Promise<this['Activity'][]> {
+    activityCtor?: ActivityConstructor<T>,
+  ): Promise<T[]> {
+    const ActivityCtor = activityCtor ?? (Activity as unknown as ActivityConstructor<T>);
     // Do not refresh the token here. That should be done before calling this method.
     // await this.refreshToken();
 
@@ -209,7 +210,7 @@ export class Api extends BaseClass {
 
       if (isSummaryActivityArray(data)) {
         return data.map((item) => {
-          const activity = new Activity(this.ctx, item);
+          const activity = new ActivityCtor(this.ctx, item);
           activity.api = this;
           return activity;
         });

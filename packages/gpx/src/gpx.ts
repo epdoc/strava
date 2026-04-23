@@ -122,9 +122,6 @@ export class GpxTool extends App.BaseClass {
         imperial: this.opts.imperial ?? false,
         blackout: this.opts.blackout ?? false,
         allowDups: this.opts.allowDups ?? false,
-        type: (this.opts.type ?? []) as Schema.Types.ActivityType[],
-        commute: this.opts.commute ?? 'all',
-        regions: _.isNonEmptyArray(this.opts.regions) ? this.opts.regions : undefined,
       };
 
       // Generate GPX
@@ -214,24 +211,5 @@ export class GpxTool extends App.BaseClass {
     } else {
       return 'activities';
     }
-  }
-
-  /**
-   * Filters activities by region if specified.
-   * This is a placeholder for future region detection based on coordinates.
-   *
-   * @param activities The activities to filter
-   * @returns Filtered activities
-   */
-  filterByRegion(activities: Strava.Activity[]): Strava.Activity[] {
-    if (!this.opts.region) {
-      return activities;
-    }
-
-    // TODO: Implement region detection based on activity coordinates
-    // For now, this is a placeholder that returns all activities
-    this.log.warn.warn(`Region filtering not yet implemented for region: ${this.opts.region}`)
-      .emit();
-    return activities;
   }
 }

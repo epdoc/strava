@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/strava-api",
   "description": "Strava API",
-  "version": "2.0.10",
+  "version": "2.0.12",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
@@ -34,7 +34,7 @@
     "@epdoc/strava-schema/stream": "../schema/src/stream.ts",
     "@epdoc/strava-schema/types": "../schema/src/types.ts",
     "@epdoc/strava-schema/zones": "../schema/src/zones.ts",
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.7",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.8",
     "@epdoc/daterange": "jsr:@epdoc/daterange@^2.1.15",
     "@epdoc/strava-core": "../core/src/mod.ts",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.11",

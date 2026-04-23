@@ -9,9 +9,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                "line": 29,
+                "line": 37,
                 "col": 0,
-                "byteIndex": 818
+                "byteIndex": 1099
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -110,9 +110,9 @@
                                 "name": "aliases",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                                  "line": 50,
+                                  "line": 58,
                                   "col": 6,
-                                  "byteIndex": 1807
+                                  "byteIndex": 2088
                                 },
                                 "optional": true,
                                 "tsType": {
@@ -139,9 +139,9 @@
                                 "name": "segmentProvider",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                                  "line": 51,
+                                  "line": 59,
                                   "col": 6,
-                                  "byteIndex": 1847
+                                  "byteIndex": 2128
                                 },
                                 "optional": true,
                                 "tsType": {
@@ -153,9 +153,9 @@
                                         "kind": "method",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                                          "line": 51,
+                                          "line": 59,
                                           "col": 26,
-                                          "byteIndex": 1867
+                                          "byteIndex": 2148
                                         },
                                         "params": [
                                           {
@@ -202,9 +202,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 46,
+                      "line": 54,
                       "col": 2,
-                      "byteIndex": 1679
+                      "byteIndex": 1960
                     }
                   }
                 ],
@@ -241,9 +241,9 @@
                     "name": "data",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 30,
+                      "line": 38,
                       "col": 2,
-                      "byteIndex": 862
+                      "byteIndex": 1143
                     }
                   },
                   {
@@ -263,9 +263,9 @@
                     "name": "api",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 31,
+                      "line": 39,
                       "col": 2,
-                      "byteIndex": 941
+                      "byteIndex": 1222
                     }
                   }
                 ],
@@ -327,9 +327,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 67,
+                      "line": 75,
                       "col": 2,
-                      "byteIndex": 2298
+                      "byteIndex": 2579
                     }
                   },
                   {
@@ -372,9 +372,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 76,
+                      "line": 84,
                       "col": 2,
-                      "byteIndex": 2618
+                      "byteIndex": 2899
                     }
                   },
                   {
@@ -401,9 +401,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 89,
+                      "line": 97,
                       "col": 2,
-                      "byteIndex": 2942
+                      "byteIndex": 3223
                     }
                   },
                   {
@@ -424,9 +424,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 101,
+                      "line": 109,
                       "col": 2,
-                      "byteIndex": 3240
+                      "byteIndex": 3521
                     }
                   },
                   {
@@ -457,9 +457,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 109,
+                      "line": 117,
                       "col": 2,
-                      "byteIndex": 3507
+                      "byteIndex": 3788
                     }
                   },
                   {
@@ -498,9 +498,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 113,
+                      "line": 121,
                       "col": 2,
-                      "byteIndex": 3585
+                      "byteIndex": 3866
                     }
                   },
                   {
@@ -521,9 +521,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 120,
+                      "line": 128,
                       "col": 2,
-                      "byteIndex": 3708
+                      "byteIndex": 3989
                     }
                   },
                   {
@@ -550,9 +550,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 127,
+                      "line": 135,
                       "col": 2,
-                      "byteIndex": 3826
+                      "byteIndex": 4107
                     }
                   },
                   {
@@ -580,9 +580,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 134,
+                      "line": 142,
                       "col": 2,
-                      "byteIndex": 3963
+                      "byteIndex": 4244
                     }
                   },
                   {
@@ -610,9 +610,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 141,
+                      "line": 149,
                       "col": 2,
-                      "byteIndex": 4101
+                      "byteIndex": 4382
                     }
                   },
                   {
@@ -640,9 +640,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 148,
+                      "line": 156,
                       "col": 2,
-                      "byteIndex": 4236
+                      "byteIndex": 4517
                     }
                   },
                   {
@@ -670,9 +670,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 155,
+                      "line": 163,
                       "col": 2,
-                      "byteIndex": 4398
+                      "byteIndex": 4679
                     }
                   },
                   {
@@ -700,9 +700,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 162,
+                      "line": 170,
                       "col": 2,
-                      "byteIndex": 4569
+                      "byteIndex": 4850
                     }
                   },
                   {
@@ -733,9 +733,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 169,
+                      "line": 177,
                       "col": 2,
-                      "byteIndex": 4738
+                      "byteIndex": 5019
                     }
                   },
                   {
@@ -766,9 +766,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 176,
+                      "line": 184,
                       "col": 2,
-                      "byteIndex": 4896
+                      "byteIndex": 5177
                     }
                   },
                   {
@@ -788,9 +788,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 183,
+                      "line": 191,
                       "col": 2,
-                      "byteIndex": 5051
+                      "byteIndex": 5332
                     }
                   },
                   {
@@ -825,9 +825,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 190,
+                      "line": 198,
                       "col": 2,
-                      "byteIndex": 5172
+                      "byteIndex": 5453
                     }
                   },
                   {
@@ -860,9 +860,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 198,
+                      "line": 206,
                       "col": 2,
-                      "byteIndex": 5380
+                      "byteIndex": 5661
                     }
                   },
                   {
@@ -882,9 +882,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 205,
+                      "line": 213,
                       "col": 2,
-                      "byteIndex": 5547
+                      "byteIndex": 5828
                     }
                   },
                   {
@@ -904,9 +904,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 212,
+                      "line": 220,
                       "col": 2,
-                      "byteIndex": 5704
+                      "byteIndex": 5985
                     }
                   },
                   {
@@ -971,9 +971,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 236,
+                      "line": 244,
                       "col": 2,
-                      "byteIndex": 6652
+                      "byteIndex": 6933
                     }
                   },
                   {
@@ -1003,9 +1003,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 249,
+                      "line": 257,
                       "col": 2,
-                      "byteIndex": 6999
+                      "byteIndex": 7280
                     }
                   },
                   {
@@ -1053,9 +1053,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 257,
+                      "line": 265,
                       "col": 2,
-                      "byteIndex": 7232
+                      "byteIndex": 7513
                     }
                   },
                   {
@@ -1075,9 +1075,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 264,
+                      "line": 272,
                       "col": 2,
-                      "byteIndex": 7375
+                      "byteIndex": 7656
                     }
                   },
                   {
@@ -1097,9 +1097,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 271,
+                      "line": 279,
                       "col": 2,
-                      "byteIndex": 7499
+                      "byteIndex": 7780
                     }
                   },
                   {
@@ -1119,9 +1119,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 280,
+                      "line": 288,
                       "col": 2,
-                      "byteIndex": 7754
+                      "byteIndex": 8035
                     }
                   },
                   {
@@ -1141,9 +1141,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 290,
+                      "line": 298,
                       "col": 2,
-                      "byteIndex": 7996
+                      "byteIndex": 8277
                     }
                   },
                   {
@@ -1176,9 +1176,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 307,
+                      "line": 315,
                       "col": 2,
-                      "byteIndex": 8599
+                      "byteIndex": 8880
                     }
                   },
                   {
@@ -1214,9 +1214,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 336,
+                      "line": 344,
                       "col": 2,
-                      "byteIndex": 9371
+                      "byteIndex": 9652
                     }
                   },
                   {
@@ -1282,9 +1282,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 381,
+                      "line": 389,
                       "col": 2,
-                      "byteIndex": 11263
+                      "byteIndex": 11544
                     }
                   },
                   {
@@ -1357,9 +1357,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 428,
+                      "line": 436,
                       "col": 2,
-                      "byteIndex": 13117
+                      "byteIndex": 13398
                     }
                   },
                   {
@@ -1400,9 +1400,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 524,
+                      "line": 532,
                       "col": 2,
-                      "byteIndex": 16240
+                      "byteIndex": 16521
                     }
                   },
                   {
@@ -1451,61 +1451,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 548,
+                      "line": 556,
                       "col": 2,
-                      "byteIndex": 16999
-                    }
-                  },
-                  {
-                    "jsDoc": {
-                      "doc": "Checks if the activity should be included based on the provided filter.\n\nThis method is useful for filtering a list of activities based on various criteria.\n",
-                      "tags": [
-                        {
-                          "kind": "param",
-                          "name": "filter",
-                          "doc": "The filter to apply."
-                        },
-                        {
-                          "kind": "return",
-                          "doc": "`true` if the activity should be included, `false` otherwise."
-                        }
-                      ]
-                    },
-                    "accessibility": "public",
-                    "name": "include",
-                    "kind": "method",
-                    "functionDef": {
-                      "params": [
-                        {
-                          "kind": "identifier",
-                          "name": "filter",
-                          "optional": false,
-                          "tsType": {
-                            "repr": "ActivityFilter",
-                            "kind": "typeRef",
-                            "value": {
-                              "typeName": "ActivityFilter",
-                              "resolution": {
-                                "kind": "import",
-                                "specifier": "./types.ts",
-                                "name": "ActivityFilter"
-                              }
-                            }
-                          }
-                        }
-                      ],
-                      "returnType": {
-                        "repr": "boolean",
-                        "kind": "keyword",
-                        "value": "boolean"
-                      },
-                      "hasBody": true
-                    },
-                    "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 569,
-                      "col": 2,
-                      "byteIndex": 17883
+                      "byteIndex": 17280
                     }
                   },
                   {
@@ -1561,9 +1509,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 600,
+                      "line": 579,
                       "col": 2,
-                      "byteIndex": 18957
+                      "byteIndex": 18364
                     }
                   },
                   {
@@ -1604,9 +1552,9 @@
                                   "name": "startDate",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                                    "line": 643,
+                                    "line": 622,
                                     "col": 9,
-                                    "byteIndex": 20504
+                                    "byteIndex": 19911
                                   },
                                   "tsType": {
                                     "repr": "DateTime",
@@ -1637,9 +1585,9 @@
                                   "name": "startDate",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                                    "line": 644,
+                                    "line": 623,
                                     "col": 9,
-                                    "byteIndex": 20536
+                                    "byteIndex": 19943
                                   },
                                   "tsType": {
                                     "repr": "DateTime",
@@ -1675,9 +1623,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 642,
+                      "line": 621,
                       "col": 2,
-                      "byteIndex": 20463
+                      "byteIndex": 19870
                     }
                   }
                 ],
@@ -1694,7 +1642,7 @@
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
                 "line": 68,
                 "col": 0,
-                "byteIndex": 2275
+                "byteIndex": 2301
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -1819,33 +1767,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 78,
+                      "line": 77,
                       "col": 2,
-                      "byteIndex": 2685
-                    }
-                  }
-                ],
-                "properties": [
-                  {
-                    "tsType": {
-                      "repr": "Activity",
-                      "kind": "typeRef",
-                      "value": {
-                        "typeName": "Activity",
-                        "resolution": {
-                          "kind": "import",
-                          "specifier": "./activity.ts",
-                          "name": "Activity"
-                        }
-                      }
-                    },
-                    "accessibility": "public",
-                    "name": "Activity",
-                    "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 69,
-                      "col": 2,
-                      "byteIndex": 2314
+                      "byteIndex": 2681
                     }
                   }
                 ],
@@ -1865,9 +1789,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 87,
+                      "line": 86,
                       "col": 2,
-                      "byteIndex": 2939
+                      "byteIndex": 2935
                     }
                   },
                   {
@@ -1913,9 +1837,9 @@
                                     "name": "force",
                                     "location": {
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                                      "line": 103,
+                                      "line": 102,
                                       "col": 21,
-                                      "byteIndex": 3744
+                                      "byteIndex": 3740
                                     },
                                     "tsType": {
                                       "repr": "boolean",
@@ -1949,9 +1873,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 103,
+                      "line": 102,
                       "col": 2,
-                      "byteIndex": 3725
+                      "byteIndex": 3721
                     }
                   },
                   {
@@ -1978,9 +1902,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 113,
+                      "line": 112,
                       "col": 2,
-                      "byteIndex": 4102
+                      "byteIndex": 4098
                     }
                   },
                   {
@@ -2022,9 +1946,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 117,
+                      "line": 116,
                       "col": 2,
-                      "byteIndex": 4165
+                      "byteIndex": 4161
                     }
                   },
                   {
@@ -2094,9 +2018,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 131,
+                      "line": 130,
                       "col": 2,
-                      "byteIndex": 4686
+                      "byteIndex": 4682
                     }
                   },
                   {
@@ -2139,6 +2063,37 @@
                               }
                             }
                           }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "activityCtor",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "ActivityConstructor",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "T",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "T",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "getActivities",
+                                      "declaringKind": "method"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "ActivityConstructor",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./activity.ts",
+                                "name": "ActivityConstructor"
+                              }
+                            }
+                          }
                         }
                       ],
                       "returnType": {
@@ -2149,19 +2104,14 @@
                             {
                               "kind": "array",
                               "value": {
-                                "kind": "indexedAccess",
+                                "repr": "T",
+                                "kind": "typeRef",
                                 "value": {
-                                  "objType": {
-                                    "repr": "this",
-                                    "kind": "this"
-                                  },
-                                  "indexType": {
-                                    "repr": "Activity",
-                                    "kind": "literal",
-                                    "value": {
-                                      "kind": "string",
-                                      "string": "Activity"
-                                    }
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "getActivities",
+                                    "declaringKind": "method"
                                   }
                                 }
                               }
@@ -2171,13 +2121,42 @@
                         }
                       },
                       "hasBody": true,
-                      "isAsync": true
+                      "isAsync": true,
+                      "typeParams": [
+                        {
+                          "name": "T",
+                          "constraint": {
+                            "repr": "Activity",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Activity",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./activity.ts",
+                                "name": "Activity"
+                              }
+                            }
+                          },
+                          "default": {
+                            "repr": "Activity",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Activity",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./activity.ts",
+                                "name": "Activity"
+                              }
+                            }
+                          }
+                        }
+                      ]
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 172,
+                      "line": 171,
                       "col": 2,
-                      "byteIndex": 5877
+                      "byteIndex": 5873
                     }
                   },
                   {
@@ -2259,9 +2238,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 236,
+                      "line": 237,
                       "col": 2,
-                      "byteIndex": 7830
+                      "byteIndex": 7979
                     }
                   },
                   {
@@ -2331,9 +2310,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 287,
+                      "line": 288,
                       "col": 2,
-                      "byteIndex": 9479
+                      "byteIndex": 9628
                     }
                   },
                   {
@@ -2496,9 +2475,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 359,
+                      "line": 360,
                       "col": 2,
-                      "byteIndex": 12081
+                      "byteIndex": 12230
                     }
                   },
                   {
@@ -2645,9 +2624,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 439,
+                      "line": 440,
                       "col": 2,
-                      "byteIndex": 14902
+                      "byteIndex": 15051
                     }
                   },
                   {
@@ -2717,9 +2696,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 494,
+                      "line": 495,
                       "col": 2,
-                      "byteIndex": 16654
+                      "byteIndex": 16803
                     }
                   },
                   {
@@ -2813,9 +2792,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/api.ts",
-                      "line": 531,
+                      "line": 532,
                       "col": 2,
-                      "byteIndex": 17731
+                      "byteIndex": 17880
                     }
                   }
                 ],
@@ -5415,119 +5394,14 @@
           ]
         },
         {
-          "name": "ActivityFilter",
-          "declarations": [
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/types.ts",
-                "line": 101,
-                "col": 0,
-                "byteIndex": 2618
-              },
-              "declarationKind": "export",
-              "jsDoc": {
-                "doc": "A filter for activities.\n\nThis can be used to filter a list of activities based on various criteria."
-              },
-              "kind": "typeAlias",
-              "def": {
-                "tsType": {
-                  "kind": "typeLiteral",
-                  "value": {
-                    "properties": [
-                      {
-                        "name": "commuteOnly",
-                        "jsDoc": {
-                          "doc": "Whether to include only commute activities."
-                        },
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/types.ts",
-                          "line": 103,
-                          "col": 2,
-                          "byteIndex": 2704
-                        },
-                        "optional": true,
-                        "tsType": {
-                          "repr": "boolean",
-                          "kind": "keyword",
-                          "value": "boolean"
-                        }
-                      },
-                      {
-                        "name": "nonCommuteOnly",
-                        "jsDoc": {
-                          "doc": "Whether to include only non-commute activities."
-                        },
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/types.ts",
-                          "line": 105,
-                          "col": 2,
-                          "byteIndex": 2786
-                        },
-                        "optional": true,
-                        "tsType": {
-                          "repr": "boolean",
-                          "kind": "keyword",
-                          "value": "boolean"
-                        }
-                      },
-                      {
-                        "name": "include",
-                        "jsDoc": {
-                          "doc": "An array of activity types to include."
-                        },
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/types.ts",
-                          "line": 107,
-                          "col": 2,
-                          "byteIndex": 2862
-                        },
-                        "optional": true,
-                        "tsType": {
-                          "kind": "array",
-                          "value": {
-                            "repr": "string",
-                            "kind": "keyword",
-                            "value": "string"
-                          }
-                        }
-                      },
-                      {
-                        "name": "exclude",
-                        "jsDoc": {
-                          "doc": "An array of activity types to exclude."
-                        },
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/types.ts",
-                          "line": 109,
-                          "col": 2,
-                          "byteIndex": 2932
-                        },
-                        "optional": true,
-                        "tsType": {
-                          "kind": "array",
-                          "value": {
-                            "repr": "string",
-                            "kind": "keyword",
-                            "value": "string"
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
           "name": "SegmentData",
           "declarations": [
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/types.ts",
-                "line": 113,
+                "line": 97,
                 "col": 0,
-                "byteIndex": 3021
+                "byteIndex": 2566
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -5556,9 +5430,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/types.ts",
-                "line": 115,
+                "line": 99,
                 "col": 0,
-                "byteIndex": 3139
+                "byteIndex": 2684
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -5587,9 +5461,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/types.ts",
-                "line": 117,
+                "line": 101,
                 "col": 0,
-                "byteIndex": 3199
+                "byteIndex": 2744
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -5754,9 +5628,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/types.ts",
-                "line": 129,
+                "line": 113,
                 "col": 0,
-                "byteIndex": 3514
+                "byteIndex": 3059
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -5789,9 +5663,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/types.ts",
-                "line": 132,
+                "line": 116,
                 "col": 0,
-                "byteIndex": 3621
+                "byteIndex": 3166
               },
               "declarationKind": "export",
               "jsDoc": {

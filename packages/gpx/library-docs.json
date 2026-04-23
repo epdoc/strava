@@ -1,17 +1,17 @@
 {
   "version": 2,
   "nodes": {
-    "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/mod.ts": {
+    "file:///Users/jpravetz/dev/@epdoc/strava/packages/gpx/src/mod.ts": {
       "symbols": [
         {
-          "name": "AthleteCommand",
+          "name": "GpxCommand",
           "declarations": [
             {
               "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
-                "line": 8,
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/gpx/src/cmd.ts",
+                "line": 31,
                 "col": 0,
-                "byteIndex": 248
+                "byteIndex": 956
               },
               "declarationKind": "export",
               "kind": "class",
@@ -31,10 +31,10 @@
                       "hasBody": true
                     },
                     "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
-                      "line": 9,
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/gpx/src/cmd.ts",
+                      "line": 32,
                       "col": 2,
-                      "byteIndex": 324
+                      "byteIndex": 1024
                     }
                   },
                   {
@@ -51,29 +51,10 @@
                       "hasBody": true
                     },
                     "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
-                      "line": 14,
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/gpx/src/cmd.ts",
+                      "line": 37,
                       "col": 2,
-                      "byteIndex": 437
-                    }
-                  },
-                  {
-                    "name": "helpText",
-                    "kind": "method",
-                    "functionDef": {
-                      "params": [],
-                      "returnType": {
-                        "repr": "string",
-                        "kind": "keyword",
-                        "value": "string"
-                      },
-                      "hasBody": true
-                    },
-                    "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
-                      "line": 19,
-                      "col": 2,
-                      "byteIndex": 574
+                      "byteIndex": 1150
                     }
                   },
                   {
@@ -87,10 +68,10 @@
                           "name": "options",
                           "optional": false,
                           "tsType": {
-                            "repr": "AthleteCmdOptions",
+                            "repr": "GpxCmdOptions",
                             "kind": "typeRef",
                             "value": {
-                              "typeName": "AthleteCmdOptions",
+                              "typeName": "GpxCmdOptions",
                               "resolution": {
                                 "kind": "local"
                               }
@@ -132,20 +113,39 @@
                       "isAsync": true
                     },
                     "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/athlete/src/cmd.ts",
-                      "line": 65,
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/gpx/src/cmd.ts",
+                      "line": 53,
                       "col": 2,
-                      "byteIndex": 2362
+                      "byteIndex": 1898
+                    }
+                  },
+                  {
+                    "name": "helpText",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/gpx/src/cmd.ts",
+                      "line": 130,
+                      "col": 2,
+                      "byteIndex": 4581
                     }
                   }
                 ],
                 "extends": "BaseRootCmdClass",
                 "superTypeParams": [
                   {
-                    "repr": "AthleteCmdOptions",
+                    "repr": "GpxCmdOptions",
                     "kind": "typeRef",
                     "value": {
-                      "typeName": "AthleteCmdOptions",
+                      "typeName": "GpxCmdOptions",
                       "resolution": {
                         "kind": "local"
                       }

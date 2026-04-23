@@ -4,9 +4,8 @@ import { buildDateHelp, dateOptionDef } from '@epdoc/daterange';
 import * as App from '@epdoc/strava-app';
 import { Activity } from '@epdoc/strava-app';
 import { BaseRootCmdClass, Ctx, Options } from '@epdoc/strava-core';
-import { Types } from '@epdoc/strava-schema';
+import { isAthleteId, type Types } from '@epdoc/strava-schema';
 import { assert } from '@std/assert/assert';
-import { GpxOptions, GpxTool } from './gpx.ts';
 
 const REG = {
   commuteOnly: new RegExp(/^(yes)$/i),
@@ -40,15 +39,93 @@ export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
     this.option('--athleteId <id>', 'Athlete ID (defaults to authenticated user)').emit();
     const help = buildDateHelp(new Ctx.CustomMsgBuilder()).format();
     this.option({ ...dateOptionDef, help: help } as CliApp.OptionDef).emit();
-    this.option(Options.optionDefs.output).emit();
+    this.option(Activity.optionDefs.output).emit();
     this.option(Options.optionDefs.laps).emit();
     this.option(Options.optionDefs.noTracks).emit();
     this.option(Options.optionDefs.blackout).emit();
     this.option(Options.optionDefs.allowDups).emit();
+    // Filters
     this.option(Activity.optionDefs.commute).emit();
     this.option(Activity.optionDefs.type).emit();
     this.option(Activity.optionDefs.region).emit();
     this.addHelpText(this.helpText());
+  }
+
+  override async execute(
+    options: GpxCmdOptions,
+    _args: CliApp.CmdArgs,
+  ): Promise<void> {
+    const ctx = this.activeContext();
+    assert(ctx);
+
+    // Validate required options
+    if (!options.date || !options.date.hasRanges()) {
+      throw new Error(
+        '--date is required. Specify date range(s) (e.g., 20240101-20241231)',
+      );
+    }
+
+    // Initialize app with Strava API and user settings
+    const app = new App.Main(ctx);
+    if (isAthleteId(options.athleteId)) {
+      app.setAthleteId(options.athleteId);
+    }
+    ctx.app = app;
+    await app.init({ strava: true, userSettings: true });
+
+    ctx.log.info.h1('GPX File Generator').emit();
+
+    // Step 1: Fetch activities for the date range
+    const activities = new Activity.Collection(ctx);
+    await activities.getForDateRange(options.date);
+
+    // Step 2: Apply filters (commute, type, region)
+    const filter: Activity.FilterOpts = {
+      commuteOnly: REG.commuteOnly.test(options.commute || 'all'),
+      nonCommuteOnly: REG.nonCommuteOnly.test(options.commute || 'all'),
+      include: options.type ? options.type as Types.ActivityType[] : undefined,
+      regions: options.region ? options.region as Activity.Region.Code[] : undefined,
+    };
+    await activities.filter(filter);
+
+    // Step 3: Get detailed activity data if lap waypoints are requested
+    if (options.laps) {
+      await activities.getDetailsAndSegments({ detailed: true });
+    }
+
+    // Step 4: Get track points (GPS coordinates) from Strava
+    // Ask the Handler what stream types GPX format needs
+    const streamTypes = App.Track.Handler.getStreamTypes('gpx');
+    await activities.getTrackPoints({
+      streams: streamTypes,
+      dedup: !options.allowDups,
+      blackoutZones: options.blackout ? app.userSettings?.blackoutZones : undefined,
+    });
+
+    // Step 5: Resolve the output file path
+    const outputPath = activities.resolveOutputFile({ output: options.output, type: 'gpx' });
+    if (!outputPath) {
+      const err = new Error(
+        'Output path could not be determined. Specify --output or set gpxFolder in user settings.',
+      );
+      ctx.log.error(err.message).emit();
+      throw err;
+    }
+
+    // Step 6: Generate the GPX file using the Handler
+    const handler = new App.Track.Handler(ctx, {
+      laps: options.laps,
+      noTracks: options.noTracks,
+      imperial: options.imperial,
+    });
+    await handler.generate(outputPath, activities);
+
+    // Step 7: Update state file with the latest activity timestamp
+    if (activities.length > 0) {
+      await app.updateState('gpx', activities.activities);
+    }
+
+    ctx.log.info.h2('GPX file generated successfully').emit();
   }
 
   helpText(): string {
@@ -79,74 +156,5 @@ export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
     msg.text('      Generate GPX with only lap waypoints (no tracks)\n');
 
     return msg.format();
-  }
-
-  override async execute(
-    options: GpxCmdOptions,
-    _args: CliApp.CmdArgs,
-  ): Promise<void> {
-    const ctx = this.activeContext();
-    assert(ctx);
-
-    // Validate required options
-    if (!options.date || !options.date.hasRanges()) {
-      throw new Error(
-        '--date is required. Specify date range(s) (e.g., 20240101-20241231)',
-      );
-    }
-
-    // Convert options to GpxOptions
-    const filter: Activity.FilterOpts = {
-      commuteOnly: REG.commuteOnly.test(options.commute || 'all'),
-      nonCommuteOnly: REG.nonCommuteOnly.test(options.commute || 'all'),
-      include: options.type ? options.type as Types.ActivityType[] : undefined,
-      regions: options.region ? options.region as Activity.Region.Code[] : undefined,
-    };
-
-    const gpxOpts: GpxOptions = {
-      athleteId: options.athleteId,
-      date: options.date,
-      output: options.output,
-      laps: options.laps,
-      noTracks: options.noTracks,
-      blackout: options.blackout,
-      allowDups: options.allowDups,
-      imperial: options.imperial,
-    };
-
-    const app = new App.Main(this.ctx);
-    ctx.app = app;
-    await app.init({ strava: true, userSettings: true });
-
-          ctx.log.info.h1('GPX File Generator').emit();
-
-
-    const activities = new Activity.Collection(this.ctx);
-    await activities.getForDateRange(options.date);
-    activities.filter(filter);
-
-    await activities.getTrackPoints({})
-
-          // Build track options
-      const trackOpts: App.Track.Opts = {
-        activities: true,
-        date: this.opts.date,
-        output: outputPath as FS.Path,
-        laps: this.opts.laps,
-        noTracks: this.opts.noTracks,
-        imperial: this.opts.imperial ?? false,
-        blackout: this.opts.blackout ?? false,
-        allowDups: this.opts.allowDups ?? false,
-        type: (this.opts.type ?? []) as Schema.Types.ActivityType[],
-        commute: this.opts.commute ?? 'all',
-        regions: _.isNonEmptyArray(this.opts.regions) ? this.opts.regions : undefined,
-      };
-
-
-
-    app.getTrack(trackOpts,'gpx')
-
-    const tool = new GpxTool(this.ctx);
-    tool.
   }
 }

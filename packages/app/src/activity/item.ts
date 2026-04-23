@@ -84,11 +84,4 @@ export class ActivityItem extends Api.Activity {
     }
     return this.#region;
   }
-
-  /**
-   * Returns a string representation of the activity.
-   */
-  override toString(): string {
-    return this.toString();
-  }
 }

@@ -1,12 +1,12 @@
 import type { Command } from '@epdoc/cliapp';
 import { DateRanges } from '@epdoc/daterange';
-import type * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { Api } from '../../dep.ts';
 import type * as Track from '../../track/mod.ts';
 import type { Ctx } from '../dep.ts';
 import * as Options from '../options/mod.ts';
 import type * as Cmd from '../types.ts';
+import * as App from '@epdoc/strava-app';
 
 export const cmdConfig: Options.Config = {
   replace: { cmd: 'KML' },
@@ -116,9 +116,25 @@ export class KmlCmd extends Options.BaseSubCmd {
           ctx.log.info.text('Fetching activities since last update').value(lastUpdated).emit();
         }
 
-        // Use default kmlFile from user settings if --output not provided
-        const outputPath = kmlOpts.output || ctx.app.userSettings?.kmlFile;
-        if (!outputPath) {
+        // Create activity collection and fetch activities for output resolution
+        const activities = new App.Activity.Collection(ctx);
+        await activities.getForDateRange(dateRanges);
+
+        // Build filter options
+        const filter: App.Activity.FilterOpts = {
+          commuteOnly: kmlOpts.commute === 'yes',
+          nonCommuteOnly: kmlOpts.commute === 'no',
+          include: kmlOpts.type,
+        };
+        activities.filter(filter);
+
+        // Resolve output path using the instance method (automatically determines defaultFolder from kmlFile)
+        const outputFile = activities.resolveOutputFile({
+          output: kmlOpts.output,
+          outputType: 'kml',
+        });
+
+        if (!outputFile) {
           ctx.log.error.error(
             '--output is required (or set kmlFile in ~/.strava/user.settings.json). Specify output filename (e.g., -o output.kml)',
           )
@@ -127,6 +143,8 @@ export class KmlCmd extends Options.BaseSubCmd {
           this.cmd.outputHelp();
           Deno.exit(1);
         }
+
+        const outputPath = outputFile.path;
 
         const opts: Track.ActivityOpts & Track.CommonOpts & Track.StreamOpts = {
           activities: true,

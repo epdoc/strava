@@ -9,3 +9,4 @@ x-*
 *.pdf
 tmp.*
 dist/
+.vscode/

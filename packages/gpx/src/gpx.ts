@@ -1,9 +1,11 @@
 import type { DateRanges } from '@epdoc/daterange';
-import { DateTime } from '@epdoc/datetime';
+import type { DateTime } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
-import * as Strava from '@epdoc/strava-api';
+import type * as Strava from '@epdoc/strava-api';
 import * as App from '@epdoc/strava-app';
 import type { Ctx, RegionCode } from '@epdoc/strava-core';
+import type * as Schema from '@epdoc/strava-schema';
+import { _ } from '@epdoc/type';
 
 /**
  * Options for GPX generation
@@ -28,7 +30,7 @@ export type GpxOptions = {
   /** Allow duplicate intermediate track points */
   allowDups?: boolean;
   /** Filter activities by region code */
-  region?: RegionCode;
+  regions?: RegionCode[];
   /** Use imperial units */
   imperial?: boolean;
 };
@@ -99,6 +101,8 @@ export class GpxTool extends App.BaseClass {
       this.ctx.app = app;
       await app.init({ strava: true, userSettings: true });
 
+      this.log.info.h1('GPX File Generator').emit();
+
       // Determine output path
       const outputPath = this.#resolveOutputPath();
       if (!outputPath) {
@@ -106,8 +110,7 @@ export class GpxTool extends App.BaseClass {
           'Output path could not be determined. Specify --output or set gpxFolder in user settings.',
         );
       }
-
-      this.log.info.h1('GPX File Generator').emit();
+      this.log.info.text('Output path').fs(outputPath).emit();
 
       // Build track options
       const trackOpts: App.Track.Opts = {
@@ -116,15 +119,16 @@ export class GpxTool extends App.BaseClass {
         output: outputPath as FS.Path,
         laps: this.opts.laps,
         noTracks: this.opts.noTracks,
-        commute: this.opts.commute ?? 'all',
-        type: (this.opts.type ?? []) as Strava.Schema.ActivityType[],
         imperial: this.opts.imperial ?? false,
         blackout: this.opts.blackout ?? false,
         allowDups: this.opts.allowDups ?? false,
+        type: (this.opts.type ?? []) as Schema.Types.ActivityType[],
+        commute: this.opts.commute ?? 'all',
+        regions: _.isNonEmptyArray(this.opts.regions) ? this.opts.regions : undefined,
       };
 
       // Generate GPX
-      await this.app.getTrack(trackOpts);
+      await this.app.getTrack(trackOpts, 'kml');
 
       this.log.info.h2('GPX file generated successfully').fs(outputPath).emit();
     } catch (err) {
@@ -187,11 +191,11 @@ export class GpxTool extends App.BaseClass {
     let maxDate: DateTime | undefined;
 
     for (const range of ranges) {
-      if (!minDate || range.afterDateTime.epochMilliseconds < minDate.epochMilliseconds) {
-        minDate = range.afterDateTime;
+      if (!minDate || range.after.epochMilliseconds < minDate.epochMilliseconds) {
+        minDate = range.after;
       }
-      if (!maxDate || range.beforeDateTime.epochMilliseconds > maxDate.epochMilliseconds) {
-        maxDate = range.beforeDateTime;
+      if (!maxDate || range.before.epochMilliseconds > maxDate.epochMilliseconds) {
+        maxDate = range.before;
       }
     }
 

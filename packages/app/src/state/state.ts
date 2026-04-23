@@ -1,8 +1,8 @@
 import { DateTime, type ISODate } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
-import type * as Strava from '@epdoc/strava-api';
 import type { Ctx } from '@epdoc/strava-core';
 import { _ } from '@epdoc/type';
+import type * as Activity from '../activity/mod.ts';
 import { BaseClass } from '../base.ts';
 import type * as State from './types.ts';
 
@@ -121,7 +121,7 @@ export class StateFile extends BaseClass {
    */
   async updateLastUpdated(
     type: State.OutputType,
-    activities: Strava.Activity[],
+    activities: Activity.Item[],
   ): Promise<void> {
     if (activities.length === 0) {
       this.log.debug.text('No activities to update state from').emit();
@@ -129,7 +129,7 @@ export class StateFile extends BaseClass {
     }
 
     // Find the most recent activity by startDatetimeLocal
-    let mostRecent: Strava.Activity | undefined;
+    let mostRecent: Activity.Item | undefined;
     for (const activity of activities) {
       if (
         !mostRecent ||

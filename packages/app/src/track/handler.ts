@@ -1,8 +1,8 @@
 import type * as FS from '@epdoc/fs/fs';
-import type * as Strava from '@epdoc/strava-api';
 import type { Ctx } from '@epdoc/strava-core';
 import { BaseClass } from '../base.ts';
 import { assert } from '@std/assert/assert';
+import type * as Activity from '../activity/mod.ts';
 import type * as Segment from '../segment/mod.ts';
 import { GpxWriter } from './gpx.ts';
 import { KmlWriter } from './kml.ts';
@@ -130,7 +130,7 @@ export class Handler extends BaseClass {
    */
   async outputData(
     filepath: FS.Path,
-    activities: Strava.Activity[],
+    activities: Activity.Item[],
     segments: SegmentData[],
   ): Promise<void> {
     const pathStr = typeof filepath === 'string'

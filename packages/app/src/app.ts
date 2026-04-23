@@ -1,12 +1,13 @@
 import { SilentError } from '@epdoc/cliapp';
 import type { DateRanges } from '@epdoc/daterange';
-import { DateTime, type ISODate } from '@epdoc/datetime';
+import type { ISODate } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import * as Strava from '@epdoc/strava-api';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
+import * as Activity from './activity/mod.ts';
 import * as BikeLog from './bikelog/mod.ts';
 import config from './consts.ts';
 import * as Segment from './segment/mod.ts';
@@ -20,16 +21,6 @@ assert(
   'Invalid application configuration',
 );
 const configPaths = config.paths;
-
-type GetActivitiesOpts = {
-  detailed?: boolean;
-  streams?: Schema.Stream.StreamKey[];
-  coordinates?: boolean;
-  starredSegments?: boolean;
-  filter?: Strava.ActivityFilter;
-  dedup?: boolean;
-  blackoutZones?: Strava.LatLngRect[];
-};
 
 /**
  * Main application class handling Strava API interactions and core business logic.
@@ -237,93 +228,22 @@ export class Main extends BaseClass {
    */
   async getActivitiesForDateRange(
     date: DateRanges,
-    opts: GetActivitiesOpts = {},
-  ): Promise<Strava.Activity[]> {
-    let activities: Strava.Activity[] = [];
+    opts: Activity.GetActivitiesOpts = {},
+  ): Promise<Activity.Collection> {
+    const activities = new Activity.Collection(this.ctx, this.#api, this.athlete);
 
     await this.api.refreshToken();
 
-    this.log.info.text('Retrieving activities for').dateRange(date).start();
+    await activities.getForDateRange(date);
+    await activities.getSegments(opts);
+    await activities.getTrackPoints(opts);
 
-    const athleteId: Schema.Athlete.Id = (this.athlete && Strava.isStravaId(this.athlete.id))
-      ? this.athlete.id
-      : 0;
-
-    // Get activities for each date range
-    for (const dateRange of date.ranges) {
-      const apiOpts: Strava.ActivityOpts = {
-        athleteId,
-        query: {
-          per_page: 200,
-          after: Math.floor(
-            (dateRange.after
-              ? dateRange.after.epochMilliseconds
-              : new DateTime(0).epochMilliseconds) /
-              1000,
-          ),
-          before: Math.floor(
-            (dateRange.before
-              ? dateRange.before.epochMilliseconds
-              : DateTime.now().epochMilliseconds) / 1000,
-          ),
-        },
-      };
-
-      activities = [...activities, ...await this.api.getActivities(apiOpts)];
-    }
-    if (opts.filter) {
-      activities = activities.filter((activity) => activity.include(opts.filter!));
+    // Attach starred segments if requested
+    if (opts.starredSegments) {
+      const starredSegmentDict = await this.getStarredSegmentDict();
+      activities.attachStarredSegments(starredSegmentDict);
     }
 
-    this.log.info.icheck().text('Retrieved a list of').count(activities.length)
-      .text('activity', 'activities').text('from Strava:').dateRange(date).stop();
-
-    if (activities.length) {
-      if (opts.detailed || opts.starredSegments) {
-        this.log.info.h2('Retrieving activity details from Strava:').emit();
-        this.log.indent();
-        const jobs: Promise<void>[] = [];
-        activities.forEach((activity) => {
-          jobs.push(activity.getDetailed());
-        });
-        await Promise.all(jobs);
-        this.log.outdent();
-      }
-      if (_.isNonEmptyArray(opts.streams)) {
-        this.log.info.h2('Retrieving track points from Strava:').emit();
-        const jobs: Promise<void>[] = [];
-        const streams = opts.streams; // Extract to non-null variable
-        this.log.indent();
-        activities.forEach((activity) => {
-          jobs.push(activity.getTrackPoints(streams));
-        });
-        await Promise.all(jobs);
-        this.log.outdent();
-        this.log.info.h2('Filtering redundant track points:').emit();
-        this.log.indent();
-        activities.forEach((activity) => {
-          activity.filterTrackPoints(opts.dedup === true, opts.blackoutZones);
-        });
-        this.log.outdent();
-        // this.log.info.text('Retrieved track points for').count(activities.length)
-        //   .text('activity', 'activities').emit();
-      }
-
-      if (opts.starredSegments) {
-        const starredSegmentDict = await this.getStarredSegmentDict();
-        this.log.info.text('Processing segment efforts for').count(activities.length)
-          .text('activity:', 'activities:').emit();
-        this.log.indent();
-        activities.forEach((activity) => {
-          const count = activity.attachStarredSegments(starredSegmentDict);
-          if (count > 0) {
-            this.log.info.text('Found').count(count)
-              .text('starred segment effort').text('for').activity(activity).emit();
-          }
-        });
-        this.log.outdent();
-      }
-    }
     return activities;
   }
 
@@ -369,10 +289,7 @@ export class Main extends BaseClass {
    * }, 'kml');
    * ```
    */
-  async getTrack(
-    streamOpts: Stream.Opts,
-    outputType?: State.OutputType,
-  ): Promise<void> {
+  async getTrack(streamOpts: Stream.Opts, outputType?: State.OutputType): Promise<void> {
     // Validate that at least activities or segments is requested
     if (!streamOpts.activities && !streamOpts.segments) {
       throw new Error('When writing KML, select either segments, activities, or both');
@@ -389,13 +306,13 @@ export class Main extends BaseClass {
       writer.setLineStyles(this.userSettings.lineStyles);
     }
 
-    let activities: Strava.Activity[] = [];
     let segments: Segment.Data[] = [];
+    let activities: Activity.Collection | undefined = undefined;
 
     if (streamOpts.activities) {
       assert(streamOpts.date);
 
-      const opts: GetActivitiesOpts = {
+      const opts: Activity.GetActivitiesOpts = {
         detailed: streamOpts.laps === true || streamOpts.more || streamOpts.efforts,
         streams: writer?.streamTypes(),
         starredSegments: streamOpts.efforts,
@@ -420,15 +337,17 @@ export class Main extends BaseClass {
       segments = await this.getKmlSegments(streamOpts);
     }
 
-    if (activities.length || segments.length) { // Generate KML or GPX files
-      // We already asserted output is not undefined earlier
-      const outputPath = streamOpts.output;
+    if (activities) {
+      if (activities.length || segments.length) { // Generate KML or GPX files
+        // We already asserted output is not undefined earlier
+        const outputPath = streamOpts.output;
 
-      await handler.outputData(outputPath, activities, segments);
+        await handler.outputData(outputPath, activities.activities, segments);
 
-      // Update state file with the latest activity timestamp
-      if (outputType && this.#stateFile && activities.length > 0) {
-        await this.#stateFile.updateLastUpdated(outputType, activities);
+        // Update state file with the latest activity timestamp
+        if (outputType && this.#stateFile && activities.length > 0) {
+          await this.#stateFile.updateLastUpdated(outputType, activities.activities);
+        }
       }
     } else {
       this.log.info.warn('No activities or segments found for the specified criteria').emit();
@@ -499,15 +418,12 @@ export class Main extends BaseClass {
 
     this.log.info.text('Generating PDF/XML for Adobe Acrobat Forms').emit();
 
-    const opts: GetActivitiesOpts = {
+    const opts: Activity.GetActivitiesOpts = {
       detailed: true,
       starredSegments: true,
     };
 
-    const activities: Strava.Activity[] = await this.getActivitiesForDateRange(
-      pdfOpts.date,
-      opts,
-    );
+    const activities: Activity.Collection = await this.getActivitiesForDateRange(pdfOpts.date, opts);
 
     // Prepare bikes dict from athlete data
     const bikes: Record<string, Schema.Gear.Summary> = {};
@@ -545,12 +461,12 @@ export class Main extends BaseClass {
     // }
 
     this.log.info.text('Generating XML file').fs(outputPath).emit();
-    await bikelog.outputData(this.ctx, outputPath, activities);
+    await bikelog.outputData(this.ctx, outputPath, activities.activities);
     this.log.info.h2('PDF/XML file generated successfully').fs(outputPath).emit();
 
     // Update state file with the latest activity timestamp
     if (outputType && this.#stateFile && activities.length > 0) {
-      await this.#stateFile.updateLastUpdated(outputType, activities);
+      await this.#stateFile.updateLastUpdated(outputType, activities.activities);
     }
   }
 

@@ -55,15 +55,15 @@ export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
     msg.label('  •').text('Use --output to specify a custom filename (relative to gpxFolder)\n\n');
 
     msg.h2('Examples:\n');
-    msg.label('  ').value('strava-gpx --date 20240101-20240131\n');
+    msg.label('  ').value('--date 20240101-20240131\n');
     msg.text('      Generate GPX for all activities in January 2024\n\n');
-    msg.label('  ').value('strava-gpx --date 20240101-20241231 --output 2024-rides.gpx\n');
+    msg.label('  ').value('--date 20240101-20241231 --output 2024-rides.gpx\n');
     msg.text('      Generate GPX with custom filename\n\n');
-    msg.label('  ').value('strava-gpx --date 20240101-20241231 --region CR\n');
+    msg.label('  ').value('--date 20240101-20241231 --region CR\n');
     msg.text('      Generate GPX for Costa Rica activities only\n\n');
-    msg.label('  ').value('strava-gpx --date 20240101-20241231 --type Ride --laps\n');
+    msg.label('  ').value('--date 20240101-20241231 --type Ride --laps\n');
     msg.text('      Generate GPX with lap waypoints for rides only\n\n');
-    msg.label('  ').value('strava-gpx --date 20240101-20241231 --laps --no-tracks\n');
+    msg.label('  ').value('--date 20240101-20241231 --laps --no-tracks\n');
     msg.text('      Generate GPX with only lap waypoints (no tracks)\n');
 
     return msg.format();

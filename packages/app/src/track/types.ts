@@ -3,6 +3,7 @@ import type * as FS from '@epdoc/fs/fs';
 import type * as Strava from '@epdoc/strava-api';
 import type * as Schema from '@epdoc/strava-schema';
 import type { Dict } from '@epdoc/type';
+import type { ActivityFilterOpts } from '../activity/mod.ts';
 
 export type KmlLineStyle = {
   color: string;
@@ -22,11 +23,9 @@ export type KmlLineStyleDefs = Partial<Record<ActivityExType, KmlLineStyle>>;
 /**
  * Options used when including Activity information
  */
-export type ActivityOpts = {
+export type ActivityOpts = ActivityFilterOpts & {
   activities?: boolean;
   efforts?: boolean; // include starred segment efforts in activity descriptions
-  commute?: 'yes' | 'no' | 'all'; // filter by commute status
-  type?: Schema.Types.ActivityType[]; // filter by activity type (empty=all, string[]=filtered by types)
 };
 
 /**
@@ -55,6 +54,8 @@ export type StreamOpts = {
   blackout?: boolean;
   /** allow duplicate intermediate track points instead of filtering them out */
   allowDups?: boolean;
+  /** filter by commute status: 'yes' = commutes only, 'no' = non-commutes only, 'all' = both */
+  commute?: 'yes' | 'no' | 'all';
 };
 
 export type Opts = CommonOpts & ActivityOpts & StreamSegmentOpts & StreamOpts;

@@ -23,22 +23,12 @@
  */
 
 // Item - A single activity wrapper (ActivityItem class)
-export { ActivityItem as Item, type ActivityFilterOpts } from './item.ts';
+export { ActivityItem as Item } from './item.ts';
+export * from './options.ts';
+export * from './types.ts';
 
 // Collection - A collection/manager for multiple activities (ActivityCollection class)
 export { ActivityCollection as Collection, type GetActivitiesOpts } from './collection.ts';
 
 // Region types and functions for geographic filtering
-export {
-  getRegionForActivity,
-  getRegionForLatLng,
-  getRegionResultForLatLng,
-  isPointInRect,
-  isPointInRegion,
-  loadRegions,
-  WORLD_REGION,
-  type Region,
-  type RegionRect,
-  type RegionResult,
-  type RegionsFile,
-} from './region.ts';
+export * as Region from './region.ts';

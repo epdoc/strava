@@ -20,6 +20,15 @@ const REGEX = {
   noKmlData: /^(Workout|Yoga|Weight Training)$/i,
 };
 
+export type ActivityConstructor<T> = new (
+  ctx: Ctx.Context,
+  data: StravaSchema.Activity.Summary | StravaSchema.Activity.Detailed,
+  opts?: {
+    aliases?: Record<string, string>;
+    segmentProvider?: { getSegment(name: string): StravaSchema.Segment.Summary | undefined };
+  },
+) => T;
+
 /**
  * Represents a Strava activity.
  *

@@ -1,8 +1,17 @@
 import type * as CliApp from '@epdoc/cliapp';
 import type { DateRanges } from '@epdoc/daterange';
 import { buildDateHelp, dateOptionDef } from '@epdoc/daterange';
+import * as App from '@epdoc/strava-app';
+import { Activity } from '@epdoc/strava-app';
 import { BaseRootCmdClass, Ctx, Options } from '@epdoc/strava-core';
+import { Types } from '@epdoc/strava-schema';
+import { assert } from '@std/assert/assert';
 import { GpxOptions, GpxTool } from './gpx.ts';
+
+const REG = {
+  commuteOnly: new RegExp(/^(yes)$/i),
+  nonCommuteOnly: new RegExp(/^(no)$/i),
+};
 
 type GpxCmdOptions = CliApp.LogCmdOptions & {
   athleteId?: string;
@@ -10,12 +19,15 @@ type GpxCmdOptions = CliApp.LogCmdOptions & {
   output?: string;
   laps?: boolean;
   noTracks?: boolean;
-  commute?: 'yes' | 'no' | 'all';
-  type?: string[];
   blackout?: boolean;
   allowDups?: boolean;
-  region?: string;
   imperial?: boolean;
+  /** Filter based on activity type */
+  type?: string[];
+  /** Filter based on commute or non commute */
+  commute?: 'yes' | 'no' | 'all';
+  /** Filter based on region (ON,CR,BC,EU,MX) */
+  region?: string[];
 };
 
 export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
@@ -31,11 +43,11 @@ export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
     this.option(Options.optionDefs.output).emit();
     this.option(Options.optionDefs.laps).emit();
     this.option(Options.optionDefs.noTracks).emit();
-    this.option(Options.optionDefs.commute).emit();
-    this.option(Options.optionDefs.type).emit();
     this.option(Options.optionDefs.blackout).emit();
     this.option(Options.optionDefs.allowDups).emit();
-    this.option(Options.optionDefs.region).emit();
+    this.option(Activity.optionDefs.commute).emit();
+    this.option(Activity.optionDefs.type).emit();
+    this.option(Activity.optionDefs.region).emit();
     this.addHelpText(this.helpText());
   }
 
@@ -73,22 +85,68 @@ export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
     options: GpxCmdOptions,
     _args: CliApp.CmdArgs,
   ): Promise<void> {
+    const ctx = this.activeContext();
+    assert(ctx);
+
+    // Validate required options
+    if (!options.date || !options.date.hasRanges()) {
+      throw new Error(
+        '--date is required. Specify date range(s) (e.g., 20240101-20241231)',
+      );
+    }
+
     // Convert options to GpxOptions
+    const filter: Activity.FilterOpts = {
+      commuteOnly: REG.commuteOnly.test(options.commute || 'all'),
+      nonCommuteOnly: REG.nonCommuteOnly.test(options.commute || 'all'),
+      include: options.type ? options.type as Types.ActivityType[] : undefined,
+      regions: options.region ? options.region as Activity.Region.Code[] : undefined,
+    };
+
     const gpxOpts: GpxOptions = {
       athleteId: options.athleteId,
       date: options.date,
       output: options.output,
       laps: options.laps,
       noTracks: options.noTracks,
-      commute: options.commute,
-      type: options.type,
       blackout: options.blackout,
       allowDups: options.allowDups,
-      region: options.region,
       imperial: options.imperial,
     };
 
-    const tool = new GpxTool(this.ctx, gpxOpts);
-    await tool.run();
+    const app = new App.Main(this.ctx);
+    ctx.app = app;
+    await app.init({ strava: true, userSettings: true });
+
+          ctx.log.info.h1('GPX File Generator').emit();
+
+
+    const activities = new Activity.Collection(this.ctx);
+    await activities.getForDateRange(options.date);
+    activities.filter(filter);
+
+    await activities.getTrackPoints({})
+
+          // Build track options
+      const trackOpts: App.Track.Opts = {
+        activities: true,
+        date: this.opts.date,
+        output: outputPath as FS.Path,
+        laps: this.opts.laps,
+        noTracks: this.opts.noTracks,
+        imperial: this.opts.imperial ?? false,
+        blackout: this.opts.blackout ?? false,
+        allowDups: this.opts.allowDups ?? false,
+        type: (this.opts.type ?? []) as Schema.Types.ActivityType[],
+        commute: this.opts.commute ?? 'all',
+        regions: _.isNonEmptyArray(this.opts.regions) ? this.opts.regions : undefined,
+      };
+
+
+
+    app.getTrack(trackOpts,'gpx')
+
+    const tool = new GpxTool(this.ctx);
+    tool.
   }
 }

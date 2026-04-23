@@ -6,34 +6,37 @@ import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import type * as Schema from '@epdoc/strava-schema';
 import { _, type Integer } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
-import { ActivityItem, type ActivityFilterOpts } from './item.ts';
+import type { Main as App } from '../app.ts';
+import { ActivityItem } from './item.ts';
 import type { Region } from './region.ts';
+import { FilterOpts } from './types.ts';
 
 export type GetActivitiesOpts = {
   detailed?: boolean;
   streams?: Schema.Stream.StreamKey[];
   coordinates?: boolean;
   starredSegments?: boolean;
-  filter?: ActivityFilterOpts;
   dedup?: boolean;
   blackoutZones?: Strava.LatLngRect[];
 };
 
 export class ActivityCollection extends BaseClass {
   #activities: ActivityItem[] = [];
-  #api: Api;
   #athlete?: Schema.Athlete.Detailed;
   #regions?: Region[];
 
-  constructor(ctx: Ctx.Context, api: Api, athlete?: Schema.Athlete.Detailed, regions?: Region[]) {
+  constructor(ctx: Ctx.Context, athlete?: Schema.Athlete.Detailed) {
     super(ctx);
-    this.#api = api;
     this.#athlete = athlete;
-    this.#regions = regions;
+  }
+
+  get app(): App {
+    assert(this.ctx.app);
+    return this.ctx.app as App;
   }
 
   get api(): Api {
-    return this.#api;
+    return this.app.api;
   }
 
   get athlete(): Schema.Athlete.Detailed {
@@ -104,22 +107,20 @@ export class ActivityCollection extends BaseClass {
         },
       };
 
-      const apiActivities = await this.api.getActivities(apiOpts);
-      for (const apiActivity of apiActivities) {
-        this.#activities.push(new ActivityItem(this.ctx, apiActivity));
+      const apiActivities = await this.api.getActivities(apiOpts, ActivityItem);
+      for (const activity of apiActivities) {
+        this.#activities.push(activity);
       }
     }
     this.log.info.icheck().text('Retrieved a list of').count(this.length)
       .text('Strava activity', 'Strava activities').dateRange(date).stop();
   }
 
-  filter(filter: ActivityFilterOpts = {}): void {
-    this.#activities = this.#activities.filter((activity) =>
-      activity.include(filter, this.#regions)
-    );
+  filter(filter: FilterOpts = {}): void {
+    this.#activities = this.#activities.filter((activity) => activity.filter(filter));
   }
 
-  async getSegments(
+  async getDetailsAndSegments(
     opts: GetActivitiesOpts = {},
   ): Promise<void> {
     if (this.length && (opts.detailed || opts.starredSegments)) {

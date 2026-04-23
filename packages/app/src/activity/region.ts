@@ -1,10 +1,12 @@
 import type * as Schema from '@epdoc/strava-schema';
-import type { Activity } from '@epdoc/strava-api';
+import config from '../consts.ts';
+
+export type Code = string;
 
 /**
  * A rectangular boundary defined by min/max lat/lng.
  */
-export type RegionRect = {
+export type Rect = {
   minLat: Schema.Types.Latitude;
   maxLat: Schema.Types.Latitude;
   minLng: Schema.Types.Longitude;
@@ -12,37 +14,109 @@ export type RegionRect = {
 };
 
 /**
- * A geographic region with one or more bounding rectangles.
+ * Result of region detection for an activity.
  */
-export type Region = {
+export type Result = {
   id: string;
   name: string;
+};
+
+/**
+ * A geographic region with one or more bounding rectangles.
+ */
+export type Def = {
+  id: Code;
+  name: string;
   skip: boolean;
-  rectangles: RegionRect[];
+  rectangles: Rect[];
 };
 
 /**
  * Structure of the user.regions.json configuration file.
  */
-export type RegionsFile = {
+export type File = {
   description: string;
   lastModified: string;
-  regions: Region[];
+  regions: Def[];
 };
 
-/**
- * Result of region detection for an activity.
- */
-export type RegionResult = {
-  id: string;
-  name: string;
-};
+export class Region {
+  #regions: Def[] = [];
 
-/** Default region when no matching region is found. */
-export const WORLD_REGION: RegionResult = {
-  id: 'WORLD',
-  name: 'World',
-};
+  readonly WORLD: Result = {
+    id: 'WORLD',
+    name: 'World',
+  };
+
+  async regions(): Promise<Def[]> {
+    if (!this.#regions) {
+      await this.load();
+    }
+    return this.#regions;
+  }
+
+  /**
+   * Loads regions from a RegionsFile, filtering out skipped regions.
+   *
+   * @param file - The regions file data
+   * @returns Array of active (non-skipped) regions
+   */
+  async load(): Promise<void> {
+    const contents = await config.paths.userRegions.readJson<File>();
+    // const contents = await this.#file.readJson<File>();
+    this.#regions = contents.regions;
+  }
+
+  async choices(): Promise<Code[]> {
+    const regions = await this.regions();
+    return regions.map((region) => {
+      return region.id;
+    });
+  }
+
+  /**
+   * Gets the first matching region for a lat/lng point.
+   * Skips regions with `skip: true`.
+   *
+   * @param lat - Latitude of the point
+   * @param lng - Longitude of the point
+   * @param regions - Array of regions to check
+   * @returns The matching region or `undefined` if no match
+   */
+
+  async findForLatLng(
+    lat: Schema.Types.Latitude,
+    lng: Schema.Types.Longitude,
+  ): Promise<Def | undefined> {
+    const regions = await this.regions();
+    for (const region of regions) {
+      if (!region.skip && isPointInRegion(lat, lng, region)) {
+        return region;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Gets the region result for a lat/lng point.
+   * Returns WORLD_REGION if no matching region is found.
+   *
+   * @param lat - Latitude of the point
+   * @param lng - Longitude of the point
+   * @param regions - Array of regions to check
+   * @returns RegionResult with id and name
+   */
+  async findResultForLatLng(
+    lat: Schema.Types.Latitude,
+    lng: Schema.Types.Longitude,
+  ): Promise<Result> {
+    const region = await this.findForLatLng(lat, lng);
+    if (region) {
+      return { id: region.id, name: region.name };
+    }
+    return this.WORLD;
+  }
+}
 
 /**
  * Checks if a lat/lng point falls within a rectangle.
@@ -55,7 +129,7 @@ export const WORLD_REGION: RegionResult = {
 export function isPointInRect(
   lat: Schema.Types.Latitude,
   lng: Schema.Types.Longitude,
-  rect: RegionRect,
+  rect: Rect,
 ): boolean {
   return lat >= rect.minLat &&
     lat <= rect.maxLat &&
@@ -74,83 +148,9 @@ export function isPointInRect(
 export function isPointInRegion(
   lat: Schema.Types.Latitude,
   lng: Schema.Types.Longitude,
-  region: Region,
+  region: Def,
 ): boolean {
   return region.rectangles.some((rect) => isPointInRect(lat, lng, rect));
 }
 
-/**
- * Gets the first matching region for a lat/lng point.
- * Skips regions with `skip: true`.
- *
- * @param lat - Latitude of the point
- * @param lng - Longitude of the point
- * @param regions - Array of regions to check
- * @returns The matching region or `undefined` if no match
- */
-export function getRegionForLatLng(
-  lat: Schema.Types.Latitude,
-  lng: Schema.Types.Longitude,
-  regions: Region[],
-): Region | undefined {
-  for (const region of regions) {
-    if (!region.skip && isPointInRegion(lat, lng, region)) {
-      return region;
-    }
-  }
-  return undefined;
-}
-
-/**
- * Gets the region result for a lat/lng point.
- * Returns WORLD_REGION if no matching region is found.
- *
- * @param lat - Latitude of the point
- * @param lng - Longitude of the point
- * @param regions - Array of regions to check
- * @returns RegionResult with id and name
- */
-export function getRegionResultForLatLng(
-  lat: Schema.Types.Latitude,
-  lng: Schema.Types.Longitude,
-  regions: Region[],
-): RegionResult {
-  const region = getRegionForLatLng(lat, lng, regions);
-  if (region) {
-    return { id: region.id, name: region.name };
-  }
-  return WORLD_REGION;
-}
-
-/**
- * Gets the region for an activity based on its start location.
- * Returns WORLD_REGION if:
- * - Activity has no start_latlng
- * - No matching region is found
- *
- * @param activity - The activity to get region for
- * @param regions - Array of regions to check
- * @returns RegionResult with id and name
- */
-export function getRegionForActivity(
-  activity: Activity,
-  regions: Region[],
-): RegionResult {
-  const startLatLng = activity.data.start_latlng;
-  if (!startLatLng || startLatLng.length < 2) {
-    return WORLD_REGION;
-  }
-
-  const [lat, lng] = startLatLng;
-  return getRegionResultForLatLng(lat, lng, regions);
-}
-
-/**
- * Loads regions from a RegionsFile, filtering out skipped regions.
- *
- * @param file - The regions file data
- * @returns Array of active (non-skipped) regions
- */
-export function loadRegions(file: RegionsFile): Region[] {
-  return file.regions.filter((region) => !region.skip);
-}
+export const db = new Region();

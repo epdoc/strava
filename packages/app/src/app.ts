@@ -60,7 +60,7 @@ export class Main extends BaseClass {
     // Initialize with defaults
     this.#api = new Strava.Api(ctx, configPaths.userCreds, [{ file: configPaths.clientCreds }, {
       env: true,
-    }]);
+    }], Activity.Item);
   }
 
   /**
@@ -235,7 +235,7 @@ export class Main extends BaseClass {
     await this.api.refreshToken();
 
     await activities.getForDateRange(date);
-    await activities.getSegments(opts);
+    await activities.getDetailsAndSegments(opts);
     await activities.getTrackPoints(opts);
 
     // Attach starred segments if requested
@@ -423,7 +423,10 @@ export class Main extends BaseClass {
       starredSegments: true,
     };
 
-    const activities: Activity.Collection = await this.getActivitiesForDateRange(pdfOpts.date, opts);
+    const activities: Activity.Collection = await this.getActivitiesForDateRange(
+      pdfOpts.date,
+      opts,
+    );
 
     // Prepare bikes dict from athlete data
     const bikes: Record<string, Schema.Gear.Summary> = {};

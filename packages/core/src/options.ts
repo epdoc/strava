@@ -96,13 +96,6 @@ EXAMPLES:
     name: 'efforts',
     description: 'Include activity stats + starred segment efforts in descriptions (superset of --more)',
   },
-  commute: {
-    name: 'commute',
-    params: '<choice>',
-    description: 'Filter by commute: yes|no|all (default: all)',
-    choices: ['yes', 'no', 'all'],
-    defVal: 'all',
-  },
   allowDups: {
     name: 'allow-dups',
     description: 'allow duplicate intermediate track points instead of filtering them out',
@@ -137,31 +130,6 @@ EXAMPLES:
     description: 'Generate KML file for starred segments',
     argParser: (str: string) => {
       return _.isString(str) ? FS.File.cwd(str) : str;
-    },
-  },
-  type: {
-    short: 't',
-    name: 'type',
-    params: '[types]',
-    description:
-      'Include activity types (default when no flags specified). Optional: comma-separated activity types (e.g., Ride,Run,Hike)',
-    argParser: (str: string | boolean): Schema.Types.ActivityType[] => {
-      if (str === true || str === '') return []; // All activities
-      if (_.isString(str)) {
-        return str.split(',').map((s) => s.trim() as Schema.Types.ActivityType);
-      }
-      return [];
-    },
-  },
-  region: {
-    name: 'region',
-    params: '<code>',
-    description: 'Filter activities by region (e.g., "CR" for Costa Rica, "EU" for Europe, "ON" for Ontario)',
-    argParser: (str: string | boolean): RegionCode | undefined => {
-      if (_.isString(str) && str.length > 0) {
-        return str.toUpperCase();
-      }
-      return undefined;
     },
   },
 } as const;

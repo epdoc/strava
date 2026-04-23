@@ -153,4 +153,4 @@ export function isPointInRegion(
   return region.rectangles.some((rect) => isPointInRect(lat, lng, rect));
 }
 
-export const db = new Region();
+export const db: Region = new Region();

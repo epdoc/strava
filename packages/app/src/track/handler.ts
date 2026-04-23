@@ -1,5 +1,6 @@
-import type * as FS from '@epdoc/fs/fs';
+import * as FS from '@epdoc/fs/fs';
 import type { Ctx } from '@epdoc/strava-core';
+import * as Schema from '@epdoc/strava-schema';
 import { BaseClass } from '../base.ts';
 import { assert } from '@std/assert/assert';
 import type * as Activity from '../activity/mod.ts';
@@ -87,6 +88,39 @@ export class Handler extends BaseClass {
     return this.opts && this.opts.efforts === true;
   }
 
+  /**
+   * Returns the stream types required for a given output format.
+   *
+   * Different output formats need different data from Strava's streams API:
+   * - **GPX**: Requires lat/lng, altitude, and time (for elevation data and timestamps)
+   * - **KML**: Only requires lat/lng (altitude/time not currently used in KML output)
+   *
+   * Call this method before `activities.getTrackPoints()` to determine which
+   * streams to request from the Strava API.
+   *
+   * @param outputType - The output format ('kml' or 'gpx')
+   * @returns Array of stream keys required for that format
+   *
+   * @example
+   * ```ts
+   * const streamTypes = Handler.getStreamTypes('gpx');
+   * // Returns: ['latlng', 'altitude', 'time']
+   *
+   * await activities.getTrackPoints({ streams: streamTypes });
+   * ```
+   */
+  static getStreamTypes(outputType: 'kml' | 'gpx'): Schema.Consts.StreamType[] {
+    if (outputType === 'gpx') {
+      return [
+        Schema.Consts.StreamKeys.LatLng,
+        Schema.Consts.StreamKeys.Altitude,
+        Schema.Consts.StreamKeys.Time,
+      ];
+    }
+    // KML only needs lat/lng coordinates
+    return [Schema.Consts.StreamKeys.LatLng];
+  }
+
   initWriter(_ctx: Ctx.Context, filepath: FS.Path): TrackWriter | undefined {
     assert(!this.#writer, 'writer is already initialized');
     const pathStr = typeof filepath === 'string'
@@ -116,7 +150,6 @@ export class Handler extends BaseClass {
    * The method uses buffered writing for performance and ensures proper resource cleanup
    * via try/catch blocks.
    *
-   * @param ctx Application context with logging
    * @param filepath Output file path for the KML file
    * @param activities Array of Strava activities with track points
    * @param segments Array of starred segments with coordinates
@@ -124,7 +157,7 @@ export class Handler extends BaseClass {
    * @example
    * ```ts
    * const kml = new KmlMain({ activities: true, segments: true, laps: true });
-   * await kml.outputData(ctx, 'strava.kml', activities, segments);
+   * await kml.outputData('strava.kml', activities, segments);
    * // Creates strava.kml ready for Google Earth
    * ```
    */
@@ -145,6 +178,78 @@ export class Handler extends BaseClass {
       // GPX output to folder
       const gpxWriter = new GpxWriter(this.ctx, this.opts);
       await gpxWriter.outputData(pathStr as FS.FolderPath, activities);
+    }
+  }
+
+  /**
+   * Generates output file from activities and optional segments.
+   *
+   * This is the main orchestration method for track output generation. It:
+   * 1. Determines output type from file extension (.kml or .gpx)
+   * 2. Creates the appropriate writer (KmlWriter or GpxWriter)
+   * 3. Applies format-specific configuration (line styles for KML)
+   * 4. Delegates to the writer for actual file generation
+   *
+   * **Usage pattern:**
+   * Commands should fetch all data first (activities, track points, segments),
+   * then call this method to generate the output file.
+   *
+   * @param filepath - Output file path as FS.File, FS.Folder, or string path
+   *                   (.kml extension for KML, .gpx or folder for GPX)
+   * @param activities - Activity collection with fetched track points
+   * @param segments - Optional array of starred segments (for KML only)
+   *
+   * @example
+   * ```ts
+   * // Fetch all data first
+   * const activities = new Activity.Collection(ctx);
+   * await activities.getForDateRange(date);
+   * await activities.getTrackPoints({ streams: Handler.getStreamTypes('gpx') });
+   *
+   * // Generate output using FS.File
+   * const outputFile = activities.resolveOutputFile({ type: 'gpx' });
+   * const handler = new Handler(ctx, { laps: true });
+   * await handler.generate(outputFile, activities);
+   * ```
+   */
+  async generate(
+    filepath: FS.File | FS.Folder | FS.Path,
+    activities: Activity.Collection,
+    segments?: SegmentData[],
+  ): Promise<void> {
+    // Handle FS.File or FS.Folder objects - extract path string
+    let pathStr: string;
+    if (filepath instanceof FS.File || filepath instanceof FS.Folder) {
+      pathStr = filepath.path;
+    } else if (typeof filepath === 'string') {
+      pathStr = filepath;
+    } else {
+      pathStr = (filepath as { path: string }).path;
+    }
+
+    // Determine output type from file extension
+    const isKml = REGEX.isKml.test(pathStr);
+
+    if (isKml) {
+      // KML output
+      const kmlWriter = new KmlWriter(this.ctx, this.opts);
+
+      // Apply line styles from user settings if available
+      const userSettings =
+        (this.ctx.app as { userSettings?: { lineStyles?: Stream.KmlLineStyleDefs } }).userSettings;
+      if (userSettings?.lineStyles) {
+        kmlWriter.setLineStyles(userSettings.lineStyles);
+      }
+
+      await kmlWriter.outputData(
+        pathStr as FS.FilePath,
+        activities.activities,
+        segments ?? [],
+      );
+    } else {
+      // GPX output
+      const gpxWriter = new GpxWriter(this.ctx, this.opts);
+      await gpxWriter.outputData(pathStr as FS.FolderPath, activities.activities);
     }
   }
 }

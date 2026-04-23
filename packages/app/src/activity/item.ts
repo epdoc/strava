@@ -1,6 +1,7 @@
 import * as Api from '@epdoc/strava-api';
 import type * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
+import * as Region from './region.ts';
 import type * as Activity from './types.ts';
 
 /**
@@ -10,6 +11,7 @@ import type * as Activity from './types.ts';
  * functionality such as filtering and region detection.
  */
 export class ActivityItem extends Api.Activity {
+  #region?: Region.Result;
   /**
    * Checks if the activity should be included based on the provided filter.
    *
@@ -22,7 +24,7 @@ export class ActivityItem extends Api.Activity {
    * @param regions Optional array of regions for geographic filtering.
    * @returns `true` if the activity should be included, `false` otherwise.
    */
-  filter(filter: Activity.FilterOpts): boolean {
+  async filter(filter: Activity.FilterOpts): Promise<boolean> {
     // Check commute filter
     if (filter.commuteOnly && !this.commute) {
       return false;
@@ -46,18 +48,11 @@ export class ActivityItem extends Api.Activity {
     }
 
     // Check region filter
-    if (_.isNonEmptyArray(filter.regions) && _.isNonEmptyArray(filter.regions)) {
-      const startLatLng = this.data.start_latlng;
-      if (!startLatLng || startLatLng.length < 2) {
-        // No location data, can't match region filter
-        return false;
-      }
-      const [lat, lng] = startLatLng;
-
+    if (_.isNonEmptyArray(filter.regions)) {
       // Find the region for this activity
-      const matchingRegion = filter.regions.find((region) =>
-        filter.regions!.includes(region.id as Activity.RegionCode) &&
-        isPointInRegion(lat, lng, region)
+      const activityRegion = await this.getRegion();
+      const matchingRegion = filter.regions.find((regionCode) =>
+        activityRegion.id.toLowerCase() === regionCode.toLowerCase()
       );
 
       if (!matchingRegion) {
@@ -78,14 +73,16 @@ export class ActivityItem extends Api.Activity {
    * @param regions - Array of regions to check
    * @returns RegionResult with id and name
    */
-  getRegion(): RegionResult {
-    const startLatLng = this.data.start_latlng;
-    if (!startLatLng || startLatLng.length < 2) {
-      return WORLD_REGION;
+  async getRegion(): Promise<Region.Result> {
+    if (!this.#region) {
+      const startLatLng = this.data.start_latlng;
+      if (_.isNonEmptyArray(startLatLng) && startLatLng.length >= 2) {
+        this.#region = await Region.db.findResultForLatLng(startLatLng[0], startLatLng[1]);
+      } else {
+        this.#region = Region.db.WORLD;
+      }
     }
-
-    const [lat, lng] = startLatLng;
-    return getRegionResultForLatLng(lat, lng, regions);
+    return this.#region;
   }
 
   /**

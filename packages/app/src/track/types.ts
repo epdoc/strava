@@ -3,7 +3,7 @@ import type * as FS from '@epdoc/fs/fs';
 import type * as Strava from '@epdoc/strava-api';
 import type * as Schema from '@epdoc/strava-schema';
 import type { Dict } from '@epdoc/type';
-import type { ActivityFilterOpts } from '../activity/mod.ts';
+import type * as Activity from '../activity/mod.ts';
 
 export type KmlLineStyle = {
   color: string;
@@ -23,7 +23,7 @@ export type KmlLineStyleDefs = Partial<Record<ActivityExType, KmlLineStyle>>;
 /**
  * Options used when including Activity information
  */
-export type ActivityOpts = ActivityFilterOpts & {
+export type ActivityOpts = Activity.FilterOpts & {
   activities?: boolean;
   efforts?: boolean; // include starred segment efforts in activity descriptions
 };

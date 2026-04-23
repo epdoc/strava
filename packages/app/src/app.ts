@@ -12,8 +12,7 @@ import * as BikeLog from './bikelog/mod.ts';
 import config from './consts.ts';
 import * as Segment from './segment/mod.ts';
 import * as State from './state/mod.ts';
-import { KmlWriter } from './track/kml.ts';
-import * as Stream from './track/mod.ts';
+import type * as Stream from './track/mod.ts';
 import type * as App from './types.ts';
 
 assert(
@@ -60,7 +59,7 @@ export class Main extends BaseClass {
     // Initialize with defaults
     this.#api = new Strava.Api(ctx, configPaths.userCreds, [{ file: configPaths.clientCreds }, {
       env: true,
-    }], Activity.Item);
+    }]);
   }
 
   /**
@@ -149,6 +148,23 @@ export class Main extends BaseClass {
   }
 
   /**
+   * Updates the state file with the latest activity timestamp for an output type.
+   *
+   * This method records the most recent activity date in the state file, which is
+   * used to determine the default date range for subsequent runs (fetching only
+   * new activities since the last update).
+   *
+   * @param type - The output type ('kml', 'gpx', or 'pdf')
+   * @param activities - Array of activities to extract the latest timestamp from
+   * @returns Promise that resolves when the state file is updated
+   */
+  async updateState(type: State.OutputType, activities: Activity.Item[]): Promise<void> {
+    if (this.#stateFile && activities.length > 0) {
+      await this.#stateFile.updateLastUpdated(type, activities);
+    }
+  }
+
+  /**
    * Checks if internet access is available.
    *
    * @param _ctx - Application context (currently unused).
@@ -225,27 +241,28 @@ export class Main extends BaseClass {
    * @param [opts.starredSegments=false] - Whether to attach starred segment information to each activity.
    * @param [opts.filter] - A filter to apply to the activities.
    * @returns A promise that resolves to an array of activities.
+   * @deprecated
    */
-  async getActivitiesForDateRange(
-    date: DateRanges,
-    opts: Activity.GetActivitiesOpts = {},
-  ): Promise<Activity.Collection> {
-    const activities = new Activity.Collection(this.ctx, this.#api, this.athlete);
+  // async getActivitiesForDateRange(
+  //   date: DateRanges,
+  //   opts: Activity.GetActivitiesOpts = {},
+  // ): Promise<Activity.Collection> {
+  //   const activities = new Activity.Collection(this.ctx, this.#api, this.athlete);
 
-    await this.api.refreshToken();
+  //   await this.api.refreshToken();
 
-    await activities.getForDateRange(date);
-    await activities.getDetailsAndSegments(opts);
-    await activities.getTrackPoints(opts);
+  //   await activities.getForDateRange(date);
+  //   await activities.getDetailsAndSegments(opts);
+  //   await activities.getTrackPoints(opts);
 
-    // Attach starred segments if requested
-    if (opts.starredSegments) {
-      const starredSegmentDict = await this.getStarredSegmentDict();
-      activities.attachStarredSegments(starredSegmentDict);
-    }
+  //   // Attach starred segments if requested
+  //   if (opts.starredSegments) {
+  //     const starredSegmentDict = await this.getStarredSegmentDict();
+  //     activities.attachStarredSegments(starredSegmentDict);
+  //   }
 
-    return activities;
-  }
+  //   return activities;
+  // }
 
   /**
    * Generates a KML or GPX file from Strava activities or segments.
@@ -288,71 +305,80 @@ export class Main extends BaseClass {
    *   commute: 'no'
    * }, 'kml');
    * ```
+   *
+   * @deprecated Use the Handler-based approach instead:
+   * ```ts
+   * const streamTypes = Handler.getStreamTypes('gpx');
+   * await activities.getTrackPoints({ streams: streamTypes });
+   * const handler = new Handler(ctx, opts);
+   * await handler.generate(outputPath, activities);
+   * await app.updateState('gpx', activities.activities);
+   * ```
    */
-  async getTrack(streamOpts: Stream.Opts, outputType?: State.OutputType): Promise<void> {
-    // Validate that at least activities or segments is requested
-    if (!streamOpts.activities && !streamOpts.segments) {
-      throw new Error('When writing KML, select either segments, activities, or both');
-    }
+  // async getTrack(streamOpts: Stream.Opts, outputType?: State.OutputType): Promise<void> {
+  //   // Validate that at least activities or segments is requested
+  //   if (!streamOpts.activities && !streamOpts.segments) {
+  //     throw new Error('When writing KML, select either segments, activities, or both');
+  //   }
 
-    // Initialize stream generator with options and line styles
-    const handler = new Stream.Handler(this.ctx, streamOpts);
-    assert(streamOpts.output, 'Output path is required for stream generation');
-    const writer = await handler.initWriter(this.ctx, streamOpts.output);
+  //   // Initialize stream generator with options and line styles
+  //   const handler = new Stream.Handler(this.ctx, streamOpts);
+  //   assert(streamOpts.output, 'Output path is required for stream generation');
+  //   const writer = await handler.initWriter(this.ctx, streamOpts.output);
 
-    assert(writer, 'No stream writer could be generated for the given output path');
+  //   assert(writer, 'No stream writer could be generated for the given output path');
 
-    if (writer instanceof KmlWriter && this.userSettings && this.userSettings.lineStyles) {
-      writer.setLineStyles(this.userSettings.lineStyles);
-    }
+  //   if (writer instanceof KmlWriter && this.userSettings && this.userSettings.lineStyles) {
+  //     writer.setLineStyles(this.userSettings.lineStyles);
+  //   }
 
-    let segments: Segment.Data[] = [];
-    let activities: Activity.Collection | undefined = undefined;
+  //   let segments: Segment.Data[] = [];
+  //   let activities: Activity.Collection | undefined = undefined;
 
-    if (streamOpts.activities) {
-      assert(streamOpts.date);
+  //   if (streamOpts.activities) {
+  //     assert(streamOpts.date);
 
-      const opts: Activity.GetActivitiesOpts = {
-        detailed: streamOpts.laps === true || streamOpts.more || streamOpts.efforts,
-        streams: writer?.streamTypes(),
-        starredSegments: streamOpts.efforts,
-        dedup: (streamOpts.allowDups === true) ? false : true,
-      };
-      // Filter activities based on commute option
-      if (streamOpts.commute === 'yes') {
-        opts.filter = { commuteOnly: true };
-      } else if (streamOpts.commute === 'no') {
-        opts.filter = { nonCommuteOnly: true };
-      }
-      if (streamOpts.blackout) {
-        assert(this.userSettings, 'User settings have not been read');
-        opts.blackoutZones = this.userSettings.blackoutZones;
-      }
+  //     const opts: Activity.GetActivitiesOpts = {
+  //       detailed: streamOpts.laps === true || streamOpts.more || streamOpts.efforts,
+  //       streams: writer?.streamTypes(),
+  //       starredSegments: streamOpts.efforts,
+  //       dedup: (streamOpts.allowDups === true) ? false : true,
+  //     };
+  //     // Filter activities based on commute option
+  //     if (streamOpts.commute === 'yes') {
+  //       opts.filter = { commuteOnly: true };
+  //     } else if (streamOpts.commute === 'no') {
+  //       opts.filter = { nonCommuteOnly: true };
+  //     }
+  //     if (streamOpts.blackout) {
+  //       assert(this.userSettings, 'User settings have not been read');
+  //       opts.blackoutZones = this.userSettings.blackoutZones;
+  //     }
 
-      activities = await this.getActivitiesForDateRange(streamOpts.date!, opts);
-    }
+  //     activities = await this.getActivitiesForDateRange(streamOpts.date!, opts);
+  //   }
 
-    // Fetch segments because we are building a KML of all our segments
-    if (streamOpts.segments) {
-      segments = await this.getKmlSegments(streamOpts);
-    }
+  //   // Fetch segments because we are building a KML of all our segments
+  //   if (streamOpts.segments) {
+  //     segments = await this.getKmlSegments(streamOpts);
+  //   }
 
-    if (activities) {
-      if (activities.length || segments.length) { // Generate KML or GPX files
-        // We already asserted output is not undefined earlier
-        const outputPath = streamOpts.output;
+  //   if (activities) {
+  //     if (activities.length || segments.length) { // Generate KML or GPX files
+  //       // We already asserted output is not undefined earlier
+  //       const outputPath = streamOpts.output;
 
-        await handler.outputData(outputPath, activities.activities, segments);
+  //       await handler.outputData(outputPath, activities.activities, segments);
 
-        // Update state file with the latest activity timestamp
-        if (outputType && this.#stateFile && activities.length > 0) {
-          await this.#stateFile.updateLastUpdated(outputType, activities.activities);
-        }
-      }
-    } else {
-      this.log.info.warn('No activities or segments found for the specified criteria').emit();
-    }
-  }
+  //       // Update state file with the latest activity timestamp
+  //       if (outputType && this.#stateFile && activities.length > 0) {
+  //         await this.#stateFile.updateLastUpdated(outputType, activities.activities);
+  //       }
+  //     }
+  //   } else {
+  //     this.log.info.warn('No activities or segments found for the specified criteria').emit();
+  //   }
+  // }
 
   /**
    * Retrieves segments suitable for KML generation.
@@ -418,15 +444,13 @@ export class Main extends BaseClass {
 
     this.log.info.text('Generating PDF/XML for Adobe Acrobat Forms').emit();
 
-    const opts: Activity.GetActivitiesOpts = {
+    const _opts: Activity.GetActivitiesOpts = {
       detailed: true,
       starredSegments: true,
     };
 
-    const activities: Activity.Collection = await this.getActivitiesForDateRange(
-      pdfOpts.date,
-      opts,
-    );
+    const activities = new Activity.Collection(this.ctx);
+    await activities.getForDateRange(pdfOpts.date);
 
     // Prepare bikes dict from athlete data
     const bikes: Record<string, Schema.Gear.Summary> = {};

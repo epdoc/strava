@@ -252,7 +252,7 @@ export class KmlWriter extends TrackWriter {
   #dateString(): string {
     if (this.opts.date && this.opts.date.hasRanges()) {
       const ad: string[] = [];
-      this.opts.date.ranges.forEach((range) => {
+      for (const range of this.opts.date.ranges) {
         const after = range.after ? range.after.toString() : '';
         const before = range.before ? range.before.toString() : '';
         if (after && before) {
@@ -262,7 +262,7 @@ export class KmlWriter extends TrackWriter {
         } else if (before) {
           ad.push(`until ${before}`);
         }
-      });
+      }
       return ad.join(', ');
     }
     return '';

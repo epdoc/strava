@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/strava-app",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Strava athlete",
   "exports": {
     ".": "./src/mod.ts"
@@ -21,7 +21,7 @@
   },
   "license": "MIT",
   "imports": {
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.7",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.8",
     "@epdoc/daterange": "jsr:@epdoc/daterange@^2.1.15",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.11",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.3.12",

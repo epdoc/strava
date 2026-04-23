@@ -37,6 +37,7 @@
         "scripts": [
           "",
           "--help",
+          "-d 202604",
           "-d 20260418-",
           "-d 20260418- --region CR,ON",
           "-d 20260415-20260429 --laps --blackout --region CR,ON"

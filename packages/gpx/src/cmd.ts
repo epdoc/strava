@@ -86,7 +86,12 @@ export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
       include: options.type ? options.type as Types.ActivityType[] : undefined,
       regions: options.region ? options.region as Activity.Region.Code[] : undefined,
     };
+    const preFilter = activities.length;
     await activities.filter(filter);
+    if (activities.length !== preFilter) {
+      ctx.log.info.icheck().text('Filtered activities from').value(preFilter).text('to')
+        .value(activities.length).emit();
+    }
 
     // Step 3: Get detailed activity data if lap waypoints are requested
     if (options.laps) {

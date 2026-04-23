@@ -9,9 +9,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                "line": 59,
+                "line": 49,
                 "col": 0,
-                "byteIndex": 2132
+                "byteIndex": 1892
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -50,9 +50,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 66,
+                      "line": 56,
                       "col": 2,
-                      "byteIndex": 2322
+                      "byteIndex": 2082
                     }
                   }
                 ],
@@ -73,9 +73,9 @@
                     "name": "athlete",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 62,
+                      "line": 52,
                       "col": 2,
-                      "byteIndex": 2224
+                      "byteIndex": 1984
                     }
                   },
                   {
@@ -94,9 +94,9 @@
                     "name": "userSettings",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 63,
+                      "line": 53,
                       "col": 2,
-                      "byteIndex": 2261
+                      "byteIndex": 2021
                     }
                   },
                   {
@@ -108,9 +108,9 @@
                     "name": "notifyOffline",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 64,
+                      "line": 54,
                       "col": 2,
-                      "byteIndex": 2296
+                      "byteIndex": 2056
                     }
                   }
                 ],
@@ -148,9 +148,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 80,
+                      "line": 70,
                       "col": 2,
-                      "byteIndex": 2743
+                      "byteIndex": 2503
                     }
                   },
                   {
@@ -242,9 +242,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 115,
+                      "line": 105,
                       "col": 2,
-                      "byteIndex": 4204
+                      "byteIndex": 3964
                     }
                   },
                   {
@@ -309,9 +309,93 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 152,
+                      "line": 142,
                       "col": 2,
-                      "byteIndex": 5473
+                      "byteIndex": 5233
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Updates the state file with the latest activity timestamp for an output type.\n\nThis method records the most recent activity date in the state file, which is\nused to determine the default date range for subsequent runs (fetching only\nnew activities since the last update).\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "type",
+                          "doc": "The output type ('kml', 'gpx', or 'pdf')"
+                        },
+                        {
+                          "kind": "param",
+                          "name": "activities",
+                          "doc": "Array of activities to extract the latest timestamp from"
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "Promise that resolves when the state file is updated"
+                        }
+                      ]
+                    },
+                    "name": "updateState",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "type",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "State.OutputType",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "State.OutputType",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./state/mod.ts"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "activities",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "Activity.Item",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Activity.Item",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./activity/mod.ts"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "Promise",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "void",
+                              "kind": "keyword",
+                              "value": "void"
+                            }
+                          ],
+                          "typeName": "Promise"
+                        }
+                      },
+                      "hasBody": true,
+                      "isAsync": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
+                      "line": 160,
+                      "col": 2,
+                      "byteIndex": 5931
                     }
                   },
                   {
@@ -373,9 +457,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 166,
+                      "line": 173,
                       "col": 2,
-                      "byteIndex": 5912
+                      "byteIndex": 6412
                     }
                   },
                   {
@@ -432,9 +516,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 178,
+                      "line": 185,
                       "col": 2,
-                      "byteIndex": 6275
+                      "byteIndex": 6775
                     }
                   },
                   {
@@ -498,272 +582,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 203,
+                      "line": 210,
                       "col": 2,
-                      "byteIndex": 7075
-                    }
-                  },
-                  {
-                    "jsDoc": {
-                      "doc": "Fetches activities for a given set of date ranges.\n\nThis method retrieves activities from the Strava API within one or more\nspecified date ranges. It can optionally fetch detailed information,\ntrack points, and attach starred segment data to the activities.\n",
-                      "tags": [
-                        {
-                          "kind": "param",
-                          "name": "ctx",
-                          "doc": "The application context for logging."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "date",
-                          "doc": "The date ranges to fetch activities for."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "opts",
-                          "default": "{}",
-                          "doc": "Options for fetching activities."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "opts.detailed",
-                          "default": "false",
-                          "doc": "Whether to fetch detailed information for each activity."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "opts.coordinates",
-                          "default": "false",
-                          "doc": "Whether to fetch track points for each activity."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "opts.starredSegments",
-                          "default": "false",
-                          "doc": "Whether to attach starred segment information to each activity."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "opts.filter",
-                          "optional": true,
-                          "doc": "A filter to apply to the activities."
-                        },
-                        {
-                          "kind": "return",
-                          "doc": "A promise that resolves to an array of activities."
-                        }
-                      ]
-                    },
-                    "name": "getActivitiesForDateRange",
-                    "kind": "method",
-                    "functionDef": {
-                      "params": [
-                        {
-                          "kind": "identifier",
-                          "name": "date",
-                          "optional": false,
-                          "tsType": {
-                            "repr": "DateRanges",
-                            "kind": "typeRef",
-                            "value": {
-                              "typeName": "DateRanges",
-                              "resolution": {
-                                "kind": "import",
-                                "specifier": "@epdoc/daterange",
-                                "name": "DateRanges"
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "kind": "assign",
-                          "left": {
-                            "kind": "identifier",
-                            "name": "opts",
-                            "optional": false,
-                            "tsType": {
-                              "repr": "GetActivitiesOpts",
-                              "kind": "typeRef",
-                              "value": {
-                                "typeName": "GetActivitiesOpts",
-                                "resolution": {
-                                  "kind": "local"
-                                }
-                              }
-                            }
-                          },
-                          "right": "[UNSUPPORTED]"
-                        }
-                      ],
-                      "returnType": {
-                        "repr": "Promise",
-                        "kind": "typeRef",
-                        "value": {
-                          "typeParams": [
-                            {
-                              "kind": "array",
-                              "value": {
-                                "repr": "Strava.Activity",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Strava.Activity",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "@epdoc/strava-api"
-                                  }
-                                }
-                              }
-                            }
-                          ],
-                          "typeName": "Promise"
-                        }
-                      },
-                      "hasBody": true,
-                      "isAsync": true
-                    },
-                    "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 237,
-                      "col": 2,
-                      "byteIndex": 8660
-                    }
-                  },
-                  {
-                    "jsDoc": {
-                      "doc": "Generates a KML or GPX file from Strava activities or segments.\n\nThis method orchestrates the complete track generation workflow:\n1. Initializes a track generator with user-configured line styles.\n2. Validates that activities or segments are requested.\n3. Fetches activities for the specified date ranges, applying filters.\n4. Optionally fetches detailed activity data for lap markers (if `streamOpts.laps` is true).\n5. Fetches track points for each activity from Strava streams.\n6. Applies commute filtering based on `streamOpts.commute`.\n7. Generates output file with appropriate styling and organization.\n8. Updates state file with the latest activity timestamp (if outputType provided).\n\nThe generated file can include:\n- Activity routes as color-coded tracks.\n- Optional lap markers as waypoints.\n- Segment routes organized by region.\n",
-                      "tags": [
-                        {
-                          "kind": "param",
-                          "name": "ctx",
-                          "doc": "Application context for logging."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "streamOpts",
-                          "doc": "Track generation options."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "outputType",
-                          "optional": true,
-                          "doc": "Optional output type ('kml' or 'pdf') for state tracking."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "streamOpts.activities",
-                          "default": "false",
-                          "doc": "Whether to include activity paths in the output."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "streamOpts.date",
-                          "optional": true,
-                          "doc": "Date ranges for filtering activities. Required if `streamOpts.activities` is true."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "streamOpts.output",
-                          "default": "'Activities.kml'",
-                          "doc": "The path for the output file."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "streamOpts.laps",
-                          "default": "false",
-                          "doc": "Whether to include lap markers."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "streamOpts.commute",
-                          "default": "'all'",
-                          "doc": "Commute filter ('yes', 'no', or 'all')."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "streamOpts.more",
-                          "default": "false",
-                          "doc": "Whether to include detailed descriptions."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "streamOpts.efforts",
-                          "default": "false",
-                          "doc": "Whether to include effort data."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "streamOpts.imperial",
-                          "default": "false",
-                          "doc": "Whether to use imperial units."
-                        },
-                        {
-                          "kind": "throws",
-                          "doc": "If neither `streamOpts.activities` nor `streamOpts.segments` is true.\n"
-                        },
-                        {
-                          "kind": "example",
-                          "doc": "```ts\nawait app.getTrack(ctx, {\n  activities: true,\n  laps: true,\n  date: dateRanges,\n  output: 'rides.kml',\n  commute: 'no'\n}, 'kml');\n```"
-                        }
-                      ]
-                    },
-                    "name": "getTrack",
-                    "kind": "method",
-                    "functionDef": {
-                      "params": [
-                        {
-                          "kind": "identifier",
-                          "name": "streamOpts",
-                          "optional": false,
-                          "tsType": {
-                            "repr": "Stream.Opts",
-                            "kind": "typeRef",
-                            "value": {
-                              "typeName": "Stream.Opts",
-                              "resolution": {
-                                "kind": "import",
-                                "specifier": "./track/mod.ts"
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "kind": "identifier",
-                          "name": "outputType",
-                          "optional": true,
-                          "tsType": {
-                            "repr": "State.OutputType",
-                            "kind": "typeRef",
-                            "value": {
-                              "typeName": "State.OutputType",
-                              "resolution": {
-                                "kind": "import",
-                                "specifier": "./state/mod.ts"
-                              }
-                            }
-                          }
-                        }
-                      ],
-                      "returnType": {
-                        "repr": "Promise",
-                        "kind": "typeRef",
-                        "value": {
-                          "typeParams": [
-                            {
-                              "repr": "void",
-                              "kind": "keyword",
-                              "value": "void"
-                            }
-                          ],
-                          "typeName": "Promise"
-                        }
-                      },
-                      "hasBody": true,
-                      "isAsync": true
-                    },
-                    "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 371,
-                      "col": 2,
-                      "byteIndex": 13976
+                      "byteIndex": 7575
                     }
                   },
                   {
@@ -851,9 +672,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 447,
+                      "line": 392,
                       "col": 2,
-                      "byteIndex": 16918
+                      "byteIndex": 15478
                     }
                   },
                   {
@@ -949,9 +770,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 489,
+                      "line": 434,
                       "col": 2,
-                      "byteIndex": 18610
+                      "byteIndex": 17170
                     }
                   },
                   {
@@ -981,9 +802,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 562,
+                      "line": 505,
                       "col": 2,
-                      "byteIndex": 20872
+                      "byteIndex": 19455
                     }
                   },
                   {
@@ -1057,9 +878,9 @@
                                     "name": "efforts",
                                     "location": {
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                                      "line": 620,
+                                      "line": 563,
                                       "col": 12,
-                                      "byteIndex": 23508
+                                      "byteIndex": 22091
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -1072,9 +893,9 @@
                                     "name": "coordinates",
                                     "location": {
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                                      "line": 620,
+                                      "line": 563,
                                       "col": 31,
-                                      "byteIndex": 23527
+                                      "byteIndex": 22110
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -1087,9 +908,9 @@
                                     "name": "dateRanges",
                                     "location": {
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                                      "line": 620,
+                                      "line": 563,
                                       "col": 54,
-                                      "byteIndex": 23550
+                                      "byteIndex": 22133
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -1109,9 +930,9 @@
                                     "name": "refresh",
                                     "location": {
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                                      "line": 620,
+                                      "line": 563,
                                       "col": 79,
-                                      "byteIndex": 23575
+                                      "byteIndex": 22158
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -1155,9 +976,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 619,
+                      "line": 562,
                       "col": 2,
-                      "byteIndex": 23477
+                      "byteIndex": 22060
                     }
                   },
                   {
@@ -1190,9 +1011,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 763,
+                      "line": 706,
                       "col": 2,
-                      "byteIndex": 28464
+                      "byteIndex": 27047
                     }
                   },
                   {
@@ -1243,9 +1064,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
-                      "line": 789,
+                      "line": 732,
                       "col": 2,
-                      "byteIndex": 29473
+                      "byteIndex": 28056
                     }
                   }
                 ],
@@ -2191,7 +2012,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                           "line": 58,
                           "col": 0,
-                          "byteIndex": 1918
+                          "byteIndex": 1921
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -2241,7 +2062,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                                 "line": 67,
                                 "col": 2,
-                                "byteIndex": 2166
+                                "byteIndex": 2169
                               }
                             }
                           ],
@@ -2275,13 +2096,13 @@
                                     "name": "activity",
                                     "optional": false,
                                     "tsType": {
-                                      "repr": "Strava.Activity",
+                                      "repr": "Activity.Item",
                                       "kind": "typeRef",
                                       "value": {
-                                        "typeName": "Strava.Activity",
+                                        "typeName": "Activity.Item",
                                         "resolution": {
                                           "kind": "import",
-                                          "specifier": "@epdoc/strava-api"
+                                          "specifier": "../activity/mod.ts"
                                         }
                                       }
                                     }
@@ -2297,7 +2118,7 @@
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                                           "line": 91,
                                           "col": 7,
-                                          "byteIndex": 3192
+                                          "byteIndex": 3193
                                         },
                                         "optional": true,
                                         "tsType": {
@@ -2330,7 +2151,7 @@
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                                           "line": 91,
                                           "col": 29,
-                                          "byteIndex": 3214
+                                          "byteIndex": 3215
                                         }
                                       }
                                     ]
@@ -2342,7 +2163,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                                 "line": 89,
                                 "col": 2,
-                                "byteIndex": 3127
+                                "byteIndex": 3130
                               }
                             },
                             {
@@ -2391,7 +2212,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                                 "line": 149,
                                 "col": 2,
-                                "byteIndex": 4953
+                                "byteIndex": 4954
                               }
                             },
                             {
@@ -2464,7 +2285,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                                 "line": 173,
                                 "col": 2,
-                                "byteIndex": 5998
+                                "byteIndex": 5999
                               }
                             },
                             {
@@ -2498,13 +2319,13 @@
                                     "tsType": {
                                       "kind": "array",
                                       "value": {
-                                        "repr": "Strava.Activity",
+                                        "repr": "Activity.Item",
                                         "kind": "typeRef",
                                         "value": {
-                                          "typeName": "Strava.Activity",
+                                          "typeName": "Activity.Item",
                                           "resolution": {
                                             "kind": "import",
-                                            "specifier": "@epdoc/strava-api"
+                                            "specifier": "../activity/mod.ts"
                                           }
                                         }
                                       }
@@ -2541,7 +2362,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                                 "line": 209,
                                 "col": 2,
-                                "byteIndex": 7639
+                                "byteIndex": 7640
                               }
                             },
                             {
@@ -2598,7 +2419,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                                 "line": 399,
                                 "col": 2,
-                                "byteIndex": 15173
+                                "byteIndex": 15172
                               }
                             },
                             {
@@ -2647,7 +2468,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                                 "line": 420,
                                 "col": 2,
-                                "byteIndex": 16049
+                                "byteIndex": 16048
                               }
                             },
                             {
@@ -2714,13 +2535,13 @@
                                     "tsType": {
                                       "kind": "array",
                                       "value": {
-                                        "repr": "Strava.Activity",
+                                        "repr": "Activity.Item",
                                         "kind": "typeRef",
                                         "value": {
-                                          "typeName": "Strava.Activity",
+                                          "typeName": "Activity.Item",
                                           "resolution": {
                                             "kind": "import",
-                                            "specifier": "@epdoc/strava-api"
+                                            "specifier": "../activity/mod.ts"
                                           }
                                         }
                                       }
@@ -2748,7 +2569,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
                                 "line": 460,
                                 "col": 2,
-                                "byteIndex": 17828
+                                "byteIndex": 17827
                               }
                             }
                           ]
@@ -3040,7 +2861,7 @@
           ]
         },
         {
-          "name": "Region",
+          "name": "Activity",
           "declarations": [
             {
               "location": {
@@ -3054,358 +2875,26 @@
               "def": {
                 "elements": [
                   {
-                    "name": "RegionRect",
+                    "name": "optionDefs",
                     "declarations": [
                       {
                         "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 6,
-                          "col": 0,
-                          "byteIndex": 167
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "A rectangular boundary defined by min/max lat/lng."
-                        },
-                        "kind": "typeAlias",
-                        "def": {
-                          "tsType": {
-                            "kind": "typeLiteral",
-                            "value": {
-                              "properties": [
-                                {
-                                  "name": "minLat",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 7,
-                                    "col": 2,
-                                    "byteIndex": 196
-                                  },
-                                  "tsType": {
-                                    "repr": "Schema.Types.Latitude",
-                                    "kind": "typeRef",
-                                    "value": {
-                                      "typeName": "Schema.Types.Latitude",
-                                      "resolution": {
-                                        "kind": "import",
-                                        "specifier": "@epdoc/strava-schema"
-                                      }
-                                    }
-                                  }
-                                },
-                                {
-                                  "name": "maxLat",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 8,
-                                    "col": 2,
-                                    "byteIndex": 229
-                                  },
-                                  "tsType": {
-                                    "repr": "Schema.Types.Latitude",
-                                    "kind": "typeRef",
-                                    "value": {
-                                      "typeName": "Schema.Types.Latitude",
-                                      "resolution": {
-                                        "kind": "import",
-                                        "specifier": "@epdoc/strava-schema"
-                                      }
-                                    }
-                                  }
-                                },
-                                {
-                                  "name": "minLng",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 9,
-                                    "col": 2,
-                                    "byteIndex": 262
-                                  },
-                                  "tsType": {
-                                    "repr": "Schema.Types.Longitude",
-                                    "kind": "typeRef",
-                                    "value": {
-                                      "typeName": "Schema.Types.Longitude",
-                                      "resolution": {
-                                        "kind": "import",
-                                        "specifier": "@epdoc/strava-schema"
-                                      }
-                                    }
-                                  }
-                                },
-                                {
-                                  "name": "maxLng",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 10,
-                                    "col": 2,
-                                    "byteIndex": 296
-                                  },
-                                  "tsType": {
-                                    "repr": "Schema.Types.Longitude",
-                                    "kind": "typeRef",
-                                    "value": {
-                                      "typeName": "Schema.Types.Longitude",
-                                      "resolution": {
-                                        "kind": "import",
-                                        "specifier": "@epdoc/strava-schema"
-                                      }
-                                    }
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "Region",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 16,
-                          "col": 0,
-                          "byteIndex": 401
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "A geographic region with one or more bounding rectangles."
-                        },
-                        "kind": "typeAlias",
-                        "def": {
-                          "tsType": {
-                            "kind": "typeLiteral",
-                            "value": {
-                              "properties": [
-                                {
-                                  "name": "id",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 17,
-                                    "col": 2,
-                                    "byteIndex": 426
-                                  },
-                                  "tsType": {
-                                    "repr": "string",
-                                    "kind": "keyword",
-                                    "value": "string"
-                                  }
-                                },
-                                {
-                                  "name": "name",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 18,
-                                    "col": 2,
-                                    "byteIndex": 440
-                                  },
-                                  "tsType": {
-                                    "repr": "string",
-                                    "kind": "keyword",
-                                    "value": "string"
-                                  }
-                                },
-                                {
-                                  "name": "skip",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 19,
-                                    "col": 2,
-                                    "byteIndex": 456
-                                  },
-                                  "tsType": {
-                                    "repr": "boolean",
-                                    "kind": "keyword",
-                                    "value": "boolean"
-                                  }
-                                },
-                                {
-                                  "name": "rectangles",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 20,
-                                    "col": 2,
-                                    "byteIndex": 473
-                                  },
-                                  "tsType": {
-                                    "kind": "array",
-                                    "value": {
-                                      "repr": "RegionRect",
-                                      "kind": "typeRef",
-                                      "value": {
-                                        "typeName": "RegionRect",
-                                        "resolution": {
-                                          "kind": "local"
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "RegionsFile",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 26,
-                          "col": 0,
-                          "byteIndex": 569
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "Structure of the user.regions.json configuration file."
-                        },
-                        "kind": "typeAlias",
-                        "def": {
-                          "tsType": {
-                            "kind": "typeLiteral",
-                            "value": {
-                              "properties": [
-                                {
-                                  "name": "description",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 27,
-                                    "col": 2,
-                                    "byteIndex": 599
-                                  },
-                                  "tsType": {
-                                    "repr": "string",
-                                    "kind": "keyword",
-                                    "value": "string"
-                                  }
-                                },
-                                {
-                                  "name": "lastModified",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 28,
-                                    "col": 2,
-                                    "byteIndex": 622
-                                  },
-                                  "tsType": {
-                                    "repr": "string",
-                                    "kind": "keyword",
-                                    "value": "string"
-                                  }
-                                },
-                                {
-                                  "name": "regions",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 29,
-                                    "col": 2,
-                                    "byteIndex": 646
-                                  },
-                                  "tsType": {
-                                    "kind": "array",
-                                    "value": {
-                                      "repr": "Region",
-                                      "kind": "typeRef",
-                                      "value": {
-                                        "typeName": "Region",
-                                        "resolution": {
-                                          "kind": "local"
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "RegionResult",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 35,
-                          "col": 0,
-                          "byteIndex": 724
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "Result of region detection for an activity."
-                        },
-                        "kind": "typeAlias",
-                        "def": {
-                          "tsType": {
-                            "kind": "typeLiteral",
-                            "value": {
-                              "properties": [
-                                {
-                                  "name": "id",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 36,
-                                    "col": 2,
-                                    "byteIndex": 755
-                                  },
-                                  "tsType": {
-                                    "repr": "string",
-                                    "kind": "keyword",
-                                    "value": "string"
-                                  }
-                                },
-                                {
-                                  "name": "name",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                                    "line": 37,
-                                    "col": 2,
-                                    "byteIndex": 769
-                                  },
-                                  "tsType": {
-                                    "repr": "string",
-                                    "kind": "keyword",
-                                    "value": "string"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "WORLD_REGION",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 41,
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/activity/options.ts",
+                          "line": 8,
                           "col": 13,
-                          "byteIndex": 856
+                          "byteIndex": 293
                         },
                         "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "Default region when no matching region is found."
-                        },
                         "kind": "variable",
                         "def": {
                           "tsType": {
-                            "repr": "RegionResult",
+                            "repr": "CliApp.OptionDefMap",
                             "kind": "typeRef",
                             "value": {
-                              "typeName": "RegionResult",
+                              "typeName": "CliApp.OptionDefMap",
                               "resolution": {
-                                "kind": "local"
+                                "kind": "import",
+                                "specifier": "@epdoc/cliapp"
                               }
                             }
                           },
@@ -3415,557 +2904,166 @@
                     ]
                   },
                   {
-                    "name": "isPointInRect",
+                    "name": "RegionCode",
                     "declarations": [
                       {
                         "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 54,
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/activity/types.ts",
+                          "line": 2,
                           "col": 0,
-                          "byteIndex": 1156
+                          "byteIndex": 54
                         },
                         "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "Checks if a lat/lng point falls within a rectangle.\n",
-                          "tags": [
-                            {
-                              "kind": "param",
-                              "name": "lat",
-                              "doc": "Latitude of the point"
-                            },
-                            {
-                              "kind": "param",
-                              "name": "lng",
-                              "doc": "Longitude of the point"
-                            },
-                            {
-                              "kind": "param",
-                              "name": "rect",
-                              "doc": "Rectangle bounds"
-                            },
-                            {
-                              "kind": "return",
-                              "doc": "`true` if the point is inside the rectangle"
-                            }
-                          ]
-                        },
-                        "kind": "function",
+                        "kind": "typeAlias",
                         "def": {
-                          "params": [
-                            {
-                              "kind": "identifier",
-                              "name": "lat",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "Schema.Types.Latitude",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Schema.Types.Latitude",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "@epdoc/strava-schema"
-                                  }
-                                }
-                              }
-                            },
-                            {
-                              "kind": "identifier",
-                              "name": "lng",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "Schema.Types.Longitude",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Schema.Types.Longitude",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "@epdoc/strava-schema"
-                                  }
-                                }
-                              }
-                            },
-                            {
-                              "kind": "identifier",
-                              "name": "rect",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "RegionRect",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "RegionRect",
-                                  "resolution": {
-                                    "kind": "local"
-                                  }
-                                }
-                              }
-                            }
-                          ],
-                          "returnType": {
-                            "repr": "boolean",
+                          "tsType": {
+                            "repr": "string",
                             "kind": "keyword",
-                            "value": "boolean"
-                          },
-                          "hasBody": true
+                            "value": "string"
+                          }
                         }
                       }
                     ]
                   },
                   {
-                    "name": "isPointInRegion",
+                    "name": "FilterOpts",
                     "declarations": [
                       {
                         "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 73,
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/activity/types.ts",
+                          "line": 7,
                           "col": 0,
-                          "byteIndex": 1664
+                          "byteIndex": 130
                         },
                         "declarationKind": "export",
                         "jsDoc": {
-                          "doc": "Checks if a lat/lng point falls within any rectangle of a region.\n",
-                          "tags": [
-                            {
-                              "kind": "param",
-                              "name": "lat",
-                              "doc": "Latitude of the point"
-                            },
-                            {
-                              "kind": "param",
-                              "name": "lng",
-                              "doc": "Longitude of the point"
-                            },
-                            {
-                              "kind": "param",
-                              "name": "region",
-                              "doc": "Region to check against"
-                            },
-                            {
-                              "kind": "return",
-                              "doc": "`true` if the point is inside any of the region's rectangles"
-                            }
-                          ]
+                          "doc": "Filter options for activities."
                         },
-                        "kind": "function",
+                        "kind": "typeAlias",
                         "def": {
-                          "params": [
-                            {
-                              "kind": "identifier",
-                              "name": "lat",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "Schema.Types.Latitude",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Schema.Types.Latitude",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "@epdoc/strava-schema"
+                          "tsType": {
+                            "kind": "typeLiteral",
+                            "value": {
+                              "properties": [
+                                {
+                                  "name": "commuteOnly",
+                                  "jsDoc": {
+                                    "doc": "Whether to include only commute activities."
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/activity/types.ts",
+                                    "line": 9,
+                                    "col": 2,
+                                    "byteIndex": 212
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
                                   }
-                                }
-                              }
-                            },
-                            {
-                              "kind": "identifier",
-                              "name": "lng",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "Schema.Types.Longitude",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Schema.Types.Longitude",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "@epdoc/strava-schema"
+                                },
+                                {
+                                  "name": "nonCommuteOnly",
+                                  "jsDoc": {
+                                    "doc": "Whether to include only non-commute activities."
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/activity/types.ts",
+                                    "line": 11,
+                                    "col": 2,
+                                    "byteIndex": 294
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
                                   }
-                                }
-                              }
-                            },
-                            {
-                              "kind": "identifier",
-                              "name": "region",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "Region",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Region",
-                                  "resolution": {
-                                    "kind": "local"
+                                },
+                                {
+                                  "name": "include",
+                                  "jsDoc": {
+                                    "doc": "An array of activity types to include. If not specified, all types are included."
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/activity/types.ts",
+                                    "line": 13,
+                                    "col": 2,
+                                    "byteIndex": 412
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "kind": "array",
+                                    "value": {
+                                      "repr": "Schema.Types.ActivityType",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "Schema.Types.ActivityType",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/strava-schema"
+                                        }
+                                      }
+                                    }
                                   }
-                                }
-                              }
-                            }
-                          ],
-                          "returnType": {
-                            "repr": "boolean",
-                            "kind": "keyword",
-                            "value": "boolean"
-                          },
-                          "hasBody": true
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "getRegionForLatLng",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 90,
-                          "col": 0,
-                          "byteIndex": 2150
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "Gets the first matching region for a lat/lng point.\nSkips regions with `skip: true`.\n",
-                          "tags": [
-                            {
-                              "kind": "param",
-                              "name": "lat",
-                              "doc": "Latitude of the point"
-                            },
-                            {
-                              "kind": "param",
-                              "name": "lng",
-                              "doc": "Longitude of the point"
-                            },
-                            {
-                              "kind": "param",
-                              "name": "regions",
-                              "doc": "Array of regions to check"
-                            },
-                            {
-                              "kind": "return",
-                              "doc": "The matching region or `undefined` if no match"
-                            }
-                          ]
-                        },
-                        "kind": "function",
-                        "def": {
-                          "params": [
-                            {
-                              "kind": "identifier",
-                              "name": "lat",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "Schema.Types.Latitude",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Schema.Types.Latitude",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "@epdoc/strava-schema"
+                                },
+                                {
+                                  "name": "exclude",
+                                  "jsDoc": {
+                                    "doc": "An array of activity types to exclude."
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/activity/types.ts",
+                                    "line": 15,
+                                    "col": 2,
+                                    "byteIndex": 501
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "kind": "array",
+                                    "value": {
+                                      "repr": "Schema.Types.ActivityType",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "Schema.Types.ActivityType",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/strava-schema"
+                                        }
+                                      }
+                                    }
                                   }
-                                }
-                              }
-                            },
-                            {
-                              "kind": "identifier",
-                              "name": "lng",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "Schema.Types.Longitude",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Schema.Types.Longitude",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "@epdoc/strava-schema"
-                                  }
-                                }
-                              }
-                            },
-                            {
-                              "kind": "identifier",
-                              "name": "regions",
-                              "optional": false,
-                              "tsType": {
-                                "kind": "array",
-                                "value": {
-                                  "repr": "Region",
-                                  "kind": "typeRef",
-                                  "value": {
-                                    "typeName": "Region",
-                                    "resolution": {
-                                      "kind": "local"
+                                },
+                                {
+                                  "name": "regions",
+                                  "jsDoc": {
+                                    "doc": "An array of region codes to filter by. If specified, only activities starting in these regions are included."
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/activity/types.ts",
+                                    "line": 17,
+                                    "col": 2,
+                                    "byteIndex": 660
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "kind": "array",
+                                    "value": {
+                                      "repr": "RegionCode",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "RegionCode",
+                                        "resolution": {
+                                          "kind": "local"
+                                        }
+                                      }
                                     }
                                   }
                                 }
-                              }
+                              ]
                             }
-                          ],
-                          "returnType": {
-                            "kind": "union",
-                            "value": [
-                              {
-                                "repr": "Region",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Region",
-                                  "resolution": {
-                                    "kind": "local"
-                                  }
-                                }
-                              },
-                              {
-                                "repr": "undefined",
-                                "kind": "keyword",
-                                "value": "undefined"
-                              }
-                            ]
-                          },
-                          "hasBody": true
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "getRegionResultForLatLng",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 112,
-                          "col": 0,
-                          "byteIndex": 2720
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "Gets the region result for a lat/lng point.\nReturns WORLD_REGION if no matching region is found.\n",
-                          "tags": [
-                            {
-                              "kind": "param",
-                              "name": "lat",
-                              "doc": "Latitude of the point"
-                            },
-                            {
-                              "kind": "param",
-                              "name": "lng",
-                              "doc": "Longitude of the point"
-                            },
-                            {
-                              "kind": "param",
-                              "name": "regions",
-                              "doc": "Array of regions to check"
-                            },
-                            {
-                              "kind": "return",
-                              "doc": "RegionResult with id and name"
-                            }
-                          ]
-                        },
-                        "kind": "function",
-                        "def": {
-                          "params": [
-                            {
-                              "kind": "identifier",
-                              "name": "lat",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "Schema.Types.Latitude",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Schema.Types.Latitude",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "@epdoc/strava-schema"
-                                  }
-                                }
-                              }
-                            },
-                            {
-                              "kind": "identifier",
-                              "name": "lng",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "Schema.Types.Longitude",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Schema.Types.Longitude",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "@epdoc/strava-schema"
-                                  }
-                                }
-                              }
-                            },
-                            {
-                              "kind": "identifier",
-                              "name": "regions",
-                              "optional": false,
-                              "tsType": {
-                                "kind": "array",
-                                "value": {
-                                  "repr": "Region",
-                                  "kind": "typeRef",
-                                  "value": {
-                                    "typeName": "Region",
-                                    "resolution": {
-                                      "kind": "local"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          ],
-                          "returnType": {
-                            "repr": "RegionResult",
-                            "kind": "typeRef",
-                            "value": {
-                              "typeName": "RegionResult",
-                              "resolution": {
-                                "kind": "local"
-                              }
-                            }
-                          },
-                          "hasBody": true
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "getRegionForActivity",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 134,
-                          "col": 0,
-                          "byteIndex": 3323
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "Gets the region for an activity based on its start location.\nReturns WORLD_REGION if:\n- Activity has no start_latlng\n- No matching region is found\n",
-                          "tags": [
-                            {
-                              "kind": "param",
-                              "name": "activity",
-                              "doc": "The activity to get region for"
-                            },
-                            {
-                              "kind": "param",
-                              "name": "regions",
-                              "doc": "Array of regions to check"
-                            },
-                            {
-                              "kind": "return",
-                              "doc": "RegionResult with id and name"
-                            }
-                          ]
-                        },
-                        "kind": "function",
-                        "def": {
-                          "params": [
-                            {
-                              "kind": "identifier",
-                              "name": "activity",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "Activity",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "Activity",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "@epdoc/strava-api",
-                                    "name": "Activity"
-                                  }
-                                }
-                              }
-                            },
-                            {
-                              "kind": "identifier",
-                              "name": "regions",
-                              "optional": false,
-                              "tsType": {
-                                "kind": "array",
-                                "value": {
-                                  "repr": "Region",
-                                  "kind": "typeRef",
-                                  "value": {
-                                    "typeName": "Region",
-                                    "resolution": {
-                                      "kind": "local"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          ],
-                          "returnType": {
-                            "repr": "RegionResult",
-                            "kind": "typeRef",
-                            "value": {
-                              "typeName": "RegionResult",
-                              "resolution": {
-                                "kind": "local"
-                              }
-                            }
-                          },
-                          "hasBody": true
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "loadRegions",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region.ts",
-                          "line": 153,
-                          "col": 0,
-                          "byteIndex": 3809
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "Loads regions from a RegionsFile, filtering out skipped regions.\n",
-                          "tags": [
-                            {
-                              "kind": "param",
-                              "name": "file",
-                              "doc": "The regions file data"
-                            },
-                            {
-                              "kind": "return",
-                              "doc": "Array of active (non-skipped) regions"
-                            }
-                          ]
-                        },
-                        "kind": "function",
-                        "def": {
-                          "params": [
-                            {
-                              "kind": "identifier",
-                              "name": "file",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "RegionsFile",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "RegionsFile",
-                                  "resolution": {
-                                    "kind": "local"
-                                  }
-                                }
-                              }
-                            }
-                          ],
-                          "returnType": {
-                            "kind": "array",
-                            "value": {
-                              "repr": "Region",
-                              "kind": "typeRef",
-                              "value": {
-                                "typeName": "Region",
-                                "resolution": {
-                                  "kind": "local"
-                                }
-                              }
-                            }
-                          },
-                          "hasBody": true
+                          }
                         }
                       }
                     ]
@@ -3983,7 +3081,7 @@
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/mod.ts",
                 "line": 4,
                 "col": 7,
-                "byteIndex": 163
+                "byteIndex": 171
               },
               "declarationKind": "export",
               "kind": "namespace",
@@ -4577,7 +3675,7 @@
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/mod.ts",
                 "line": 5,
                 "col": 7,
-                "byteIndex": 208
+                "byteIndex": 216
               },
               "declarationKind": "export",
               "kind": "namespace",
@@ -4591,7 +3689,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/state.ts",
                           "line": 27,
                           "col": 0,
-                          "byteIndex": 1004
+                          "byteIndex": 1007
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -4658,7 +3756,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/state.ts",
                                 "line": 36,
                                 "col": 2,
-                                "byteIndex": 1223
+                                "byteIndex": 1226
                               }
                             }
                           ],
@@ -4699,7 +3797,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/state.ts",
                                 "line": 49,
                                 "col": 2,
-                                "byteIndex": 1575
+                                "byteIndex": 1578
                               }
                             },
                             {
@@ -4738,7 +3836,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/state.ts",
                                 "line": 82,
                                 "col": 2,
-                                "byteIndex": 2726
+                                "byteIndex": 2729
                               }
                             },
                             {
@@ -4748,7 +3846,7 @@
                                   {
                                     "kind": "param",
                                     "name": "type",
-                                    "doc": "Output type ('kml' or 'pdf')"
+                                    "doc": "Output type ('kml', 'gpx' or 'pdf')"
                                   },
                                   {
                                     "kind": "return",
@@ -4805,7 +3903,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/state.ts",
                                 "line": 102,
                                 "col": 2,
-                                "byteIndex": 3442
+                                "byteIndex": 3452
                               }
                             },
                             {
@@ -4820,7 +3918,7 @@
                                   {
                                     "kind": "param",
                                     "name": "type",
-                                    "doc": "Output type ('kml' or 'pdf')"
+                                    "doc": "Output type ('kml', 'gpx' or 'pdf')"
                                   },
                                   {
                                     "kind": "param",
@@ -4856,13 +3954,13 @@
                                     "tsType": {
                                       "kind": "array",
                                       "value": {
-                                        "repr": "Strava.Activity",
+                                        "repr": "Activity.Item",
                                         "kind": "typeRef",
                                         "value": {
-                                          "typeName": "Strava.Activity",
+                                          "typeName": "Activity.Item",
                                           "resolution": {
                                             "kind": "import",
-                                            "specifier": "@epdoc/strava-api"
+                                            "specifier": "../activity/mod.ts"
                                           }
                                         }
                                       }
@@ -4890,7 +3988,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/state.ts",
                                 "line": 121,
                                 "col": 2,
-                                "byteIndex": 4261
+                                "byteIndex": 4278
                               }
                             },
                             {
@@ -4924,7 +4022,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/state.ts",
                                 "line": 167,
                                 "col": 2,
-                                "byteIndex": 5568
+                                "byteIndex": 5581
                               }
                             }
                           ],
@@ -4999,15 +4097,60 @@
                                   }
                                 },
                                 {
+                                  "name": "gpx",
+                                  "jsDoc": {
+                                    "doc": "State for KML file generation"
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/types.ts",
+                                    "line": 16,
+                                    "col": 2,
+                                    "byteIndex": 629
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "kind": "typeLiteral",
+                                    "value": {
+                                      "properties": [
+                                        {
+                                          "name": "lastUpdated",
+                                          "jsDoc": {
+                                            "doc": "ISO date of the most recent activity included in the last KML generation"
+                                          },
+                                          "location": {
+                                            "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/types.ts",
+                                            "line": 18,
+                                            "col": 4,
+                                            "byteIndex": 725
+                                          },
+                                          "optional": true,
+                                          "tsType": {
+                                            "repr": "ISODate",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeName": "ISODate",
+                                              "resolution": {
+                                                "kind": "import",
+                                                "specifier": "@epdoc/datetime",
+                                                "name": "ISODate"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
                                   "name": "pdf",
                                   "jsDoc": {
                                     "doc": "State for PDF/Acroforms XML file generation"
                                   },
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/types.ts",
-                                    "line": 16,
+                                    "line": 21,
                                     "col": 2,
-                                    "byteIndex": 643
+                                    "byteIndex": 808
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5021,9 +4164,9 @@
                                           },
                                           "location": {
                                             "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/types.ts",
-                                            "line": 18,
+                                            "line": 23,
                                             "col": 4,
-                                            "byteIndex": 739
+                                            "byteIndex": 904
                                           },
                                           "optional": true,
                                           "tsType": {
@@ -5056,9 +4199,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/state/types.ts",
-                          "line": 25,
+                          "line": 30,
                           "col": 0,
-                          "byteIndex": 826
+                          "byteIndex": 991
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -5084,6 +4227,14 @@
                                   "kind": "string",
                                   "string": "pdf"
                                 }
+                              },
+                              {
+                                "repr": "gpx",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "gpx"
+                                }
                               }
                             ]
                           }
@@ -5104,7 +4255,7 @@
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/mod.ts",
                 "line": 6,
                 "col": 7,
-                "byteIndex": 249
+                "byteIndex": 257
               },
               "declarationKind": "export",
               "kind": "namespace",
@@ -5257,9 +4408,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                          "line": 6,
+                          "line": 7,
                           "col": 0,
-                          "byteIndex": 238
+                          "byteIndex": 291
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -5272,9 +4423,9 @@
                                   "name": "color",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 7,
+                                    "line": 8,
                                     "col": 2,
-                                    "byteIndex": 269
+                                    "byteIndex": 322
                                   },
                                   "tsType": {
                                     "repr": "string",
@@ -5286,9 +4437,9 @@
                                   "name": "width",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 8,
+                                    "line": 9,
                                     "col": 2,
-                                    "byteIndex": 286
+                                    "byteIndex": 339
                                   },
                                   "tsType": {
                                     "repr": "number",
@@ -5309,9 +4460,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                          "line": 11,
+                          "line": 12,
                           "col": 0,
-                          "byteIndex": 305
+                          "byteIndex": 358
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -5374,9 +4525,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                          "line": 19,
+                          "line": 20,
                           "col": 0,
-                          "byteIndex": 523
+                          "byteIndex": 576
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -5429,9 +4580,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                          "line": 24,
+                          "line": 25,
                           "col": 0,
-                          "byteIndex": 662
+                          "byteIndex": 715
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -5440,104 +4591,57 @@
                         "kind": "typeAlias",
                         "def": {
                           "tsType": {
-                            "kind": "typeLiteral",
-                            "value": {
-                              "properties": [
-                                {
-                                  "name": "activities",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 25,
-                                    "col": 2,
-                                    "byteIndex": 693
-                                  },
-                                  "optional": true,
-                                  "tsType": {
-                                    "repr": "boolean",
-                                    "kind": "keyword",
-                                    "value": "boolean"
-                                  }
-                                },
-                                {
-                                  "name": "efforts",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 26,
-                                    "col": 2,
-                                    "byteIndex": 717
-                                  },
-                                  "optional": true,
-                                  "tsType": {
-                                    "repr": "boolean",
-                                    "kind": "keyword",
-                                    "value": "boolean"
-                                  }
-                                },
-                                {
-                                  "name": "commute",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 27,
-                                    "col": 2,
-                                    "byteIndex": 798
-                                  },
-                                  "optional": true,
-                                  "tsType": {
-                                    "kind": "union",
-                                    "value": [
-                                      {
-                                        "repr": "yes",
-                                        "kind": "literal",
-                                        "value": {
-                                          "kind": "string",
-                                          "string": "yes"
-                                        }
-                                      },
-                                      {
-                                        "repr": "no",
-                                        "kind": "literal",
-                                        "value": {
-                                          "kind": "string",
-                                          "string": "no"
-                                        }
-                                      },
-                                      {
-                                        "repr": "all",
-                                        "kind": "literal",
-                                        "value": {
-                                          "kind": "string",
-                                          "string": "all"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                },
-                                {
-                                  "name": "type",
-                                  "location": {
-                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 28,
-                                    "col": 2,
-                                    "byteIndex": 860
-                                  },
-                                  "optional": true,
-                                  "tsType": {
-                                    "kind": "array",
-                                    "value": {
-                                      "repr": "Schema.Types.ActivityType",
-                                      "kind": "typeRef",
-                                      "value": {
-                                        "typeName": "Schema.Types.ActivityType",
-                                        "resolution": {
-                                          "kind": "import",
-                                          "specifier": "@epdoc/strava-schema"
-                                        }
-                                      }
-                                    }
+                            "kind": "intersection",
+                            "value": [
+                              {
+                                "repr": "Activity.FilterOpts",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Activity.FilterOpts",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "../activity/mod.ts"
                                   }
                                 }
-                              ]
-                            }
+                              },
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "properties": [
+                                    {
+                                      "name": "activities",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
+                                        "line": 26,
+                                        "col": 2,
+                                        "byteIndex": 768
+                                      },
+                                      "optional": true,
+                                      "tsType": {
+                                        "repr": "boolean",
+                                        "kind": "keyword",
+                                        "value": "boolean"
+                                      }
+                                    },
+                                    {
+                                      "name": "efforts",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
+                                        "line": 27,
+                                        "col": 2,
+                                        "byteIndex": 792
+                                      },
+                                      "optional": true,
+                                      "tsType": {
+                                        "repr": "boolean",
+                                        "kind": "keyword",
+                                        "value": "boolean"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
                           }
                         }
                       }
@@ -5549,9 +4653,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                          "line": 34,
+                          "line": 33,
                           "col": 0,
-                          "byteIndex": 1032
+                          "byteIndex": 940
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -5567,9 +4671,9 @@
                                   "name": "segments",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 35,
+                                    "line": 34,
                                     "col": 2,
-                                    "byteIndex": 1068
+                                    "byteIndex": 976
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5603,9 +4707,9 @@
                                   "name": "refresh",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 36,
+                                    "line": 35,
                                     "col": 2,
-                                    "byteIndex": 1170
+                                    "byteIndex": 1078
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5618,9 +4722,9 @@
                                   "name": "bikes",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 37,
+                                    "line": 36,
                                     "col": 2,
-                                    "byteIndex": 1239
+                                    "byteIndex": 1147
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5649,9 +4753,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                          "line": 40,
+                          "line": 39,
                           "col": 0,
-                          "byteIndex": 1306
+                          "byteIndex": 1214
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -5664,9 +4768,9 @@
                                   "name": "output",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 41,
+                                    "line": 40,
                                     "col": 2,
-                                    "byteIndex": 1335
+                                    "byteIndex": 1243
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5685,9 +4789,9 @@
                                   "name": "date",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 42,
+                                    "line": 41,
                                     "col": 2,
-                                    "byteIndex": 1428
+                                    "byteIndex": 1336
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5707,9 +4811,9 @@
                                   "name": "more",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 43,
+                                    "line": 42,
                                     "col": 2,
-                                    "byteIndex": 1488
+                                    "byteIndex": 1396
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5722,9 +4826,9 @@
                                   "name": "imperial",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 44,
+                                    "line": 43,
                                     "col": 2,
-                                    "byteIndex": 1596
+                                    "byteIndex": 1504
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5746,9 +4850,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                          "line": 50,
+                          "line": 49,
                           "col": 0,
-                          "byteIndex": 1727
+                          "byteIndex": 1635
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -5764,9 +4868,9 @@
                                   "name": "activities",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 51,
+                                    "line": 50,
                                     "col": 2,
-                                    "byteIndex": 1756
+                                    "byteIndex": 1664
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5779,9 +4883,9 @@
                                   "name": "laps",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 52,
+                                    "line": 51,
                                     "col": 2,
-                                    "byteIndex": 1780
+                                    "byteIndex": 1688
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5794,9 +4898,9 @@
                                   "name": "noTracks",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 53,
+                                    "line": 52,
                                     "col": 2,
-                                    "byteIndex": 1823
+                                    "byteIndex": 1731
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5809,9 +4913,9 @@
                                   "name": "blackout",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 54,
+                                    "line": 53,
                                     "col": 2,
-                                    "byteIndex": 1894
+                                    "byteIndex": 1802
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5827,15 +4931,57 @@
                                   },
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 56,
+                                    "line": 55,
                                     "col": 2,
-                                    "byteIndex": 1997
+                                    "byteIndex": 1905
                                   },
                                   "optional": true,
                                   "tsType": {
                                     "repr": "boolean",
                                     "kind": "keyword",
                                     "value": "boolean"
+                                  }
+                                },
+                                {
+                                  "name": "commute",
+                                  "jsDoc": {
+                                    "doc": "filter by commute status: 'yes' = commutes only, 'no' = non-commutes only, 'all' = both"
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
+                                    "line": 57,
+                                    "col": 2,
+                                    "byteIndex": 2025
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "kind": "union",
+                                    "value": [
+                                      {
+                                        "repr": "yes",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "yes"
+                                        }
+                                      },
+                                      {
+                                        "repr": "no",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "no"
+                                        }
+                                      },
+                                      {
+                                        "repr": "all",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "all"
+                                        }
+                                      }
+                                    ]
                                   }
                                 }
                               ]
@@ -5851,9 +4997,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                          "line": 59,
+                          "line": 60,
                           "col": 0,
-                          "byteIndex": 2022
+                          "byteIndex": 2061
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -5913,9 +5059,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                          "line": 61,
+                          "line": 62,
                           "col": 0,
-                          "byteIndex": 2102
+                          "byteIndex": 2141
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -5945,9 +5091,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                          "line": 63,
+                          "line": 64,
                           "col": 0,
-                          "byteIndex": 2191
+                          "byteIndex": 2230
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -5960,9 +5106,9 @@
                                   "name": "description",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 64,
+                                    "line": 65,
                                     "col": 2,
-                                    "byteIndex": 2228
+                                    "byteIndex": 2267
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -5975,9 +5121,9 @@
                                   "name": "coordinates",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 65,
+                                    "line": 66,
                                     "col": 2,
-                                    "byteIndex": 2252
+                                    "byteIndex": 2291
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -6008,9 +5154,9 @@
                                   "name": "placemarkId",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 66,
+                                    "line": 67,
                                     "col": 2,
-                                    "byteIndex": 2298
+                                    "byteIndex": 2337
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -6023,9 +5169,9 @@
                                   "name": "name",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 67,
+                                    "line": 68,
                                     "col": 2,
-                                    "byteIndex": 2322
+                                    "byteIndex": 2361
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -6038,9 +5184,9 @@
                                   "name": "styleName",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/track/types.ts",
-                                    "line": 68,
+                                    "line": 69,
                                     "col": 2,
-                                    "byteIndex": 2339
+                                    "byteIndex": 2378
                                   },
                                   "optional": true,
                                   "tsType": {

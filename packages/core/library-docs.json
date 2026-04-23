@@ -4,31 +4,6 @@
     "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/mod.ts": {
       "symbols": [
         {
-          "name": "ActivityType",
-          "declarations": [
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/options.ts",
-                "line": 20,
-                "col": 0,
-                "byteIndex": 617
-              },
-              "declarationKind": "export",
-              "jsDoc": {
-                "doc": "Activity type strings for filtering"
-              },
-              "kind": "typeAlias",
-              "def": {
-                "tsType": {
-                  "repr": "string",
-                  "kind": "keyword",
-                  "value": "string"
-                }
-              }
-            }
-          ]
-        },
-        {
           "name": "RegionCode",
           "declarations": [
             {
@@ -956,40 +931,14 @@
                     ]
                   },
                   {
-                    "name": "ActivityType",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/mod.ts",
-                          "line": 2,
-                          "col": 7,
-                          "byteIndex": 71
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "Activity type strings for filtering"
-                        },
-                        "kind": "reference",
-                        "def": {
-                          "target": {
-                            "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/options.ts",
-                            "line": 20,
-                            "col": 0,
-                            "byteIndex": 617
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
                     "name": "optionDefs",
                     "declarations": [
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/core/src/options.ts",
-                          "line": 22,
+                          "line": 19,
                           "col": 13,
-                          "byteIndex": 666
+                          "byteIndex": 587
                         },
                         "declarationKind": "export",
                         "kind": "variable",

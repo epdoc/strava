@@ -1,7 +1,6 @@
 import type * as CliApp from '@epdoc/cliapp';
 import { type DateRanges, dateRanges } from '@epdoc/daterange';
 import * as FS from '@epdoc/fs/fs';
-import type * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import type { OutputFormat } from './context.ts';
 
@@ -52,15 +51,15 @@ EXAMPLES:
   -d 2024,2025             All of 2024 and 2025
 `,
   },
-  output: {
-    short: 'o',
-    description: 'Output ${cmd} filename (default location is set in user settings).',
-    name: 'output',
-    params: '[filename]',
-    argParser: (str: string) => {
-      return str;
-    },
-  },
+  // output: {
+  //   short: 'o',
+  //   description: 'Output ${cmd} filename (default location is set in user settings).',
+  //   name: 'output',
+  //   params: '[filename]',
+  //   argParser: (str: string) => {
+  //     return str;
+  //   },
+  // },
   segments: {
     short: 's',
     name: 'segments',

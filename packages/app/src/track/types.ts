@@ -56,6 +56,8 @@ export type StreamOpts = {
   allowDups?: boolean;
   /** filter by commute status: 'yes' = commutes only, 'no' = non-commutes only, 'all' = both */
   commute?: 'yes' | 'no' | 'all';
+  /** organize activities into folders by region in KML output */
+  splitRegions?: boolean;
 };
 
 export type Opts = CommonOpts & ActivityOpts & StreamSegmentOpts & StreamOpts;

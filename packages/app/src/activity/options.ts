@@ -10,7 +10,7 @@ export const optionDefs: CliApp.OptionDefMap = {
   commute: {
     name: 'commute',
     params: '<choice>',
-    description: 'Filter by commute: yes|no|all (default: all)',
+    description: 'Filter by commute',
     choices: ['yes', 'no', 'all'],
     defVal: 'all',
   },

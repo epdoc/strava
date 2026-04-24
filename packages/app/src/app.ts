@@ -50,6 +50,7 @@ const configPaths = config.paths;
 export class Main extends BaseClass {
   #api: Strava.Api;
   #stateFile?: State.StateFile;
+  #cachedSegments?: Segment.CacheMap;
   athlete?: Schema.Athlete.Detailed;
   userSettings?: App.UserSettings;
   notifyOffline = false;
@@ -506,6 +507,8 @@ export class Main extends BaseClass {
   async refreshStarredSegments() {
     const segFile = new Segment.File(this.ctx, new FS.File(configPaths.userSegments));
     await segFile.get({ refresh: true });
+    // Clear the in-memory cache so next call to getCachedSegments() gets fresh data
+    this.#cachedSegments = undefined;
   }
 
   /**
@@ -569,6 +572,11 @@ export class Main extends BaseClass {
     // Load or refresh segment cache
     const segFile = new Segment.File(this.ctx, new FS.File(configPaths.userSegments));
     await segFile.get({ refresh: opts.refresh });
+
+    // Clear in-memory cache if we refreshed from server
+    if (opts.refresh) {
+      this.#cachedSegments = undefined;
+    }
 
     // Get all cached segments
     const cachedSegments = segFile.getAllSegments();
@@ -705,9 +713,12 @@ export class Main extends BaseClass {
   }
 
   async getCachedSegments(): Promise<Segment.CacheMap> {
-    const segFile = new Segment.File(this.ctx, new FS.File(configPaths.userSegments));
-    await segFile.get({ refresh: false }); // Use cache, don't refresh
-    return segFile.segments;
+    if (!this.#cachedSegments) {
+      const segFile = new Segment.File(this.ctx, new FS.File(configPaths.userSegments));
+      await segFile.get({ refresh: false }); // Use cache, don't refresh
+      this.#cachedSegments = segFile.segments;
+    }
+    return this.#cachedSegments;
   }
 
   /**

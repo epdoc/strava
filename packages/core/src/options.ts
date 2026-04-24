@@ -64,7 +64,7 @@ EXAMPLES:
     short: 's',
     name: 'segments',
     params: '[mode]',
-    description: 'Include starred segments. Modes: "only", "flat"',
+    description: 'Include starred segments',
     choices: ['only', 'flat'],
     argParser: (str: string | boolean) => {
       if (str === true || str === '') return true;
@@ -130,5 +130,10 @@ EXAMPLES:
     argParser: (str: string) => {
       return _.isString(str) ? FS.File.cwd(str) : str;
     },
+  },
+  splitRegions: {
+    short: 'r',
+    name: 'split-regions',
+    description: 'Organize activities into folders by region in KML output',
   },
 } as const;

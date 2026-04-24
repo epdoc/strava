@@ -217,15 +217,57 @@ export class KmlWriter extends TrackWriter {
   /**
    * Adds a folder of activities to the KML file.
    *
+   * If `splitRegions` option is enabled, activities are grouped by region
+   * and output in separate folders with date ranges.
+   *
    * @private
    * @param ctx - The application context.
    * @param activities - An array of activities to include.
    */
   async #addActivities(activities: Activity.Item[]): Promise<void> {
-    if (activities && activities.length) {
+    if (!activities || activities.length === 0) {
+      return;
+    }
+
+    const indent = 2;
+
+    if (this.opts.splitRegions) {
+      // Group activities by region
+      const regionGroups = this.#groupActivitiesByRegion(activities);
+
+      // Sort region IDs alphabetically by region name
+      const sortedRegionIds = Array.from(regionGroups.keys()).sort((a, b) => {
+        const regionA = regionGroups.get(a)!.region;
+        const regionB = regionGroups.get(b)!.region;
+        return regionA.name.localeCompare(regionB.name);
+      });
+
+      // Output each region as a folder
+      for (const regionId of sortedRegionIds) {
+        const group = regionGroups.get(regionId)!;
+
+        // Sort activities by date (earliest first)
+        group.activities.sort((a, b) => a.startDateLocal.localeCompare(b.startDateLocal));
+
+        const [minDate, maxDate] = this.#getDateRangeForActivities(group.activities);
+        const folderName = `Activities ${minDate} to ${maxDate} ${group.region.name}`;
+
+        this.writeln(indent, `<Folder><name>${folderName}</name><open>1</open>`);
+
+        for (const activity of group.activities) {
+          if (activity.hasTrackPoints()) {
+            await this.outputActivity(indent + 1, activity);
+          }
+          await this.flush();
+        }
+
+        this.writeln(indent, '</Folder>');
+        await this.flush();
+      }
+    } else {
+      // Original behavior: single folder with date range from options
       const dateString = this.#dateString();
 
-      const indent = 2;
       this.writeln(
         indent,
         '<Folder><name>Activities' + (dateString ? ' ' + dateString : '') + '</name><open>1</open>',
@@ -241,6 +283,62 @@ export class KmlWriter extends TrackWriter {
       this.writeln(indent, '</Folder>');
       await this.flush();
     }
+  }
+
+  /**
+   * Groups activities by their region.
+   *
+   * @private
+   * @param activities - Array of activities to group.
+   * @returns Map of region ID to {region, activities}.
+   */
+  #groupActivitiesByRegion(
+    activities: Activity.Item[],
+  ): Map<string, { region: { id: string; name: string }; activities: Activity.Item[] }> {
+    const groups = new Map<
+      string,
+      { region: { id: string; name: string }; activities: Activity.Item[] }
+    >();
+
+    for (const activity of activities) {
+      // Get cached region from activity (getRegions() must be called first)
+      const region = activity.region;
+
+      if (!groups.has(region.id)) {
+        groups.set(region.id, { region, activities: [] });
+      }
+      groups.get(region.id)!.activities.push(activity);
+    }
+
+    return groups;
+  }
+
+  /**
+   * Calculates the date range for a group of activities.
+   *
+   * @private
+   * @param activities - Array of activities.
+   * @returns Tuple of [minDate, maxDate] in YYYY-MM-DD format.
+   */
+  #getDateRangeForActivities(activities: Activity.Item[]): [string, string] {
+    if (!activities || activities.length === 0) {
+      return ['', ''];
+    }
+
+    let minDate = activities[0].startDateLocal;
+    let maxDate = activities[0].startDateLocal;
+
+    for (const activity of activities) {
+      const date = activity.startDateLocal;
+      if (date < minDate) {
+        minDate = date;
+      }
+      if (date > maxDate) {
+        maxDate = date;
+      }
+    }
+
+    return [minDate, maxDate];
   }
 
   /**

@@ -1,6 +1,7 @@
 import * as Api from '@epdoc/strava-api';
 import type * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
+import { assert } from '@std/assert/assert';
 import * as Region from './region.ts';
 import type * as Activity from './types.ts';
 
@@ -83,6 +84,18 @@ export class ActivityItem extends Api.Activity {
         this.#region = Region.db.WORLD;
       }
     }
+    return this.#region;
+  }
+
+  /**
+   * Gets the cached region for the activity.
+   * Must only be called after `getRegion()` or `getRegions()` has been called.
+   *
+   * @returns RegionResult with id and name
+   * @throws Error if region has not been cached
+   */
+  get region(): Region.Result {
+    assert(this.#region, 'Region has not been loaded. Call getRegion() or getRegions() first.');
     return this.#region;
   }
 

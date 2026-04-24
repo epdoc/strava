@@ -40,11 +40,9 @@
     "jsr:@std/testing@^1.0.18": "1.0.18",
     "jsr:@std/toml@^1.0.11": "1.0.11",
     "jsr:@std/yaml@^1.1.0": "1.1.0",
-    "jsr:@zod/zod@^4.3.6": "4.3.6",
     "npm:@types/node@*": "24.2.0",
     "npm:commander@^14.0.3": "14.0.3",
-    "npm:path-to-regexp@^6.3.0": "6.3.0",
-    "npm:xmlbuilder@^15.1.1": "15.1.1"
+    "npm:path-to-regexp@^6.3.0": "6.3.0"
   },
   "jsr": {
     "@epdoc/cliapp@2.2.8": {
@@ -266,9 +264,6 @@
     },
     "@std/yaml@1.1.0": {
       "integrity": "fc1c5c63e05c4c5eb6118355f557958035d41940d6c29d35b306ef7155d6edb0"
-    },
-    "@zod/zod@4.3.6": {
-      "integrity": "7144e5e11f8ffc3cf6e2fca624f6597a8762898aac9868cc8938e9398b96ffe4"
     }
   },
   "npm": {
@@ -286,9 +281,6 @@
     },
     "undici-types@7.10.0": {
       "integrity": "sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="
-    },
-    "xmlbuilder@15.1.1": {
-      "integrity": "sha512-yMqGBqtXyeN1e3TGYvgNgDVZ3j84W4cwkOXQswghol6APgZWaff9lnbvN7MHYJOiXsvGPXtjTYJEiC9J2wv9Eg=="
     }
   },
   "remote": {
@@ -402,8 +394,7 @@
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
-          "jsr:@std/testing@^1.0.18",
-          "jsr:@zod/zod@^4.3.6"
+          "jsr:@std/testing@^1.0.18"
         ]
       },
       "packages/app": {
@@ -419,8 +410,7 @@
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
-          "jsr:@std/testing@^1.0.18",
-          "npm:xmlbuilder@^15.1.1"
+          "jsr:@std/testing@^1.0.18"
         ]
       },
       "packages/athlete": {
@@ -436,8 +426,7 @@
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
-          "jsr:@std/testing@^1.0.18",
-          "npm:xmlbuilder@^15.1.1"
+          "jsr:@std/testing@^1.0.18"
         ]
       },
       "packages/core": {
@@ -465,8 +454,7 @@
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
-          "jsr:@std/testing@^1.0.18",
-          "npm:xmlbuilder@^15.1.1"
+          "jsr:@std/testing@^1.0.18"
         ]
       },
       "packages/info": {
@@ -479,6 +467,8 @@
           "jsr:@epdoc/logger@^1003.3.18",
           "jsr:@epdoc/table@~0.1.17",
           "jsr:@epdoc/type@^1.2.13",
+          "jsr:@oak/oak@^17.2.0",
+          "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/fmt@^1.0.10",
@@ -488,7 +478,6 @@
       "packages/schema": {
         "dependencies": [
           "jsr:@epdoc/type@^1.2.13",
-          "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/testing@^1.0.18"
         ]

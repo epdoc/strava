@@ -1,1 +1,2 @@
-export { GpxCommand } from './cmd.ts';
+export { GpxCommand } from './gpx.ts';
+export { KmlCommand } from './kml.ts';

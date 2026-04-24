@@ -3,7 +3,7 @@ import type { Seconds } from '@epdoc/duration';
 import * as FS from '@epdoc/fs/fs';
 import type { Ctx } from '@epdoc/strava-core';
 import { _ } from '@epdoc/type';
-import * as builder from 'xmlbuilder';
+import { type XmlNode, Xml } from './xml.ts';
 import type * as Activity from '../activity/mod.ts';
 import { Fmt, formatMS } from '../fmt.ts';
 import type * as BikeLog from './types.ts';
@@ -477,41 +477,40 @@ export class Bikelog {
       const m0 = ctx.log.mark();
 
       // Build XML document
-      const doc = builder
-        .create('fields', { version: '1.0', encoding: 'UTF-8' })
-        .att('xmlns:xfdf', 'http://ns.adobe.com/xfdf-transition/')
-        .ele('day');
-
-      Object.keys(activities).forEach((key) => {
-        const activity = activities[key];
-        const item = doc.ele('group').att('xfdf:original', activity.jd);
+      const dayChildren = Object.values(activities).map((activity) => {
+        const groupChildren: XmlNode[] = [];
 
         for (let idx = 0; idx < Math.min(activity.events.length, 2); ++idx) {
           const event = activity.events[idx];
           if (event) {
-            const group = item.ele('group').att('xfdf:original', idx);
-            if (event.bike !== undefined) group.ele('bike', event.bike);
-            if (event.distance !== undefined) group.ele('dist', event.distance);
-            if (event.el !== undefined) group.ele('el', event.el);
-            if (event.t !== undefined) group.ele('t', event.t);
-            if (event.wh !== undefined) group.ele('wh', event.wh);
+            const eventChildren: XmlNode[] = [];
+            if (event.bike !== undefined) eventChildren.push(Xml.ele('bike', {}, [event.bike]));
+            if (event.distance !== undefined) eventChildren.push(Xml.ele('dist', {}, [String(event.distance)]));
+            if (event.el !== undefined) eventChildren.push(Xml.ele('el', {}, [String(event.el)]));
+            if (event.t !== undefined) eventChildren.push(Xml.ele('t', {}, [String(event.t)]));
+            if (event.wh !== undefined) eventChildren.push(Xml.ele('wh', {}, [String(event.wh)]));
+            groupChildren.push(Xml.ele('group', { 'xfdf:original': idx }, eventChildren));
           }
         }
 
-        if (activity.note0) {
-          item.ele('note0', activity.note0);
-        }
-        if (activity.note1) {
-          item.ele('note1', activity.note1);
-        }
+        if (activity.note0) groupChildren.push(Xml.ele('note0', {}, [activity.note0]));
+        if (activity.note1) groupChildren.push(Xml.ele('note1', {}, [activity.note1]));
         if (activity.wt) {
-          const wtStr = typeof activity.wt === 'string' ? activity.wt : String(activity.wt);
-          item.ele('wt', wtStr.replace(/[^\d\.]/g, ''));
+          const wtStr = String(activity.wt).replace(/[^\d.]/g, '');
+          groupChildren.push(Xml.ele('wt', {}, [wtStr]));
         }
+
+        return Xml.ele('group', { 'xfdf:original': activity.jd }, groupChildren);
       });
 
+      const root = Xml.ele(
+        'fields',
+        { 'xmlns:xfdf': 'http://ns.adobe.com/xfdf-transition/' },
+        [Xml.ele('day', {}, dayChildren)],
+      );
+
       // Generate XML string and write to file
-      const xmlContent = doc.doc().end({ pretty: true });
+      const xmlContent = Xml.doc(root);
       await this.#writer.write(xmlContent);
       await this.#writer.close();
 

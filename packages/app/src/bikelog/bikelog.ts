@@ -3,7 +3,7 @@ import type { Seconds } from '@epdoc/duration';
 import * as FS from '@epdoc/fs/fs';
 import type { Ctx } from '@epdoc/strava-core';
 import { _ } from '@epdoc/type';
-import { type XmlNode, Xml } from './xml.ts';
+import { Xml, type XmlNode } from './xml.ts';
 import type * as Activity from '../activity/mod.ts';
 import { Fmt, formatMS } from '../fmt.ts';
 import type * as BikeLog from './types.ts';
@@ -485,7 +485,9 @@ export class Bikelog {
           if (event) {
             const eventChildren: XmlNode[] = [];
             if (event.bike !== undefined) eventChildren.push(Xml.ele('bike', {}, [event.bike]));
-            if (event.distance !== undefined) eventChildren.push(Xml.ele('dist', {}, [String(event.distance)]));
+            if (event.distance !== undefined) {
+              eventChildren.push(Xml.ele('dist', {}, [String(event.distance)]));
+            }
             if (event.el !== undefined) eventChildren.push(Xml.ele('el', {}, [String(event.el)]));
             if (event.t !== undefined) eventChildren.push(Xml.ele('t', {}, [String(event.t)]));
             if (event.wh !== undefined) eventChildren.push(Xml.ele('wh', {}, [String(event.wh)]));

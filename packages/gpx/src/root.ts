@@ -1,10 +1,6 @@
 import type * as CliApp from '@epdoc/cliapp';
 import type { DateRanges } from '@epdoc/daterange';
-import {
-  BaseRootCmdClass,
-  Ctx,
-  Options,
-} from '@epdoc/strava-core';
+import { BaseRootCmdClass, Ctx, Options } from '@epdoc/strava-core';
 import { GpxCommand } from './gpx.ts';
 import { KmlCommand } from './kml.ts';
 

@@ -1,4 +1,5 @@
 import type * as Schema from '@epdoc/strava-schema';
+import { _ } from '@epdoc/type';
 import config from '../consts.ts';
 
 export type Code = string;
@@ -49,7 +50,7 @@ export class Region {
   };
 
   async regions(): Promise<Def[]> {
-    if (!this.#regions) {
+    if (!_.isNonEmptyArray(this.#regions)) {
       await this.load();
     }
     return this.#regions;

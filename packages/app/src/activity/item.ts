@@ -54,10 +54,11 @@ export class ActivityItem extends Api.Activity {
       const matchingRegion = filter.regions.find((regionCode) =>
         activityRegion.id.toLowerCase() === regionCode.toLowerCase()
       );
-
-      if (!matchingRegion) {
+      if (_.isNullOrUndefined(matchingRegion)) {
+        // this.log.info.activity(this).text('is not in region').value(filter.regions).emit();
         return false;
       }
+      // this.log.info.activity(this).text('is in region').value(filter.regions).emit();
     }
 
     return true;
@@ -83,5 +84,13 @@ export class ActivityItem extends Api.Activity {
       }
     }
     return this.#region;
+  }
+
+  override toString(): string {
+    const d = Math.round(this.data.distance / 100) / 10;
+    if (this.#region) {
+      return `${this.startDateLocal}, ${this.type} ${d} km, ${this.name} (${this.#region.name})`;
+    }
+    return `${this.startDateLocal}, ${this.type} ${d} km, ${this.name}`;
   }
 }

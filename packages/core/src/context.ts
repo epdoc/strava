@@ -38,7 +38,7 @@ export class CustomMsgBuilder extends CliApp.Progress.MsgBuilder {
 
   activity(activity: object | undefined): this {
     if (activity) {
-      this.label('activity').value(activity.toString());
+      this.value(activity.toString());
     } else {
       this.label('activity').value('undefined');
     }

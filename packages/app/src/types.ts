@@ -44,6 +44,8 @@ export type UserSettings = {
   bikes?: BikeDef[];
   /** Default folder to save gpx files. Can be overridden by --output flag. */
   gpxFolder?: FS.FolderPath;
+  /** Default folder to save kml files. Can be overridden by --output flag. */
+  kmlFolder?: FS.FolderPath;
   /** Default file path for KML output. Can be overridden by --output flag. */
   kmlFile?: FS.FilePath;
   /** Default file path for Adobe Acroforms XML output. Can be overridden by --output flag. */

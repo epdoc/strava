@@ -429,10 +429,15 @@ export class ActivityCollection extends BaseClass {
       if (userSettings) {
         if (outputType === 'gpx' && userSettings.gpxFolder) {
           defaultFolder = userSettings.gpxFolder;
-        } else if (outputType === 'kml' && userSettings.kmlFile) {
-          // Extract folder from kmlFile path
-          const kmlFile = new FS.File(userSettings.kmlFile);
-          defaultFolder = kmlFile.parentFolder().path;
+        } else if (outputType === 'kml') {
+          if (userSettings.kmlFolder) {
+            // Use kmlFolder if available
+            defaultFolder = userSettings.kmlFolder;
+          } else if (userSettings.kmlFile) {
+            // Fallback: extract folder from kmlFile path
+            const kmlFile = new FS.File(userSettings.kmlFile);
+            defaultFolder = kmlFile.parentFolder().path;
+          }
         }
       }
     }

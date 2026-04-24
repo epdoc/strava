@@ -540,7 +540,8 @@ export class Activity extends BaseClass {
       const detailedActivity = await this.api.getDetailedActivity(this.data);
       this.data = detailedActivity;
       this.#detailed = true;
-      this.log.info.text('Retrieved detailed activity data for').value(this.toString()).ewt(m0);
+      this.log.info.text('Retrieved').label('detailed activity').text('data for').activity(this)
+        .ewt(m0);
     } catch (_e) {
       this.log.warn.warn('Failed to fetch detailed data for').value(this.name).emit();
     }

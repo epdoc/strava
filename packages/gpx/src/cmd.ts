@@ -5,6 +5,7 @@ import * as App from '@epdoc/strava-app';
 import { Activity } from '@epdoc/strava-app';
 import { BaseRootCmdClass, Ctx, Options } from '@epdoc/strava-core';
 import { isAthleteId, type Types } from '@epdoc/strava-schema';
+import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 
 const REG = {
@@ -89,8 +90,18 @@ export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
     const preFilter = activities.length;
     await activities.filter(filter);
     if (activities.length !== preFilter) {
-      ctx.log.info.icheck().text('Filtered activities from').value(preFilter).text('to')
-        .value(activities.length).emit();
+      const line = ctx.log.info.icheck().text('Filtered').value(preFilter)
+        .iarrow(0xFFFFFF).count(activities.length).text('activity', 'activities')
+        .text('using');
+      if (_.isNonEmptyArray(filter.regions)) {
+        line.label('regions:').value(filter.regions.join(', '));
+      }
+      if (_.isNonEmptyArray(filter.include)) {
+        line.label('types:').value(filter.include);
+      }
+      if (filter.commuteOnly) line.value('commute only');
+      if (filter.nonCommuteOnly) line.value('non-commute only');
+      line.emit();
     }
 
     // Step 3: Get detailed activity data if lap waypoints are requested

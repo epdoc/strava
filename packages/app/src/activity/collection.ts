@@ -155,7 +155,8 @@ export class ActivityCollection extends BaseClass {
    * ```
    */
   async filter(filter: FilterOpts = {}): Promise<void> {
-    this.#activities = await this.#activities.filter((activity) => activity.filter(filter));
+    const results = await Promise.all(this.#activities.map((a) => a.filter(filter)));
+    this.#activities = this.#activities.filter((_, i) => results[i]);
     this.#lastFilterOpts = filter;
     this.#generateSuggestedFilename();
   }

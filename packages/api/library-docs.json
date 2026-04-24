@@ -1451,9 +1451,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 556,
+                      "line": 557,
                       "col": 2,
-                      "byteIndex": 17280
+                      "byteIndex": 17298
                     }
                   },
                   {
@@ -1509,9 +1509,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 579,
+                      "line": 580,
                       "col": 2,
-                      "byteIndex": 18364
+                      "byteIndex": 18382
                     }
                   },
                   {
@@ -1552,9 +1552,9 @@
                                   "name": "startDate",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                                    "line": 622,
+                                    "line": 623,
                                     "col": 9,
-                                    "byteIndex": 19911
+                                    "byteIndex": 19929
                                   },
                                   "tsType": {
                                     "repr": "DateTime",
@@ -1585,9 +1585,9 @@
                                   "name": "startDate",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                                    "line": 623,
+                                    "line": 624,
                                     "col": 9,
-                                    "byteIndex": 19943
+                                    "byteIndex": 19961
                                   },
                                   "tsType": {
                                     "repr": "DateTime",
@@ -1623,9 +1623,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 621,
+                      "line": 622,
                       "col": 2,
-                      "byteIndex": 19870
+                      "byteIndex": 19888
                     }
                   }
                 ],

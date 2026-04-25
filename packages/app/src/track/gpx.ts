@@ -155,7 +155,7 @@ export class GpxWriter extends TrackWriter {
     this.writer = await fsFile.writer();
 
     // Convert start date to timezone-aware format
-    const startDateEx = activity.startDateEx();
+    const startDateEx = activity.startDateTime();
     const metadata = {
       title: activity.name,
       time: startDateEx.toISOLocalString(),
@@ -217,7 +217,7 @@ export class GpxWriter extends TrackWriter {
     }
 
     if (coord.time) {
-      const dateEx = activity.startDateEx(coord.time);
+      const dateEx = activity.startDateTime(coord.time);
       lines.push(`  <time>${dateEx.toISOLocalString()}</time>`);
     }
 
@@ -363,7 +363,7 @@ export class GpxWriter extends TrackWriter {
       }
 
       if (coord.time) {
-        const dateEx = activity.startDateEx(coord.time);
+        const dateEx = activity.startDateTime(coord.time);
         this.writeln(2, '<time>' + dateEx.toISOLocalString() + '</time>');
       }
 

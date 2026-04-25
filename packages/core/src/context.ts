@@ -1,8 +1,8 @@
 import * as CliApp from '@epdoc/cliapp';
 import { DateRanges } from '@epdoc/daterange';
+import { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import type * as Log from '@epdoc/logger';
-import { DateTime } from '@epdoc/datetime';
 
 export type OutputFormat = 'auto' | 'json' | 'yaml' | 'table' | 'csv' | 'text';
 
@@ -59,6 +59,13 @@ export class CustomMsgBuilder extends CliApp.Progress.MsgBuilder {
     }
     return this;
   }
+
+  newline(): this {
+    return this.plain('\n');
+  }
+  nl(): this {
+    return this.plain('\n');
+  }
 }
 
 export function msgBuilder(
@@ -88,12 +95,13 @@ export function msgBuilder(
  * ```
  */
 export class Context extends CliApp.Ctx.AbstractBase {
-  format: OutputFormat = 'auto';
-  online = true;
-  imperial = false;
   app: object | undefined;
-  date: DateRanges | undefined;
-  more = false;
+  /** Are we online or offline (need to review if we've implemented this correctly) */
+  online = true;
+  /** Set to true for imperial units */
+  imperial = false;
+  /** Some commands support output in different formats (eg. JSON) */
+  format: OutputFormat = 'auto';
 
   protected override builderClass = CustomMsgBuilder;
 

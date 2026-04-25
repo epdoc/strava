@@ -440,7 +440,6 @@
           "jsr:@epdoc/datetime@^3.2.11",
           "jsr:@epdoc/fs@^1.3.9",
           "jsr:@epdoc/logger@^1003.3.20",
-          "jsr:@epdoc/type@^1.2.13",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/testing@^1.0.18"
         ]

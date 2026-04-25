@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/strava-schema",
   "description": "TypeScript types and type guards for the Strava API",
-  "version": "2.0.10",
+  "version": "2.2.0-beta.1",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"

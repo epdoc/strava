@@ -7,10 +7,11 @@ import { BaseClass, type Ctx } from '@epdoc/strava-core';
 import * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
-import * as Activity from './activity/mod.ts';
+import type * as Activity from './activity/mod.ts';
 import * as BikeLog from './bikelog/mod.ts';
 import config from './consts.ts';
 import * as Segment from './segment/mod.ts';
+import type { OutputType } from './state/mod.ts';
 import * as State from './state/mod.ts';
 import type * as Stream from './track/mod.ts';
 import type * as App from './types.ts';
@@ -74,6 +75,13 @@ export class Main extends BaseClass {
       throw new Error('API not initialized. Call initClient() first.');
     }
     return this.#api;
+  }
+
+  getFileSettings(type: State.OutputType): App.FileUserSettings {
+    if (this.userSettings && type in this.userSettings) {
+      return this.userSettings[type] as App.FileUserSettings;
+    }
+    return { ext: 'xml' };
   }
 
   /**
@@ -159,7 +167,7 @@ export class Main extends BaseClass {
    * @param activities - Array of activities to extract the latest timestamp from
    * @returns Promise that resolves when the state file is updated
    */
-  async updateState(type: State.OutputType, activities: Activity.Item[]): Promise<void> {
+  async updateState(type: OutputType, activities: Activity.Collection): Promise<void> {
     if (this.#stateFile && activities.length > 0) {
       await this.#stateFile.updateLastUpdated(type, activities);
     }
@@ -433,25 +441,15 @@ export class Main extends BaseClass {
    * }, 'pdf');
    * ```
    */
-  async getPdf(
-    pdfOpts: BikeLog.Opts,
-    outputType?: State.OutputType,
-  ): Promise<void> {
-    // Fetch activities if we have date ranges
-    if (!(pdfOpts.date && pdfOpts.date.hasRanges())) {
-      this.log.warn.warn('No date ranges specified').emit();
-      return;
-    }
+  async getPdf(pdfOpts: BikeLog.Opts, outputType?: OutputType): Promise<void> {
+    const activities = pdfOpts.activities;
 
-    this.log.info.text('Generating PDF/XML for Adobe Acrobat Forms').emit();
+    this.log.info.h2('Generating Acroforms file:').emit();
 
     const _opts: Activity.GetActivitiesOpts = {
       detailed: true,
       starredSegments: true,
     };
-
-    const activities = new Activity.Collection(this.ctx);
-    await activities.getForDateRange(pdfOpts.date);
 
     // Prepare bikes dict from athlete data
     const bikes: Record<string, Schema.Gear.Summary> = {};
@@ -469,18 +467,22 @@ export class Main extends BaseClass {
     // Create Bikelog instance with options
     const bikelogOpts: BikeLog.OutputOpts = {
       more: true, // pdfOpts.more,
-      dates: pdfOpts.date,
+      dates: activities.getDateRange(),
       bikes,
     };
 
     const bikelog = new BikeLog.Bikelog(bikelogOpts);
 
     // Generate output file path
-    const outputPath = typeof pdfOpts.output === 'string'
-      ? pdfOpts.output
-      : pdfOpts.output?.path
-      ? pdfOpts.output.path
-      : 'bikelog.xml';
+    let output = pdfOpts.output;
+    if (this.ctx.dryRun === true) {
+      output = await FS.File.makeTemp({ prefix: 'bikelog', suffix: '.xml' });
+      this.log.info.warn('DRY RUN').text('Generating XML file to temporary location ...')
+        .emit();
+    }
+    if (!(output instanceof FS.File)) {
+      throw new Error('Output must be an instance of FS.File');
+    }
 
     // if (pdfOpts.dryRun) {
     //   this.log.info.text(`Dry run: would generate XML file: ${outputPath}`).emit();
@@ -488,13 +490,18 @@ export class Main extends BaseClass {
     //   return;
     // }
 
-    this.log.info.text('Generating XML file').fs(outputPath).emit();
-    await bikelog.outputData(this.ctx, outputPath, activities.activities);
-    this.log.info.h2('PDF/XML file generated successfully').fs(outputPath).emit();
+    this.log.info.text('Generating Acroforms data file').fs(output).start();
+    await bikelog.outputData(this.ctx, output, activities.activities);
+    this.log.info.icheck().text('Acroforms data file generated successfully').fs(output).stop();
 
     // Update state file with the latest activity timestamp
     if (outputType && this.#stateFile && activities.length > 0) {
-      await this.#stateFile.updateLastUpdated(outputType, activities.activities);
+      if (this.ctx.dryRun === true) {
+        this.log.info.warn('DRY RUN').text('Skipping state update').emit();
+        return;
+      } else {
+        await this.#stateFile.updateLastUpdated(outputType, activities);
+      }
     }
   }
 

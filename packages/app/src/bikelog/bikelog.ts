@@ -1,12 +1,12 @@
 import type { DateTime } from '@epdoc/datetime';
 import type { Seconds } from '@epdoc/duration';
-import * as FS from '@epdoc/fs/fs';
+import type * as FS from '@epdoc/fs/fs';
 import type { Ctx } from '@epdoc/strava-core';
 import { _ } from '@epdoc/type';
-import { Xml, type XmlNode } from './xml.ts';
 import type * as Activity from '../activity/mod.ts';
 import { Fmt, formatMS } from '../fmt.ts';
 import type * as BikeLog from './types.ts';
+import { Xml, type XmlNode } from './xml.ts';
 
 const REGEX = {
   moto: /^moto$/i,
@@ -460,20 +460,17 @@ export class Bikelog {
    */
   public async outputData(
     ctx: Ctx.Context,
-    filepath: string,
+    fsFile: FS.File,
     stravaActivities: Activity.Item[],
   ): Promise<void> {
-    filepath = filepath || 'bikelog.xml';
-
     // Combine activities by day
     const activities = this.combineActivities(stravaActivities);
 
-    // Create the FileSpec and writer
-    const fsFile: FS.File = new FS.File(FS.Folder.cwd(), filepath);
+    // Create the  writer
     this.#writer = await fsFile.writer();
 
     try {
-      ctx.log.verbose.text('Generating XML file').fs(filepath).emit();
+      ctx.log.verbose.text('Generating XML file').fs(fsFile).emit();
       const m0 = ctx.log.mark();
 
       // Build XML document
@@ -516,7 +513,7 @@ export class Bikelog {
       await this.#writer.write(xmlContent);
       await this.#writer.close();
 
-      ctx.log.verbose.text('Wrote').count(xmlContent.length).text('byte').text('to').fs(filepath)
+      ctx.log.verbose.text('Wrote').count(xmlContent.length).text('byte').text('to').fs(fsFile)
         .ewt(m0);
     } catch (err) {
       if (this.#writer) {

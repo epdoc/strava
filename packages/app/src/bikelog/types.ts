@@ -1,11 +1,12 @@
-import type { DateRanges } from '@epdoc/daterange';
+import type { DateRange } from '@epdoc/daterange';
 import type { FileSpec } from '@epdoc/fs';
 import type { Dict } from '@epdoc/type';
+import type * as Activity from '../activity/mod.ts';
 import type { BikeDef } from '../types.ts';
 
 export type OutputOpts = {
   more?: boolean;
-  dates?: DateRanges;
+  dates?: DateRange;
   imperial?: boolean;
   segmentsFlatFolder?: boolean;
   selectedBikes?: BikeDef[];
@@ -14,8 +15,8 @@ export type OutputOpts = {
 };
 
 export type Opts = {
+  activities: Activity.Collection;
   output?: string | FileSpec; // output filename
-  date?: DateRanges; // date range for which to output data
   selectedBikes?: BikeDef[]; // bike filter definitions
   bikes?: Dict; // bike definitions for identifying bikes
 };

@@ -2,6 +2,7 @@ import type * as FS from '@epdoc/fs/fs';
 import type * as Strava from '@epdoc/strava-api';
 import type * as Schema from '@epdoc/strava-schema';
 import type { Dict, Integer } from '@epdoc/type';
+import type { OutputType } from './state/mod.ts';
 import type { KmlLineStyle as LineStyle } from './track/types.ts';
 
 export type SegmentConfig = {
@@ -19,6 +20,15 @@ export type Opts = Partial<{
 
 export type BikeId = string;
 
+export type FileUserSettings = {
+  /** Default folder to save files. Can be overridden by --output flag. */
+  folder?: FS.FolderPath;
+  /** Default file to save files. Can be overridden by --output flag. */
+  file?: FS.FilePath;
+  /** Extension of output file */
+  ext: string;
+};
+
 /**
  * Bike definition for mapping Strava bike names to custom display names.
  *
@@ -32,34 +42,31 @@ export type BikeDef = {
   pattern: string;
 };
 
-export type UserSettings = {
-  /** A description of this file, not used by code */
-  description: string;
-  // client: StravaClientConfig;
-  athleteId?: Integer;
-  /**  */
-  cachePath?: string;
-  /** Custom line styles for KML files */
-  lineStyles?: Record<string, LineStyle>;
-  bikes?: BikeDef[];
-  /** Default folder to save gpx files. Can be overridden by --output flag. */
-  gpxFolder?: FS.FolderPath;
-  /** Default folder to save kml files. Can be overridden by --output flag. */
-  kmlFolder?: FS.FolderPath;
-  /** Default file path for KML output. Can be overridden by --output flag. */
-  kmlFile?: FS.FilePath;
-  /** Default file path for Adobe Acroforms XML output. Can be overridden by --output flag. */
-  formsDataFile?: FS.FilePath;
-  /**
-   * Blackout regions where we optionally do not show paths in our gpx or kml output
-   */
-  blackoutZones?: Strava.LatLngRect[];
-  /**
-   * A user will manually add entries to this file when they do not like the name that
-   * Strava uses for a segment.
-   */
-  aliases?: Record<Schema.Segment.Name, string>;
-};
+export type UserSettings =
+  & {
+    /** A description of this file, not used by code */
+    description: string;
+    // client: StravaClientConfig;
+    athleteId?: Integer;
+    /**  */
+    cachePath?: string;
+    /** Custom line styles for KML files */
+    lineStyles?: Record<string, LineStyle>;
+    bikes?: BikeDef[];
+    /**
+     * Blackout regions where we optionally do not show paths in our gpx or kml output
+     */
+    blackoutZones?: Strava.LatLngRect[];
+    /**
+     * A user will manually add entries to this file when they do not like the name that
+     * Strava uses for a segment.
+     */
+    aliases?: Record<Schema.Segment.Name, string>;
+  }
+  & {
+    // This maps over each value in your branded constant
+    [K in OutputType]: FileUserSettings;
+  };
 
 /**
  * Config data that is part of the source code for this project

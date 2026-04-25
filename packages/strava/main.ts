@@ -1,13 +1,13 @@
 import * as CliApp from '@epdoc/cliapp';
+import { Ctx } from '@epdoc/strava-core';
 import pkg from './deno.json' with { type: 'json' };
-import { Ctx } from './src/deps.ts';
-import * as App from './src/mod.ts';
+import { RootCommand } from './src/mod.ts';
 
 if (import.meta.main) {
   const ctx = new Ctx.Context(pkg);
-  await ctx.setupLogging({ pkg: 'template' });
+  await ctx.setupLogging({ pkg: 'strava' });
 
-  const cmd = new App.Cmd.Root(ctx, { root: true, dryRun: true });
+  const cmd = new RootCommand(ctx, { root: true, dryRun: true });
   await cmd.init();
 
   await CliApp.run(ctx, cmd);

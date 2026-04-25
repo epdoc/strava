@@ -1,0 +1,706 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "GpxCommand",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/gpx.ts",
+                "line": 32,
+                "col": 0,
+                "byteIndex": 1014
+              },
+              "declarationKind": "export",
+              "kind": "class",
+              "def": {
+                "methods": [
+                  {
+                    "isOverride": true,
+                    "name": "defineMetadata",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/gpx.ts",
+                      "line": 33,
+                      "col": 2,
+                      "byteIndex": 1082
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "defineOptions",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/gpx.ts",
+                      "line": 38,
+                      "col": 2,
+                      "byteIndex": 1208
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "execute",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "options",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "GpxCmdOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "GpxCmdOptions",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "_args",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "CliApp.CmdArgs",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "CliApp.CmdArgs",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/cliapp"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "Promise",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "void",
+                              "kind": "keyword",
+                              "value": "void"
+                            }
+                          ],
+                          "typeName": "Promise"
+                        }
+                      },
+                      "hasBody": true,
+                      "isAsync": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/gpx.ts",
+                      "line": 54,
+                      "col": 2,
+                      "byteIndex": 1888
+                    }
+                  },
+                  {
+                    "name": "helpText",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/gpx.ts",
+                      "line": 147,
+                      "col": 2,
+                      "byteIndex": 5257
+                    }
+                  }
+                ],
+                "extends": "BaseRootCmdClass",
+                "superTypeParams": [
+                  {
+                    "repr": "GpxCmdOptions",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "GpxCmdOptions",
+                      "resolution": {
+                        "kind": "local"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "KmlCommand",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/kml.ts",
+                "line": 38,
+                "col": 0,
+                "byteIndex": 1227
+              },
+              "declarationKind": "export",
+              "kind": "class",
+              "def": {
+                "methods": [
+                  {
+                    "isOverride": true,
+                    "name": "defineMetadata",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/kml.ts",
+                      "line": 39,
+                      "col": 2,
+                      "byteIndex": 1295
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "defineOptions",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/kml.ts",
+                      "line": 44,
+                      "col": 2,
+                      "byteIndex": 1434
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "execute",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "options",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "KmlCmdOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "KmlCmdOptions",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "_args",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "CliApp.CmdArgs",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "CliApp.CmdArgs",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/cliapp"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "Promise",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "void",
+                              "kind": "keyword",
+                              "value": "void"
+                            }
+                          ],
+                          "typeName": "Promise"
+                        }
+                      },
+                      "hasBody": true,
+                      "isAsync": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/kml.ts",
+                      "line": 63,
+                      "col": 2,
+                      "byteIndex": 2248
+                    }
+                  },
+                  {
+                    "name": "helpText",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/kml.ts",
+                      "line": 204,
+                      "col": 2,
+                      "byteIndex": 7579
+                    }
+                  }
+                ],
+                "extends": "BaseRootCmdClass",
+                "superTypeParams": [
+                  {
+                    "repr": "KmlCmdOptions",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "KmlCmdOptions",
+                      "resolution": {
+                        "kind": "local"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PdfCommand",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/pdf.ts",
+                "line": 15,
+                "col": 0,
+                "byteIndex": 531
+              },
+              "declarationKind": "export",
+              "kind": "class",
+              "def": {
+                "methods": [
+                  {
+                    "isOverride": true,
+                    "name": "defineMetadata",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/pdf.ts",
+                      "line": 16,
+                      "col": 2,
+                      "byteIndex": 599
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "defineOptions",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/pdf.ts",
+                      "line": 21,
+                      "col": 2,
+                      "byteIndex": 740
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "execute",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "options",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "PdfCmdOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "PdfCmdOptions",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "_args",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "CliApp.CmdArgs",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "CliApp.CmdArgs",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/cliapp"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "Promise",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "void",
+                              "kind": "keyword",
+                              "value": "void"
+                            }
+                          ],
+                          "typeName": "Promise"
+                        }
+                      },
+                      "hasBody": true,
+                      "isAsync": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/pdf.ts",
+                      "line": 29,
+                      "col": 2,
+                      "byteIndex": 1100
+                    }
+                  },
+                  {
+                    "name": "helpText",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/pdf.ts",
+                      "line": 100,
+                      "col": 2,
+                      "byteIndex": 3375
+                    }
+                  }
+                ],
+                "extends": "BaseRootCmdClass",
+                "superTypeParams": [
+                  {
+                    "repr": "PdfCmdOptions",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "PdfCmdOptions",
+                      "resolution": {
+                        "kind": "local"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RootCommand",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/root.ts",
+                "line": 15,
+                "col": 0,
+                "byteIndex": 476
+              },
+              "declarationKind": "export",
+              "kind": "class",
+              "def": {
+                "methods": [
+                  {
+                    "isOverride": true,
+                    "name": "defineMetadata",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/root.ts",
+                      "line": 16,
+                      "col": 2,
+                      "byteIndex": 543
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "defineOptions",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/root.ts",
+                      "line": 21,
+                      "col": 2,
+                      "byteIndex": 702
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "hydrateContext",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "opts",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "RootCmdOpts",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "RootCmdOpts",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "_args",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "CliApp.CmdArgs",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "CliApp.CmdArgs",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/cliapp"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/root.ts",
+                      "line": 27,
+                      "col": 2,
+                      "byteIndex": 869
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "execute",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "_opts",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "RootCmdOpts",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "RootCmdOpts",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "_args",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "CliApp.CmdArgs",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "CliApp.CmdArgs",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/cliapp"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/root.ts",
+                      "line": 35,
+                      "col": 2,
+                      "byteIndex": 1096
+                    }
+                  },
+                  {
+                    "accessibility": "protected",
+                    "isOverride": true,
+                    "name": "getSubCommands",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "array",
+                        "value": {
+                          "repr": "BaseRootCmdClass",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeParams": [
+                              {
+                                "repr": "RootCmdOpts",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "RootCmdOpts",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            ],
+                            "typeName": "BaseRootCmdClass",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/strava-core",
+                              "name": "BaseRootCmdClass"
+                            }
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/root.ts",
+                      "line": 39,
+                      "col": 2,
+                      "byteIndex": 1198
+                    }
+                  },
+                  {
+                    "name": "helpText",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/root.ts",
+                      "line": 49,
+                      "col": 2,
+                      "byteIndex": 1446
+                    }
+                  }
+                ],
+                "extends": "BaseRootCmdClass",
+                "superTypeParams": [
+                  {
+                    "repr": "RootCmdOpts",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "RootCmdOpts",
+                      "resolution": {
+                        "kind": "local"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,8 +1,11 @@
+export * as Activity from './activity/mod.ts';
 export { Main } from './app.ts';
 export { BaseClass } from './base.ts';
 export * as BikeLog from './bikelog/mod.ts';
-export * as Activity from './activity/mod.ts';
+export * as Option from './options.ts';
 export * as Segment from './segment/mod.ts';
 export * as State from './state/mod.ts';
+export { OutputTypes } from './state/types.ts';
+export type { OutputType } from './state/types.ts';
 export * as Track from './track/mod.ts';
 export type * from './types.ts';

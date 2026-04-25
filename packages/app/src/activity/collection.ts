@@ -1,4 +1,4 @@
-import type { DateRanges } from '@epdoc/daterange';
+import { DateRange, type DateRanges } from '@epdoc/daterange';
 import { DateTime } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import type { Api } from '@epdoc/strava-api';
@@ -8,12 +8,11 @@ import type * as Schema from '@epdoc/strava-schema';
 import { _, type Integer } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import type { Main as App } from '../app.ts';
-import type * as State from '../state/mod.ts';
 import { ActivityItem } from './item.ts';
-import type { FilterOpts } from './types.ts';
+import type { FilterOpts, ResolveFileOpts } from './types.ts';
 
 const REG = {
-  kmlOrGpx: new RegExp(/([^\/.]+)\.(gpx|kml)$/i),
+  validExt: new RegExp(/([^\/.]+)\.(gpx|kml|xml)$/i),
 };
 
 export type GetActivitiesOpts = {
@@ -26,9 +25,9 @@ export type GetActivitiesOpts = {
 };
 
 export class ActivityCollection extends BaseClass {
-  #activities: ActivityItem[] = [];
-  #suggestedFilename?: string;
-  #lastFilterOpts?: FilterOpts;
+  private _activities: ActivityItem[] = [];
+  private _suggestedFilename?: string;
+  private _lastFilterOpts?: FilterOpts;
 
   constructor(ctx: Ctx.Context) {
     super(ctx);
@@ -49,11 +48,11 @@ export class ActivityCollection extends BaseClass {
   }
 
   get length(): Integer {
-    return this.#activities.length;
+    return this._activities.length;
   }
 
   get activities(): ActivityItem[] {
-    return this.#activities;
+    return this._activities;
   }
 
   /**
@@ -62,8 +61,8 @@ export class ActivityCollection extends BaseClass {
    * @returns The suggested filename base (without extension), or undefined if no activities.
    */
   getSuggestedFilename(): string | undefined {
-    assert(this.#suggestedFilename, 'Suggested filename has not been generated yet');
-    return this.#suggestedFilename;
+    assert(this._suggestedFilename, 'Suggested filename has not been generated yet');
+    return this._suggestedFilename;
   }
 
   /**
@@ -83,8 +82,8 @@ export class ActivityCollection extends BaseClass {
    * @returns A promise that resolves to an array of activities.
    */
   async getForDateRange(date: DateRanges): Promise<void> {
-    this.#activities = [];
-    this.#suggestedFilename = undefined;
+    this._activities = [];
+    this._suggestedFilename = undefined;
 
     // await this.api.refreshToken();
 
@@ -107,22 +106,52 @@ export class ActivityCollection extends BaseClass {
               1000,
           ),
           before: Math.floor(
-            (dateRange.before
+            ((dateRange.before && !dateRange.before.isNearMax())
               ? dateRange.before.epochMilliseconds
-              : DateTime.now().epochMilliseconds) / 1000,
+              : DateTime.now().add({ days: 7 }).epochMilliseconds) / 1000,
           ),
         },
       };
 
       const apiActivities = await this.api.getActivities(apiOpts, ActivityItem);
       for (const activity of apiActivities) {
-        this.#activities.push(activity);
+        this._activities.push(activity);
       }
     }
-    this.#generateSuggestedFilename();
+    this.sort();
+    this._generateSuggestedFilename();
 
     this.log.info.icheck().text('Retrieved a list of').count(this.length)
       .text('Strava activity', 'Strava activities').dateRange(date).stop();
+  }
+
+  /**
+   * Sorts activities by start date.
+   * @param ascending - If true (default), sorts oldest first. If false, sorts newest first.
+   */
+  sort(ascending: boolean = true): void {
+    this._activities.sort((a, b) => {
+      const comparison = a.startDateAsDateTime < b.startDateAsDateTime
+        ? -1
+        : a.startDateAsDateTime > b.startDateAsDateTime
+        ? 1
+        : 0;
+      return ascending ? comparison : -comparison;
+    });
+  }
+
+  /**
+   * Returns a DateRange covering the start dates of all activities.
+   * Assumes activities have been sorted (e.g., after calling getForDateRange).
+   * @returns DateRange from first to last activity, or undefined if no activities.
+   */
+  getDateRange(): DateRange | undefined {
+    if (this._activities.length === 0) {
+      return undefined;
+    }
+    const first = this._activities[0].startDateAsDateTime;
+    const last = this._activities[this._activities.length - 1].startDateAsDateTime;
+    return new DateRange(first, last);
   }
 
   /**
@@ -155,10 +184,10 @@ export class ActivityCollection extends BaseClass {
    * ```
    */
   async filter(filter: FilterOpts = {}): Promise<void> {
-    const results = await Promise.all(this.#activities.map((a) => a.filter(filter)));
-    this.#activities = this.#activities.filter((_, i) => results[i]);
-    this.#lastFilterOpts = filter;
-    this.#generateSuggestedFilename();
+    const results = await Promise.all(this._activities.map((a) => a.filter(filter)));
+    this._activities = this._activities.filter((_, i) => results[i]);
+    this._lastFilterOpts = filter;
+    this._generateSuggestedFilename();
   }
 
   /**
@@ -201,7 +230,7 @@ export class ActivityCollection extends BaseClass {
       this.log.info.h2('Retrieving activity details from Strava:').emit();
       this.log.indent();
       const jobs: Promise<void>[] = [];
-      this.#activities.forEach((activity) => {
+      this._activities.forEach((activity) => {
         jobs.push(activity.getDetailed());
       });
       await Promise.all(jobs);
@@ -270,7 +299,7 @@ export class ActivityCollection extends BaseClass {
         const jobs: Promise<void>[] = [];
         const streams = opts.streams; // Extract to non-null variable
         this.log.indent();
-        this.#activities.forEach((activity) => {
+        this._activities.forEach((activity) => {
           jobs.push(activity.getTrackPoints(streams));
         });
         await Promise.all(jobs);
@@ -280,7 +309,7 @@ export class ActivityCollection extends BaseClass {
         if (verbs.length) {
           this.log.info.h2('Filtering').h2(verbs.join('and')).h2('track points:').emit();
           this.log.indent();
-          this.#activities.forEach((activity) => {
+          this._activities.forEach((activity) => {
             activity.filterTrackPoints(opts.dedup === true, opts.blackoutZones);
           });
           this.log.outdent();
@@ -302,7 +331,7 @@ export class ActivityCollection extends BaseClass {
     this.log.info.text('Processing segment efforts for').count(this.length)
       .text('activity:', 'activities:').emit();
     this.log.indent();
-    this.#activities.forEach((activity) => {
+    this._activities.forEach((activity) => {
       const count = activity.attachStarredSegments(starredSegmentDict);
       if (count > 0) {
         this.log.info.text('Found').count(count)
@@ -320,26 +349,18 @@ export class ActivityCollection extends BaseClass {
    * - 20240101-20240131
    * - 20240101-20240131_CR
    * - 20240101-20240131_CR_Ride_commute
+   *
+   * Note: Assumes activities are sorted by start date (oldest first).
    */
-  #generateSuggestedFilename(): void {
-    if (this.#activities.length === 0) {
-      this.#suggestedFilename = undefined;
+  private _generateSuggestedFilename(): void {
+    if (this._activities.length === 0) {
+      this._suggestedFilename = undefined;
       return;
     }
 
-    // Find min and max dates from activities
-    let minDate: DateTime | undefined;
-    let maxDate: DateTime | undefined;
-
-    for (const activity of this.#activities) {
-      const startDate = activity.startDateAsDateTime;
-      if (!minDate || startDate.epochMilliseconds < minDate.epochMilliseconds) {
-        minDate = startDate;
-      }
-      if (!maxDate || startDate.epochMilliseconds > maxDate.epochMilliseconds) {
-        maxDate = startDate;
-      }
-    }
+    // Activities are sorted by start date, so first is oldest and last is newest
+    const minDate = this._activities[0].startDateAsDateTime;
+    const maxDate = this._activities[this._activities.length - 1].startDateAsDateTime;
 
     // Format as YYYYMMDD
     const formatDate = (date: DateTime): string => {
@@ -359,7 +380,7 @@ export class ActivityCollection extends BaseClass {
     }
 
     // Add filter suffixes
-    const filter = this.#lastFilterOpts;
+    const filter = this._lastFilterOpts;
     if (filter) {
       // Add region codes
       if (_.isNonEmptyArray(filter.regions)) {
@@ -379,14 +400,14 @@ export class ActivityCollection extends BaseClass {
       }
     }
 
-    this.#suggestedFilename = parts.join('_');
+    this._suggestedFilename = parts.join('_');
   }
 
   /**
    * Calculates the region for all activities in the collection.
    */
   async getRegions(): Promise<void> {
-    for (const activity of this.#activities) {
+    for (const activity of this._activities) {
       await activity.getRegion();
     }
   }
@@ -411,43 +432,33 @@ export class ActivityCollection extends BaseClass {
    * @param opts.defaultFolder - Default folder path for output (optional, will be derived from outputType if not provided)
    * @returns The resolved FS.File, or undefined if it cannot be determined
    */
-  resolveOutputFile(opts: {
-    output?: string;
-    type: State.OutputType;
-    defaultFolder?: FS.FolderPath;
-  }): FS.File | undefined {
-    const { output, type: outputType } = opts;
-    let { defaultFolder } = opts;
+  resolveOutputFile(opts: ResolveFileOpts): FS.File | undefined {
+    const output = opts.output;
+    const outputType = opts.type; // 'kml', 'gpx', or 'acroforms'
+    let defaultFolder = opts.defaultFolder ? new FS.Folder(opts.defaultFolder) : undefined;
+
+    const fileSettings = this.app.getFileSettings(outputType);
 
     // Determine extension from outputType
-    // const extension = outputType;
-    const extWithDot = `.${outputType}`;
+    const extWithDot = `.${fileSettings.ext || 'xml'}`;
 
     // Determine defaultFolder from outputType if not provided
+    if (!defaultFolder && FS.isFolderPath(fileSettings.folder)) {
+      defaultFolder = new FS.Folder(fileSettings.folder);
+    }
+    if (!defaultFolder && FS.isFilePath(fileSettings.file)) {
+      defaultFolder = new FS.File(fileSettings.file).parentFolder();
+    }
     if (!defaultFolder) {
-      const userSettings = this.app.userSettings;
-      if (userSettings) {
-        if (outputType === 'gpx' && userSettings.gpxFolder) {
-          defaultFolder = userSettings.gpxFolder;
-        } else if (outputType === 'kml') {
-          if (userSettings.kmlFolder) {
-            // Use kmlFolder if available
-            defaultFolder = userSettings.kmlFolder;
-          } else if (userSettings.kmlFile) {
-            // Fallback: extract folder from kmlFile path
-            const kmlFile = new FS.File(userSettings.kmlFile);
-            defaultFolder = kmlFile.parentFolder().path;
-          }
-        }
-      }
+      defaultFolder = FS.Folder.cwd(); // Fallback to current working directory if no folder specified
     }
 
-    // Use the suggested filename (generated from activities' date range and filters)
-    const suggestedFilename = this.#suggestedFilename;
+    // The suggested filename (generated from activities' date range and filters)
+    const suggestedFilename = this._suggestedFilename;
 
     if (output) {
       // Check if output matches the pattern: optional path + filename + .gpx/.kml
-      const match = output.match(REG.kmlOrGpx);
+      const match = output.match(REG.validExt);
       if (match) {
         // Output has the correct extension (.gpx or .kml)
         const pathPart = match[1]; // e.g., "folder/" or undefined

@@ -51,7 +51,7 @@ export class StateFile extends BaseClass {
     try {
       this.log.info.text('Loading state file').relative(this.#file.path).start();
       if (await this.#file.exists()) {
-        const rawState = await this.#file.readJson();
+        const rawState = await this.#file.readJson<State.UserState>();
         if (_.isDict(rawState)) {
           this.#state = rawState;
           this.log.info.icheck().text('Loaded state file').relative(this.#file.path).stop();
@@ -119,38 +119,22 @@ export class StateFile extends BaseClass {
    * @param type Output type ('kml', 'gpx' or 'pdf')
    * @param activities Array of activities that were processed
    */
-  async updateLastUpdated(
-    type: State.OutputType,
-    activities: Activity.Item[],
-  ): Promise<void> {
+  async updateLastUpdated(type: State.OutputType, activities: Activity.Collection): Promise<void> {
     if (activities.length === 0) {
       this.log.debug.text('No activities to update state from').emit();
       return;
     }
 
     // Find the most recent activity by startDatetimeLocal
-    let mostRecent: Activity.Item | undefined;
-    for (const activity of activities) {
-      if (
-        !mostRecent ||
-        activity.startDateAsDateTime.epochMilliseconds >
-          mostRecent.startDateAsDateTime.epochMilliseconds
-      ) {
-        mostRecent = activity;
-      }
-    }
-
-    if (mostRecent) {
+    const dr = activities.getDateRange();
+    if (dr && dr.before && dr.before < DateTime.now()) {
       // Initialize the type object if it doesn't exist
       if (!this.#state[type]) {
         this.#state[type] = {};
       }
 
       // Update the lastUpdated timestamp to the start date + 1 minute
-      this.#state[type]!.lastUpdated = new DateTime(
-        mostRecent.startDateAsDateTime.epochMilliseconds + 60 * 1000,
-      )
-        .setTz('local').toISOString() as ISODate;
+      this.#state[type]!.lastUpdated = dr.before.withTz().toISOString() as ISODate;
 
       this.log.info.text('Updated').value(type).text('last updated to')
         .date(this.#state[type]!.lastUpdated).emit();

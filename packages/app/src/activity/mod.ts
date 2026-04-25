@@ -24,7 +24,6 @@
 
 // Item - A single activity wrapper (ActivityItem class)
 export { ActivityItem as Item } from './item.ts';
-export * from './options.ts';
 export * from './types.ts';
 
 // Collection - A collection/manager for multiple activities (ActivityCollection class)

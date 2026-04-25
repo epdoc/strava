@@ -439,6 +439,10 @@ export class ActivityCollection extends BaseClass {
 
     const fileSettings = this.app.getFileSettings(outputType);
 
+    if (fileSettings.file) {
+      return new FS.File(fileSettings.file);
+    }
+
     // Determine extension from outputType
     const extWithDot = `.${fileSettings.ext || 'xml'}`;
 

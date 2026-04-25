@@ -210,20 +210,21 @@ export class Bikelog {
   private combineActivities(activities: Activity.Item[]): Record<string, BikelogEntry> {
     const result: Record<string, BikelogEntry> = {};
     activities.forEach((activity) => {
-      // Calculate Julian date from the local date components (YYYY-MM-DD).
+      // Calculate Julian Day Number from the activity's local calendar date.
       //
       // Background: Strava's start_date_local has the local time but no timezone suffix.
       // The 'timezone' field provides the IANA timezone (e.g., "America/Costa_Rica").
       //
-      // For PDF bikelog forms, we need a Julian date that corresponds to the
-      // LOCAL calendar date (e.g., Nov 22 in Costa Rica), not the UTC date.
-      // This determines which PDF form field the activity is placed in.
+      // For PDF bikelog forms, we need an integer Julian Day Number that corresponds
+      // to the LOCAL calendar date (e.g., Nov 22 in Costa Rica), not the UTC date
+      // and not a fractional Julian date. This determines which PDF form field
+      // the activity is placed in.
       //
-      // Solution: Use the activity's local DateTime (which has the proper timezone
-      // set) and calculate the Julian date. This ensures activities are grouped
-      // by the calendar date in the location where they occurred.
-      const localDateTime = activity.startDateEx();
-      const jd = localDateTime.julianDate();
+      // Solution: Use the activity's getJulianDay() method which returns the integer
+      // Julian Day Number for the activity's local timezone. This ensures activities
+      // are grouped by calendar date regardless of what time they occurred.
+      const jd = activity.getJulianDay();
+      const localDateTime = activity.startDateAsDateTime;
       const entry: BikelogEntry = result[jd] ?? {
         jd: jd,
         date: localDateTime,

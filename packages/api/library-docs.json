@@ -911,7 +911,7 @@
                   },
                   {
                     "jsDoc": {
-                      "doc": "Creates a timezone-aware DateEx object for a specific time during the activity.\n\nConverts a time offset (in seconds from activity start) to a DateEx object with the\nactivity's local timezone. Used for generating timezone-aware timestamps in GPX/KML output.\n",
+                      "doc": "Creates a timezone-aware DateTime object for a specific time during the activity.\n\nConverts a time offset (in seconds from activity start) to a DateEx object with the\nactivity's local timezone. Used for generating timezone-aware timestamps in GPX/KML output.\n",
                       "tags": [
                         {
                           "kind": "param",
@@ -929,7 +929,7 @@
                         }
                       ]
                     },
-                    "name": "startDateEx",
+                    "name": "startDateTime",
                     "kind": "method",
                     "functionDef": {
                       "params": [
@@ -973,7 +973,39 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
                       "line": 244,
                       "col": 2,
-                      "byteIndex": 6933
+                      "byteIndex": 6935
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Returns the Julian Day Number for the activity's local calendar date.\n\nThis method calculates the integer Julian Day Number based on the activity's\nstart date in its local timezone. This ensures that activities are grouped by\ncalendar date regardless of the specific time they occurred.\n\nFor example, an activity on April 24, 2026 at 09:17 in Costa Rica will return\n2461155, which is the same value as if the activity occurred at 23:00 on the\nsame day. This is essential for PDF form field mapping where each day has a\nunique field.\n",
+                      "tags": [
+                        {
+                          "kind": "return",
+                          "doc": "The Julian Day Number as an integer for the activity's local date\n"
+                        },
+                        {
+                          "kind": "example",
+                          "doc": "```ts\n// Activity on 2026-04-24 in Costa Rica (America/Costa_Rica)\nconst jd = activity.getJulianDay();\nconsole.log(jd); // 2461155\n```"
+                        }
+                      ]
+                    },
+                    "name": "getJulianDay",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "number",
+                        "kind": "keyword",
+                        "value": "number"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
+                      "line": 273,
+                      "col": 2,
+                      "byteIndex": 8056
                     }
                   },
                   {
@@ -1003,9 +1035,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 257,
+                      "line": 280,
                       "col": 2,
-                      "byteIndex": 7280
+                      "byteIndex": 8208
                     }
                   },
                   {
@@ -1053,9 +1085,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 265,
+                      "line": 288,
                       "col": 2,
-                      "byteIndex": 7513
+                      "byteIndex": 8441
                     }
                   },
                   {
@@ -1075,9 +1107,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 272,
+                      "line": 295,
                       "col": 2,
-                      "byteIndex": 7656
+                      "byteIndex": 8584
                     }
                   },
                   {
@@ -1097,9 +1129,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 279,
+                      "line": 302,
                       "col": 2,
-                      "byteIndex": 7780
+                      "byteIndex": 8708
                     }
                   },
                   {
@@ -1119,9 +1151,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 288,
+                      "line": 311,
                       "col": 2,
-                      "byteIndex": 8035
+                      "byteIndex": 8963
                     }
                   },
                   {
@@ -1141,9 +1173,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 298,
+                      "line": 321,
                       "col": 2,
-                      "byteIndex": 8277
+                      "byteIndex": 9205
                     }
                   },
                   {
@@ -1176,9 +1208,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 315,
+                      "line": 338,
                       "col": 2,
-                      "byteIndex": 8880
+                      "byteIndex": 9808
                     }
                   },
                   {
@@ -1214,9 +1246,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 344,
+                      "line": 367,
                       "col": 2,
-                      "byteIndex": 9652
+                      "byteIndex": 10580
                     }
                   },
                   {
@@ -1282,9 +1314,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 389,
+                      "line": 412,
                       "col": 2,
-                      "byteIndex": 11544
+                      "byteIndex": 12472
                     }
                   },
                   {
@@ -1357,9 +1389,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 436,
+                      "line": 459,
                       "col": 2,
-                      "byteIndex": 13398
+                      "byteIndex": 14326
                     }
                   },
                   {
@@ -1400,9 +1432,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 532,
+                      "line": 555,
                       "col": 2,
-                      "byteIndex": 16521
+                      "byteIndex": 17449
                     }
                   },
                   {
@@ -1451,9 +1483,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 557,
+                      "line": 580,
                       "col": 2,
-                      "byteIndex": 17298
+                      "byteIndex": 18226
                     }
                   },
                   {
@@ -1509,9 +1541,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 580,
+                      "line": 603,
                       "col": 2,
-                      "byteIndex": 18382
+                      "byteIndex": 19310
                     }
                   },
                   {
@@ -1552,9 +1584,9 @@
                                   "name": "startDate",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                                    "line": 623,
+                                    "line": 646,
                                     "col": 9,
-                                    "byteIndex": 19929
+                                    "byteIndex": 20857
                                   },
                                   "tsType": {
                                     "repr": "DateTime",
@@ -1585,9 +1617,9 @@
                                   "name": "startDate",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                                    "line": 624,
+                                    "line": 647,
                                     "col": 9,
-                                    "byteIndex": 19961
+                                    "byteIndex": 20889
                                   },
                                   "tsType": {
                                     "repr": "DateTime",
@@ -1623,9 +1655,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/api/src/activity.ts",
-                      "line": 622,
+                      "line": 645,
                       "col": 2,
-                      "byteIndex": 19888
+                      "byteIndex": 20816
                     }
                   }
                 ],

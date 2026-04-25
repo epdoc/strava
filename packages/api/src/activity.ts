@@ -223,7 +223,7 @@ export class Activity extends BaseClass {
   }
 
   /**
-   * Creates a timezone-aware DateEx object for a specific time during the activity.
+   * Creates a timezone-aware DateTime object for a specific time during the activity.
    *
    * Converts a time offset (in seconds from activity start) to a DateEx object with the
    * activity's local timezone. Used for generating timezone-aware timestamps in GPX/KML output.
@@ -242,14 +242,37 @@ export class Activity extends BaseClass {
    * console.log(pointTime.toISOLocalString()); // "2025-11-14T10:53:35.000-06:00"
    * ```
    */
-  startDateEx(delta: Seconds = 0): DateTime {
-    const startMs = DateTime.from(this.data.start_date).epochMilliseconds;
-    const dateEx = new DateTime(startMs + delta * 1000);
-    const tz = this.ianaTimezone;
-    if (tz) {
-      dateEx.setTz(tz);
+  startDateTime(delta: Seconds = 0): DateTime {
+    const dt = DateTime.from(this.data.start_date);
+    if (delta !== 0) {
+      return dt.add({ seconds: delta }).withTz(this.ianaTimezone ?? 'local');
     }
-    return dateEx;
+    return dt.withTz(this.ianaTimezone ?? 'local');
+  }
+
+  /**
+   * Returns the Julian Day Number for the activity's local calendar date.
+   *
+   * This method calculates the integer Julian Day Number based on the activity's
+   * start date in its local timezone. This ensures that activities are grouped by
+   * calendar date regardless of the specific time they occurred.
+   *
+   * For example, an activity on April 24, 2026 at 09:17 in Costa Rica will return
+   * 2461155, which is the same value as if the activity occurred at 23:00 on the
+   * same day. This is essential for PDF form field mapping where each day has a
+   * unique field.
+   *
+   * @returns The Julian Day Number as an integer for the activity's local date
+   *
+   * @example
+   * ```ts
+   * // Activity on 2026-04-24 in Costa Rica (America/Costa_Rica)
+   * const jd = activity.getJulianDay();
+   * console.log(jd); // 2461155
+   * ```
+   */
+  getJulianDay(): number {
+    return this.startDateAsDateTime.julianDayInTz();
   }
 
   /**

@@ -215,42 +215,33 @@ export class KmlCommand extends BaseRootCmdClass<KmlCmdOptions> {
     b.line.h2('Output Behavior:');
     b.line.label('  •').text('By default, activity routes are output as colored line strings');
     b.line.label('  •').text('Default filename is based on date range (YYYYMMDD-YYYYMMDD.kml)');
-    b.line.label('  •').text(
-      'Files are saved to kmlFolder from user settings (~/.strava/user.settings.json)',
-    );
-    b.line.label('  •').text('Use --output to specify a custom filename (relative to kmlFolder)');
+    b.line.label('  •').text('Files are saved to the  kmlFolder that is defined in')
+      .relative('~/.config/epdoc/strava/user.settings.json'),
+      b.line.label('  •').text('Use --output to specify a custom filename (relative to kmlFolder)');
     b.line.label('  •').text('Use --segments to include or output only starred segments');
     b.newline();
 
     b.line.h2('Activity Options:');
-    b.line.label('  ').value('--date 20240101-20240131');
-    b.line.text('      Generate KML for all activities in January 2024');
-    b.newline();
-    b.line.label('  ').value('--date 20240101-20241231 --output 2024-rides.kml');
-    b.line.text('      Generate KML with custom filename');
-    b.newline();
+    b.line.ibullet().text('Generate KML for all activities in January 2024');
+    b.line.label('  ').value('--date 202401');
+    b.line.ibullet().text('Generate KML for 2024 with custom filename');
+    b.line.label('  ').value('--date 2024 --output 2024-rides.kml');
+    b.line.ibullet().text('Generate KML for Costa Rica activities only');
     b.line.label('  ').value('--date 20240101-20241231 --region CR');
-    b.line.text('      Generate KML for Costa Rica activities only');
-    b.newline();
-    b.line.label('  ').value('--date 20240101-20241231 --type Ride --laps');
-    b.line.text('      Generate KML with lap markers for rides only');
-    b.newline();
-    b.line.label('  ').value('--date 20240101-20241231 --more');
-    b.line.text('      Include detailed activity stats in descriptions');
-    b.newline();
-    b.line.label('  ').value('--date 20240101-20241231 --split-regions');
-    b.line.text('      Organize activities into folders by region');
-    b.newline();
+    b.line.ibullet().text('Generate KML with lap markers for rides only');
+    b.line.label('  ').value('--date 2024 --type Ride --laps');
+    b.line.ibullet().text('Include detailed activity stats in descriptions');
+    b.line.label('  ').value('--date 2024 --more');
+    b.line.ibullet().text('Organize activities into folders by region');
+    b.line.label('  ').value('--date 2025 --split-regions');
 
     b.line.h2('Segment Options:');
-    b.line.label('  ').value('--date 20240101-20241231 --segments');
-    b.line.text('      Include both activities and starred segments');
-    b.newline();
-    b.line.label('  ').value('--date 20240101-20241231 --segments only');
-    b.line.text('      Output only starred segments (no activities)');
-    b.newline();
-    b.line.label('  ').value('--date 20240101-20241231 --segments flat');
-    b.line.text('      Output segments in a flat folder structure (not by region)');
+    b.line.ibullet().text('Include both activities and starred segments');
+    b.line.label('  ').value('--date 202501 --segments');
+    b.line.ibullet().text('Output only starred segments (no activities)');
+    b.line.label('  ').value('--date 202501 --segments only');
+    b.line.ibullet().text('Output segments in a flat folder structure (not by region)');
+    b.line.label('  ').value('--date 202501 --segments flat');
 
     return b.toString();
   }

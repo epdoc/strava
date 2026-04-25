@@ -78,7 +78,7 @@
           "-A",
           "--inspect-brk"
         ],
-        "scriptArgs": "pdf -o /Users/jpravetz/dev/@epdoc/strava/tmp/Activities.xml",
+        "scriptArgs": "pdf -d 202604",
         "scripts": [
           "--help",
           "-d 20251011"

@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/strava",
   "description": "A command line application to generate KML files suitable for import into Google Earth",
-  "version": "2.2.0-beta.1",
+  "version": "2.2.0-beta.2",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
@@ -39,6 +39,7 @@
     "@epdoc/strava-app": "../app/src/mod.ts",
     "@epdoc/strava-schema": "../schema/src/mod.ts",
     "@epdoc/strava-athlete": "../athlete/src/mod.ts",
+    "@epdoc/strava-api": "../api/src/mod.ts",
     "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.15",
     "@epdoc/daterange": "jsr:@epdoc/daterange@^2.2.0",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.11",

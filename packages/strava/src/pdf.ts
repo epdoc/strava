@@ -109,42 +109,40 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
     b.newline();
 
     b.line.h2('Output Behavior:');
-    b.line.label('  •').text(
+    b.line.ibullet().text(
       'XML files can be imported into Adobe Acrobat to populate form fields',
     );
-    b.line.label('  •').text('Default filename is set by formsDataFile in user settings');
-    b.line.label('  •').text(
-      'Use --output to specify a custom filename (relative to current directory)',
-    );
+    b.line.ibullet().text('Default filename is set by acroformsFile in user settings')
+      .relative('~/.config/epdoc/strava/user.settings.json'),
+      b.line.ibullet().text(
+        'Use --output to specify a custom filename (relative to current directory)',
+      );
     b.newline();
 
     b.line.h2('Activity Data:');
-    b.line.label('  •').text('Daily activity summaries (up to 2 bike rides per day tracked)');
-    b.line.label('  •').text('Ride metrics: distance, bike name, elevation, moving time');
-    b.line.label('  •').text('Activity descriptions and private notes merged and parsed');
-    b.line.label('  •').text('Custom properties extracted from descriptions (key=value format)');
-    b.line.label('  •').text('Weight data automatically extracted and placed in dedicated field');
-    b.line.label('  •').text('Non-bike activities (Run, Swim, etc.) included in notes');
+    b.line.ibullet().text('Daily activity summaries (up to 2 bike rides per day tracked)');
+    b.line.ibullet().text('Ride metrics: distance, bike name, elevation, moving time');
+    b.line.ibullet().text('Activity descriptions and private notes merged and parsed');
+    b.line.ibullet().text('Custom properties extracted from descriptions (key=value format)');
+    b.line.ibullet().text('Weight data automatically extracted and placed in dedicated field');
+    b.line.ibullet().text('Non-bike activities (Run, Swim, etc.) included in notes');
     b.newline();
 
     b.line.h2('Incremental Updates:');
-    b.line.label('  •').text('After first run, subsequent runs fetch only new activities');
-    b.line.label('  •').text('Last update time is stored in ~/.strava/user.state.json');
-    b.line.label('  •').text('Use --date to override and fetch specific date ranges');
+    b.line.ibullet().text('After first run, subsequent runs fetch only on new activities');
+    b.line.ibullet().text('Last update time is stored in ~/.strava/user.state.json');
+    b.line.ibullet().text('Use --date to override and fetch specific date ranges');
     b.newline();
 
     b.line.h2('Examples:');
+    b.line.ibullet().text('Generate XML for all activities in 2024');
     b.line.label('  ').value('--date 20240101-20241231');
-    b.line.text('      Generate XML for all activities in 2024');
-    b.newline();
+    b.line.ibullet().text('Generate XML with custom filename');
     b.line.label('  ').value('--date 20240101-20241231 --output bikelog2024.xml');
-    b.line.text('      Generate XML with custom filename');
-    b.newline();
+    b.line.ibullet().text('Generate XML for activities in the last 7 days');
     b.line.label('  ').value('--date 7d-now');
-    b.line.text('      Generate XML for activities in the last 7 days');
-    b.newline();
+    b.line.ibullet().text('Incremental update: fetch only activities since last run');
     b.line.label('  ').value('(no --date, after first run)');
-    b.line.text('      Incremental update: fetch only activities since last run');
 
     return b.toString();
   }

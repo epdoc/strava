@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/strava",
   "description": "A command line application to generate KML files suitable for import into Google Earth",
-  "version": "2.1.0-beta.0",
+  "version": "2.2.0-beta.1",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"

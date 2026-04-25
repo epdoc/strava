@@ -151,34 +151,33 @@ export class GpxCommand extends BaseRootCmdClass<GpxCmdOptions> {
     b.line.h1('GPX Generation');
     b.newline();
     b.line.text(
-      'Generate GPX files from Strava activities for use in GPS devices and mapping software.',
+      'Generate GPX files from Strava activities, optimized for use in mapping software such as JOSM.',
     );
     b.newline();
 
     b.line.h2('Output Behavior:');
     b.line.label('  •').text('By default, all activities are combined into a single GPX file');
     b.line.label('  •').text('Default filename is based on date range (YYYYMMDD-YYYYMMDD.gpx)');
-    b.line.label('  •').text(
-      'Files are saved to gpxFolder from user settings (~/.strava/user.settings.json)',
-    );
-    b.line.label('  •').text('Use --output to specify a custom filename (relative to gpxFolder)');
+    b.line.label('  •').text('Files are saved to gpxFolder defined in user settings')
+      .relative('~/.config/epdoc/strava/user.settings.json'),
+      b.line.label('  •').text('Use --output to specify a custom filename or folder');
     b.newline();
 
     b.line.h2('Examples:');
-    b.line.label('  ').value('--date 20240101-20240131');
-    b.line.text('      Generate GPX for all activities in January 2024');
-    b.newline();
+    b.line.ibullet().text('Generate GPX for all activities in January 2024');
+    b.line.label('  ').value('--date 202401');
+
+    b.line.ibullet().text('Generate GPX with custom filename');
     b.line.label('  ').value('--date 20240101-20241231 --output 2024-rides.gpx');
-    b.line.text('      Generate GPX with custom filename');
-    b.newline();
-    b.line.label('  ').value('--date 20240101-20241231 --region CR');
-    b.line.text('      Generate GPX for Costa Rica activities only');
-    b.newline();
+
+    b.line.ibullet().text('Generate GPX for all 2024 Costa Rica activities');
+    b.line.label('  ').value('--date 2024 --region CR');
+
+    b.line.ibullet().text('Generate GPX also with lap waypoints, for rides only');
     b.line.label('  ').value('--date 20240101-20241231 --type Ride --laps');
-    b.line.text('      Generate GPX with lap waypoints for rides only');
-    b.newline();
+
+    b.line.ibullet().text('Generate GPX with only lap waypoints (no tracks)');
     b.line.label('  ').value('--date 20240101-20241231 --laps --no-tracks');
-    b.line.text('      Generate GPX with only lap waypoints (no tracks)');
 
     return b.toString();
   }

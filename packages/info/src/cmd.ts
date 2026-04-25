@@ -1,7 +1,8 @@
 import type * as CliApp from '@epdoc/cliapp';
 import { buildDateHelp, dateOptionDef, DateRanges } from '@epdoc/daterange';
 import { DateTime } from '@epdoc/datetime';
-import { BaseRootCmdClass, Ctx, Options } from '@epdoc/strava-core';
+import { Option } from '@epdoc/strava-app';
+import { BaseRootCmdClass, Ctx } from '@epdoc/strava-core';
 import { type InfoOptions, InfoTool } from './info.ts';
 
 type InfoCmdOptions = CliApp.LogCmdOptions & {
@@ -20,7 +21,7 @@ export class InfoCommand extends BaseRootCmdClass<InfoCmdOptions> {
   override defineOptions(): void {
     const help = buildDateHelp(new Ctx.CustomMsgBuilder()).format();
     this.option({ ...dateOptionDef, help: help } as CliApp.OptionDef).emit();
-    this.option(Options.optionDefs.format).emit();
+    this.option(Option.def.format).emit();
     this.option('--region', 'List available regions from configuration')
       .default(false)
       .emit();

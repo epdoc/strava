@@ -2,6 +2,7 @@ import type * as CliApp from '@epdoc/cliapp';
 import { Option } from '@epdoc/strava-app';
 import { AthleteCommand } from '@epdoc/strava-athlete';
 import { BaseRootCmdClass, type Ctx, TextBuilder } from '@epdoc/strava-core';
+import { InfoCommand } from '@epdoc/strava-info';
 import { GpxCommand } from './gpx.ts';
 import { KmlCommand } from './kml.ts';
 import { PdfCommand } from './pdf.ts';
@@ -44,6 +45,7 @@ export class RootCommand extends BaseRootCmdClass<RootCmdOpts> {
       new KmlCommand(ctx),
       new PdfCommand(ctx),
       new AthleteCommand(ctx),
+      new InfoCommand(ctx),
     ];
   }
 

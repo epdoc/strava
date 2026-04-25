@@ -9,9 +9,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/cmd.ts",
-                "line": 13,
+                "line": 14,
                 "col": 0,
-                "byteIndex": 435
+                "byteIndex": 470
               },
               "declarationKind": "export",
               "kind": "class",
@@ -32,9 +32,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/cmd.ts",
-                      "line": 14,
+                      "line": 15,
                       "col": 2,
-                      "byteIndex": 505
+                      "byteIndex": 540
                     }
                   },
                   {
@@ -52,9 +52,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/cmd.ts",
-                      "line": 19,
+                      "line": 20,
                       "col": 2,
-                      "byteIndex": 624
+                      "byteIndex": 659
                     }
                   },
                   {
@@ -71,9 +71,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/cmd.ts",
-                      "line": 29,
+                      "line": 30,
                       "col": 2,
-                      "byteIndex": 1011
+                      "byteIndex": 1038
                     }
                   },
                   {
@@ -133,9 +133,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/info/src/cmd.ts",
-                      "line": 45,
+                      "line": 46,
                       "col": 2,
-                      "byteIndex": 1671
+                      "byteIndex": 1698
                     }
                   }
                 ],

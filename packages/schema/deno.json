@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/strava-schema",
   "description": "TypeScript types and type guards for the Strava API",
-  "version": "2.2.0-beta.1",
+  "version": "2.2.0-beta.2",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
@@ -37,8 +37,8 @@
     ]
   },
   "imports": {
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.13",
-    "@std/testing/bdd": "jsr:@std/testing@^1.0.18/bdd",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.17",
+    "@std/testing/bdd": "jsr:@std/testing@^1.0.19/bdd",
     "@std/expect": "jsr:@std/expect@^1.0.19/expect"
   },
   "lint": {

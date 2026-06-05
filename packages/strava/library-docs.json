@@ -315,9 +315,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/pdf.ts",
-                "line": 15,
+                "line": 16,
                 "col": 0,
-                "byteIndex": 531
+                "byteIndex": 575
               },
               "declarationKind": "export",
               "kind": "class",
@@ -338,9 +338,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/pdf.ts",
-                      "line": 16,
+                      "line": 17,
                       "col": 2,
-                      "byteIndex": 599
+                      "byteIndex": 643
                     }
                   },
                   {
@@ -358,9 +358,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/pdf.ts",
-                      "line": 21,
+                      "line": 22,
                       "col": 2,
-                      "byteIndex": 740
+                      "byteIndex": 784
                     }
                   },
                   {
@@ -420,9 +420,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/pdf.ts",
-                      "line": 29,
+                      "line": 30,
                       "col": 2,
-                      "byteIndex": 1100
+                      "byteIndex": 1144
                     }
                   },
                   {
@@ -439,9 +439,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/strava/src/pdf.ts",
-                      "line": 100,
+                      "line": 101,
                       "col": 2,
-                      "byteIndex": 3375
+                      "byteIndex": 3436
                     }
                   }
                 ],

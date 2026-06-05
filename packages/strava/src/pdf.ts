@@ -1,5 +1,6 @@
 import * as CliApp from '@epdoc/cliapp';
 import { buildDateHelp, dateOptionDef, DateRanges } from '@epdoc/daterange';
+import { DateTime } from '@epdoc/datetime';
 import * as App from '@epdoc/strava-app';
 import { Activity, Option, OutputTypes } from '@epdoc/strava-app';
 import { BaseRootCmdClass, Ctx, TextBuilder } from '@epdoc/strava-core';
@@ -52,7 +53,7 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
     if (options.date && options.date.hasRanges()) {
       dateRanges = options.date;
     } else if (lastUpdated) {
-      dateRanges = DateRanges.fromJSON([{ after: lastUpdated }]);
+      dateRanges = DateRanges.from([{ after: DateTime.fromString(lastUpdated) }]);
       ctx.log.info.text('Retrieving activities since last update').value(lastUpdated).emit();
     } else {
       throw new CliApp.SilentError(

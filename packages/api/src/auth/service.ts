@@ -396,7 +396,9 @@ export class AuthService extends BaseClass {
           try {
             await this.requestToken(code); // Use ctx.app! for StravaApi instance
             const seconds: EpochSeconds | undefined = this.#creds.expiresAt; // Use ctx.app! for StravaApi instance
-            const d: string = seconds ? new DateTime(seconds).setTz('local').toString() : 'Unknown';
+            const d: string = seconds
+              ? DateTime.fromEpochMilliseconds(seconds * 1000).setTz().toISOString()
+              : 'Unknown';
             s += '<p>Authentication tokens retrieved.</p>';
             s += `<p>Expiry date is ${d}</p>`;
             this.result = { resolve: 'Tokens retrieved' };

@@ -1,4 +1,4 @@
-import type { ISOTzDate } from '@epdoc/datetime';
+import type { ISODate } from '@epdoc/datetime';
 import type { Seconds } from '@epdoc/duration';
 import type * as Strava from '@epdoc/strava-api';
 import type * as Schema from '@epdoc/strava-schema';
@@ -48,7 +48,7 @@ export type Base = Partial<{
  */
 export type CacheFile = {
   description?: string;
-  lastModified?: ISOTzDate;
+  lastModified?: ISODate;
   segments: Record<Schema.Segment.Id, CacheEntry>; // Keyed by segment ID as string
 };
 

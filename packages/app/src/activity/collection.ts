@@ -102,7 +102,7 @@ export class ActivityCollection extends BaseClass {
           after: Math.floor(
             (dateRange.after
               ? dateRange.after.epochMilliseconds
-              : new DateTime(0).epochMilliseconds) /
+              : DateTime.fromEpochMilliseconds(0).epochMilliseconds) /
               1000,
           ),
           before: Math.floor(
@@ -151,7 +151,7 @@ export class ActivityCollection extends BaseClass {
     }
     const first = this._activities[0].startDateAsDateTime;
     const last = this._activities[this._activities.length - 1].startDateAsDateTime;
-    return new DateRange(first, last);
+    return DateRange.fromDef({ after: first, before: last });
   }
 
   /**

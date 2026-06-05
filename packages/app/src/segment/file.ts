@@ -104,7 +104,7 @@ export class SegmentFile extends BaseClass {
       .text('to').fs(this.#fsFile).start();
     const json: Record<string, unknown> = {
       description: 'Strava segments',
-      lastModified: new DateTime().setTz('local').toISOString(),
+      lastModified: DateTime.now().setTz().toISOString(),
       segments: Object.fromEntries(this.#segments),
     };
     try {

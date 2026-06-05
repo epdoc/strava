@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/strava",
   "description": "A command line application to generate KML files suitable for import into Google Earth",
-  "version": "2.2.0-beta.5",
+  "version": "2.2.0-beta.7",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
@@ -15,6 +15,21 @@
       "strava": "./main.ts"
     }
   },
+  "compile": {
+    "include": [
+      "./src",
+      "./build/build-info.json"
+    ],
+    "permissions": {
+      "read": true,
+      "write": true,
+      "env": {
+        "allow": true
+      },
+      "sys": true,
+      "net": true
+    }
+  },
   "tasks": {
     "fmt": "deno fmt src test *.ts *.json",
     "lint": "deno lint",
@@ -23,8 +38,9 @@
     "run": "deno run -A ./main.ts",
     "docs": "deno doc --json src/mod.ts > library-docs.json",
     "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs",
-    "install": "deno eval \"const os = Deno.build.os; const task = os === 'darwin' ? 'install:mac' : 'install:debian'; console.log('Detected OS:', os); console.log('Running:', task); const cmd = new Deno.Command('deno', { args: ['task', task], stdout: 'inherit', stderr: 'inherit' }); await cmd.output();\"",
-    "ginstall": "dtask install",
+    "compile": "deno compile -P --output ${OUTPUT} ${INPUT}",
+    "install": "mv ${OUTPUT} /Users/jpravetz/bin",
+    "release": "deno task compile && deno task install",
     "install:debian": "deno cache --lock=deno.lock ./main.ts && /root/.deno/bin/deno install -f --global --config deno.json --name strava --lock=deno.lock --allow-net --allow-env --allow-sys --allow-read=/root/ --allow-write=/root/ ./main.ts",
     "install:mac": "deno cache --lock=deno.lock ./main.ts && deno install -f --global -A --config deno.json --name strava --lock=deno.lock ./main.ts"
   },

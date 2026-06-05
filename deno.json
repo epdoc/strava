@@ -5,9 +5,9 @@
   },
   "license": "MIT",
   "tasks": {
-    "test": "deno test -A --unstable-kv",
     "lint": "deno lint packages/** deno.json",
-    "check": "deno check packages/**"
+    "check": "deno check packages/**",
+    "test": "deno test -A --unstable-kv"
   },
   "workspace": [
     "./packages/schema",

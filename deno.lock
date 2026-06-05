@@ -457,12 +457,12 @@
       },
       "packages/athlete": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.2.15",
+          "jsr:@epdoc/cliapp@^2.2.71",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
-          "jsr:@std/testing@^1.0.18"
+          "jsr:@std/testing@^1.0.19"
         ]
       },
       "packages/core": {

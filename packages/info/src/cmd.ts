@@ -54,7 +54,7 @@ export class InfoCommand extends BaseRootCmdClass<InfoCmdOptions> {
     }
 
     const defaultDate = DateTime.now().setTz().subtract({ days: 7 });
-    const date = options.date ? options.date : new DateRanges([{ after: defaultDate }]);
+    const date = options.date ? options.date : DateRanges.from([{ after: defaultDate }]);
 
     const infoOpts: InfoOptions = {
       athleteId: options.athleteId,

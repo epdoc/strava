@@ -17,7 +17,7 @@
     "jsr:@epdoc/msgbuilder@~0.1.49": "0.1.49",
     "jsr:@epdoc/progress@~0.1.9": "0.1.9",
     "jsr:@epdoc/string@~0.1.29": "0.1.29",
-    "jsr:@epdoc/table@~0.1.18": "0.1.34",
+    "jsr:@epdoc/table@~0.1.34": "0.1.34",
     "jsr:@epdoc/terminal@^0.0.13": "0.0.13",
     "jsr:@epdoc/type@^1.2.13": "1.2.17",
     "jsr:@epdoc/type@^1.2.17": "1.2.17",
@@ -181,6 +181,7 @@
         "jsr:@epdoc/colors",
         "jsr:@epdoc/datetime@^4.1.4",
         "jsr:@epdoc/fmt",
+        "jsr:@epdoc/type@^1.2.17",
         "jsr:@std/fmt"
       ]
     },
@@ -478,16 +479,16 @@
       },
       "packages/info": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.2.15",
-          "jsr:@epdoc/daterange@^2.2.0",
-          "jsr:@epdoc/datetime@^3.2.11",
-          "jsr:@epdoc/table@~0.1.18",
+          "jsr:@epdoc/cliapp@^2.2.71",
+          "jsr:@epdoc/daterange@^3.0.6",
+          "jsr:@epdoc/datetime@^4.1.4",
+          "jsr:@epdoc/table@~0.1.34",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/fmt@^1.0.10",
-          "jsr:@std/testing@^1.0.18"
+          "jsr:@std/testing@^1.0.19"
         ]
       },
       "packages/schema": {

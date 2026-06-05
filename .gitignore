@@ -10,3 +10,5 @@ x-*
 tmp.*
 dist/
 .vscode/
+build/
+bin/

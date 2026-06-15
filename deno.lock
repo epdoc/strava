@@ -9,7 +9,6 @@
     "jsr:@epdoc/datetime@^4.1.10": "4.1.10",
     "jsr:@epdoc/datetime@^4.1.4": "4.1.10",
     "jsr:@epdoc/datetime@^4.1.9": "4.1.10",
-    "jsr:@epdoc/duration@~0.3.16": "0.3.21",
     "jsr:@epdoc/duration@~0.3.21": "0.3.21",
     "jsr:@epdoc/fmt@^1.0.14": "1.0.15",
     "jsr:@epdoc/fmt@^1.0.15": "1.0.15",
@@ -103,7 +102,7 @@
       "integrity": "90e587d957f142adb84570c34371c4360c93b058f3df65a99600d748288b4291",
       "dependencies": [
         "jsr:@epdoc/colors",
-        "jsr:@epdoc/duration@~0.3.21",
+        "jsr:@epdoc/duration",
         "jsr:@epdoc/type@2",
         "jsr:@std/fmt"
       ]
@@ -127,7 +126,7 @@
       "integrity": "acbec7f97950f739668e0ff91199aa3b81c6d5f312ae44f57932cc0b40b0f557",
       "dependencies": [
         "jsr:@epdoc/datetime@^4.1.10",
-        "jsr:@epdoc/duration@~0.3.21",
+        "jsr:@epdoc/duration",
         "jsr:@epdoc/loglevels",
         "jsr:@epdoc/msgbuilder@~0.1.51",
         "jsr:@epdoc/string",
@@ -148,7 +147,7 @@
       "dependencies": [
         "jsr:@epdoc/colors",
         "jsr:@epdoc/datetime@^4.1.10",
-        "jsr:@epdoc/duration@~0.3.21",
+        "jsr:@epdoc/duration",
         "jsr:@epdoc/fmt@^1.0.14",
         "jsr:@epdoc/string",
         "jsr:@epdoc/type@2",
@@ -175,6 +174,7 @@
         "jsr:@epdoc/colors",
         "jsr:@epdoc/datetime@^4.1.10",
         "jsr:@epdoc/fmt@^1.0.15",
+        "jsr:@epdoc/type@2",
         "jsr:@std/fmt"
       ]
     },
@@ -446,12 +446,13 @@
       },
       "packages/app": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.2.71",
-          "jsr:@epdoc/daterange@^3.0.6",
-          "jsr:@epdoc/datetime@^4.1.4",
-          "jsr:@epdoc/duration@~0.3.16",
-          "jsr:@epdoc/fs@^1.5.6",
-          "jsr:@epdoc/type@^1.2.17",
+          "jsr:@epdoc/cliapp@^2.2.76",
+          "jsr:@epdoc/daterange@^3.0.11",
+          "jsr:@epdoc/datetime@^4.1.10",
+          "jsr:@epdoc/duration@~0.3.21",
+          "jsr:@epdoc/fs@^1.5.11",
+          "jsr:@epdoc/transform@^2.0.1",
+          "jsr:@epdoc/type@2",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",

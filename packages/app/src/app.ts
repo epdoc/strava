@@ -1,6 +1,7 @@
 import { SilentError } from '@epdoc/cliapp';
 import type { DateRanges } from '@epdoc/daterange';
 import type { ISODate } from '@epdoc/datetime';
+import type { ReadJsonOptions } from '@epdoc/fs';
 import * as FS from '@epdoc/fs/fs';
 import * as Strava from '@epdoc/strava-api';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
@@ -123,12 +124,12 @@ export class Main extends BaseClass {
 
     if (opts.userSettings) {
       this.log.info.text('Loading user settings').relative(configPaths.userSettings.path).start();
-      const rawSettings = await configPaths.userSettings.readJson<App.UserSettings>();
-      this.userSettings = _.deepCopy(rawSettings, {
+      const opts: ReadJsonOptions = {
         replace: { 'HOME': FS.Folder.home().path },
         pre: '${',
         post: '}',
-      }) as App.UserSettings;
+      };
+      this.userSettings = await configPaths.userSettings.readJson<App.UserSettings>(opts);
       this.log.info.icheck().text('Loaded user settings').relative(configPaths.userSettings.path)
         .stop();
     }

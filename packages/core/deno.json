@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/strava-core",
-  "version": "2.2.0-beta.2",
+  "version": "2.2.0",
   "exports": "./src/mod.ts",
   "tasks": {
     "fmt": "deno fmt src test *.json",

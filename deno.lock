@@ -15,6 +15,7 @@
     "jsr:@epdoc/string@~0.1.29": "0.1.29",
     "jsr:@epdoc/table@~0.1.34": "0.1.34",
     "jsr:@epdoc/terminal@^0.0.13": "0.0.13",
+    "jsr:@epdoc/type@2": "2.0.0",
     "jsr:@epdoc/type@^1.2.13": "1.2.17",
     "jsr:@epdoc/type@^1.2.17": "1.2.17",
     "jsr:@oak/commons@1": "1.0.1",
@@ -175,6 +176,9 @@
       "dependencies": [
         "jsr:@std/encoding@^1.0.10"
       ]
+    },
+    "@epdoc/type@2.0.0": {
+      "integrity": "f0c0d77a6b0e74ada5a568267128af88d7512154e5fdc0268d254f55012a4aa6"
     },
     "@oak/commons@1.0.1": {
       "integrity": "889ff210f0b4292591721be07244ecb1b5c118742f5273c70cf30d7cd4184d0c",
@@ -475,7 +479,7 @@
       },
       "packages/schema": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.2.17",
+          "jsr:@epdoc/type@2",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/testing@^1.0.19"
         ]

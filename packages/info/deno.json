@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/strava-info",
-  "version": "2.2.0-beta.2",
+  "version": "2.2.0",
   "description": "Strava info - query activity information",
   "exports": {
     ".": "./src/mod.ts"

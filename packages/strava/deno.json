@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/strava",
   "description": "A command line application to generate KML files suitable for import into Google Earth",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
@@ -51,16 +51,16 @@
     ]
   },
   "imports": {
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^4.1.4",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^4.1.10",
     "@epdoc/strava-app": "../app/src/mod.ts",
     "@epdoc/strava-athlete": "../athlete/src/mod.ts",
     "@epdoc/strava-core": "../core/src/mod.ts",
     "@epdoc/strava-info": "../info/src/mod.ts",
     "@epdoc/strava-schema": "../schema/src/mod.ts",
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.71",
-    "@epdoc/daterange": "jsr:@epdoc/daterange@^3.0.6",
-    "@epdoc/fs": "jsr:@epdoc/fs@^1.5.6",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.17",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.76",
+    "@epdoc/daterange": "jsr:@epdoc/daterange@^3.0.11",
+    "@epdoc/fs": "jsr:@epdoc/fs@^1.5.11",
+    "@epdoc/type": "jsr:@epdoc/type@^2.0.0",
     "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.10/colors",

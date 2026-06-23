@@ -16,7 +16,7 @@
     "jsr:@epdoc/msgbuilder@0.1.54": "0.1.54",
     "jsr:@epdoc/msgbuilder@~0.1.54": "0.1.54",
     "jsr:@epdoc/progress@~0.1.13": "0.1.13",
-    "jsr:@epdoc/table@~0.1.40": "0.1.42",
+    "jsr:@epdoc/table@~0.1.42": "0.1.42",
     "jsr:@epdoc/terminal@^0.0.14": "0.0.14",
     "jsr:@epdoc/text@^1.0.7": "1.0.7",
     "jsr:@epdoc/transform@^2.0.1": "2.0.1",
@@ -470,10 +470,10 @@
       },
       "packages/info": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.2.76",
-          "jsr:@epdoc/daterange@^3.0.11",
+          "jsr:@epdoc/cliapp@^2.2.80",
+          "jsr:@epdoc/daterange@^3.0.12",
           "jsr:@epdoc/datetime@^4.1.10",
-          "jsr:@epdoc/table@~0.1.40",
+          "jsr:@epdoc/table@~0.1.42",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",

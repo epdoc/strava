@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/strava-core",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "exports": "./src/mod.ts",
   "tasks": {
     "fmt": "deno fmt src test *.json",
@@ -11,11 +11,11 @@
     "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.76",
-    "@epdoc/daterange": "jsr:@epdoc/daterange@^3.0.11",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.80",
+    "@epdoc/daterange": "jsr:@epdoc/daterange@^3.0.12",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.1.10",
-    "@epdoc/fs": "jsr:@epdoc/fs@^1.5.11",
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.53",
+    "@epdoc/fs": "jsr:@epdoc/fs@^1.5.15",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.57",
     "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/testing/bdd": "jsr:@std/testing@^1.0.19/bdd"
   },

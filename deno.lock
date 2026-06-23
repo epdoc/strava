@@ -433,11 +433,11 @@
       },
       "packages/app": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.2.76",
-          "jsr:@epdoc/daterange@^3.0.11",
+          "jsr:@epdoc/cliapp@^2.2.80",
+          "jsr:@epdoc/daterange@^3.0.12",
           "jsr:@epdoc/datetime@^4.1.10",
           "jsr:@epdoc/duration@~0.3.21",
-          "jsr:@epdoc/fs@^1.5.11",
+          "jsr:@epdoc/fs@^1.5.15",
           "jsr:@epdoc/transform@^2.0.1",
           "jsr:@epdoc/type@2",
           "jsr:@oak/oak@^17.2.0",

@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/strava-athlete",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Strava athlete",
   "exports": {
     ".": "./src/mod.ts"
@@ -23,9 +23,9 @@
   "imports": {
     "@epdoc/strava-app": "../app/src/mod.ts",
     "@epdoc/strava-core": "../core/src/mod.ts",
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.2.80",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.4",
     "@std/assert": "jsr:@std/assert@^1.0.19",
-    "@std/expect": "jsr:@std/expect@^1.0.19",
+    "@std/expect": "jsr:@std/expect@^1.0.20",
     "@std/testing/bdd": "jsr:@std/testing@^1.0.19/bdd",
     "@oak/oak": "jsr:@oak/oak@^17.2.0",
     "@opensrc/deno-open": "jsr:@opensrc/deno-open@^1.0.0"

@@ -41,6 +41,9 @@ export class AthleteTool extends App.BaseClass {
       // Initialize only what we need for this command
       await this.app.init({ strava: true, userSettings: true });
 
+      this.log.info.section().emit();
+      this.log.info.h1('Retrieve Athlete Information').emit();
+
       // Delegate to app layer for business logic
       await this.app.getAthlete();
 
@@ -114,9 +117,8 @@ export class AthleteTool extends App.BaseClass {
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);
-      this.log.error.error(
-        `Failed to retrieve athlete information: ${errorMsg}`,
-      ).emit();
+      this.log.info.ierror().text('Failed to retrieve athlete information:')
+        .error(errorMsg).emit();
       throw err;
     }
   }

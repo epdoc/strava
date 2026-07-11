@@ -147,8 +147,8 @@ export class Api extends BaseClass {
 
     const resp = await fetch(url, reqOpts);
     if (!resp.ok) {
-      this.log.error.warn('Failed to get athlete').error(resp.statusText).emit();
-      throw new Error('Failed to retrieve athlete ' + athleteId);
+      // this.log.error.warn('Failed to get athlete').error(resp.statusText).emit();
+      throw new Error(`GET athleteId=${athleteId} returned ${resp.status} ${resp.statusText}`);
     }
 
     const data: unknown = await resp.json();

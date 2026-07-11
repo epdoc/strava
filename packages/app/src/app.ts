@@ -226,12 +226,11 @@ export class Main extends BaseClass {
         this.log.info.ierror().text('Athlete is not defined').stop();
         throw new SilentError('Athlete is not defined');
       }
-      this.log.info.icheck().text('Retrieved athlete:').value(this.athlete.firstname).value(
-        this.athlete.lastname,
-      ).stop();
+      this.log.info.icheck().text('Retrieved athlete:').value(this.athlete.firstname)
+        .value(this.athlete.lastname).stop();
     } catch (e) {
       const err = _.asError(e);
-      this.log.info.ierror().text('Failed to get athelete').error(err.message).stop();
+      this.log.info.ierror().text('Failed to get athlete').error(err.message).stop();
       throw new SilentError(err.message);
     }
   }

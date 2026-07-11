@@ -43,6 +43,7 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
     ctx.app = app;
     await app.init({ strava: true, userSettings: true, state: true });
 
+    ctx.log.info.section().emit();
     ctx.log.info.h1('Acroforms Generator').emit();
 
     // Get last updated timestamp for incremental updates

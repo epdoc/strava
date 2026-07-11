@@ -19,7 +19,8 @@ const defaultStravaToken: StravaCredsData = {
  * @returns `true` if the data is a valid `StravaCredsData` object, `false` otherwise.
  */
 export function isValidCredData(val: unknown): val is StravaCredsData {
-  return _.isDict(val) && val.token_type === 'Bearer' && _.isNumber(val.expires_at);
+  return _.isDict(val) && val.token_type === 'Bearer' && _.isNumber(val.expires_at) &&
+    _.isNonEmptyString(val.access_token);
 }
 
 /**
@@ -64,6 +65,14 @@ export class StravaCreds {
   }
 
   /**
+   * The Strava athlete ID from the OAuth token response, if available.
+   * Only present after initial authorization code exchange; refresh responses omit it.
+   */
+  get athleteId(): number | undefined {
+    return this.#data.athlete?.id;
+  }
+
+  /**
    * The file path where the credentials are stored.
    */
   get path(): FS.FilePath {
@@ -93,7 +102,8 @@ export class StravaCreds {
   isValid(t: Seconds = 0, now?: EpochSeconds): boolean {
     const currentTime: EpochSeconds = now ?? DateTime.now().toEpochSeconds();
     const tLimit: EpochSeconds = currentTime + t;
-    return this.#data && this.#data.token_type === 'Bearer' && this.#data.expires_at > tLimit;
+    return this.#data && this.#data.token_type === 'Bearer' && this.#data.expires_at > tLimit &&
+      _.isNonEmptyString(this.#data.access_token);
   }
 
   /**

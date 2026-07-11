@@ -25,6 +25,7 @@ const STRAVA_URL = {
   authorize: STRAVA_URL_PREFIX + '/oauth/authorize',
   token: STRAVA_URL_PREFIX + '/oauth/token',
   athlete: STRAVA_API_PREFIX + '/athlete',
+  athletes: STRAVA_API_PREFIX + '/athletes',
   picture: STRAVA_API_PREFIX + '/athlete/picture',
   activities: STRAVA_API_PREFIX + '/athlete/activities',
   detailedActivity: STRAVA_API_PREFIX + '/activities',
@@ -118,6 +119,21 @@ export class Api extends BaseClass {
     await this.#auth.refreshToken(force);
   }
 
+  #formatApiError(
+    id: unknown,
+    status: number,
+    statusText: string,
+    body: Record<string, unknown>,
+  ): string {
+    const errors: unknown[] = _.isArray(body.errors) ? body.errors : [];
+    for (const err of errors) {
+      if (_.isDict(err) && err.code === 'Inactive') {
+        return `Strava API application is inactive — reactivate it at https://www.strava.com/settings/api`;
+      }
+    }
+    return `GET athleteId=${id} returned ${status} ${statusText}`;
+  }
+
   /**
    * Retrieves the profile of the authenticated athlete.
    *
@@ -132,9 +148,11 @@ export class Api extends BaseClass {
     athleteId?: StravaSchema.Athlete.Id,
   ): Promise<StravaSchema.Athlete.Detailed> {
     await this.refreshToken();
-    let url = STRAVA_URL.athlete;
+    let url: string;
     if (isStravaId(athleteId)) {
-      url = url + '/' + athleteId;
+      url = STRAVA_URL.athletes + '/' + athleteId;
+    } else {
+      url = STRAVA_URL.athlete;
     }
 
     const reqOpts: RequestInit = {
@@ -147,8 +165,9 @@ export class Api extends BaseClass {
 
     const resp = await fetch(url, reqOpts);
     if (!resp.ok) {
-      // this.log.error.warn('Failed to get athlete').error(resp.statusText).emit();
-      throw new Error(`GET athleteId=${athleteId} returned ${resp.status} ${resp.statusText}`);
+      const body = await resp.json().catch(() => ({}));
+      const msg = this.#formatApiError(athleteId, resp.status, resp.statusText, body);
+      throw new Error(msg);
     }
 
     const data: unknown = await resp.json();

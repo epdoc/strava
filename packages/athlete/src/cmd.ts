@@ -34,10 +34,10 @@ export class AthleteCommand extends BaseRootCmdClass<AthleteCmdOptions> {
   }
 
   override async execute(options: AthleteCmdOptions, _args: CliApp.CmdArgs): Promise<void> {
-    const _opts: AthleteOptions = {
+    const opts: AthleteOptions = {
       athleteId: options.athleteId,
     };
-    const tool = new AthleteTool(this.ctx);
+    const tool = new AthleteTool(this.ctx, opts);
     await tool.run();
   }
 }

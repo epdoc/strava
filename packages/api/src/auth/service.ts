@@ -29,7 +29,7 @@ export const defaultAuthOpts: Strava.AuthUrlOpts = {
   scope: 'read_all,activity:read_all,profile:read_all',
   state: '',
   approvalPrompt: 'auto',
-  redirectUri: 'https://localhost',
+  redirectUri: 'http://localhost:3000/token',
 };
 
 type Response = {
@@ -104,19 +104,58 @@ export class AuthService extends BaseClass {
     this.log.info.text('Reading').relative(this.#creds.path).start();
     await this.#creds.read();
     this.log.info.icheck().text('Read').relative(this.#creds.path).stop();
-    await this.refreshToken(opts.force);
+    try {
+      await this.refreshToken(opts.force);
+    } catch (_) {
+      this.log.info.text('Token refresh failed, will re-authenticate').emit();
+    }
     const hasAuth = this.#creds.isValid();
     if (hasAuth && opts.force !== true) {
-      await this.#logAuthStatus();
-      this.log.outdent();
-      // this.log.info.text('Authentication complete.').emit();
-      return true;
+      const verified = await this.#verifyAuth();
+      if (verified) {
+        await this.#logAuthStatus();
+        this.log.outdent();
+        return true;
+      }
+      this.log.info.text('Stored token rejected by API, re-authenticating').emit();
     }
 
     const result = await this.runAuthWebPage();
     this.log.outdent();
-    // this.log.info.text('Authentication complete.').emit();
     return result;
+  }
+
+  /**
+   * Verifies the current access token is actually accepted by the Strava API.
+   * Makes a lightweight GET request to /athlete to confirm the token works.
+   * If the application is inactive, throws a clear error immediately.
+   * @returns true if the token is accepted, false if a different auth error occurred
+   */
+  async #verifyAuth(): Promise<boolean> {
+    try {
+      const resp = await fetch(STRAVA_URL.athlete, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + this.creds.accessToken,
+          'accept': 'application/json',
+        },
+      });
+      if (resp.ok) return true;
+      const body = await resp.json().catch(() => ({}));
+      const errors: unknown[] = _.isDict(body) && _.isArray(body.errors) ? body.errors : [];
+      for (const err of errors) {
+        if (_.isDict(err) && err.code === 'Inactive') {
+          throw new Cliapp.SilentError(
+            `Strava API application is inactive. ` +
+              `Reactivate it at https://www.strava.com/settings/api`,
+          );
+        }
+      }
+      return false;
+    } catch (err) {
+      if (err instanceof Cliapp.SilentError) throw err;
+      return false;
+    }
   }
 
   /**

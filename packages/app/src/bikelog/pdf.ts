@@ -104,46 +104,10 @@ export class BikelogPdf extends BaseClass {
       }
     }
 
-    let noteOverflowed = false;
-    for (const [jd, entry] of Object.entries(entries)) {
-      for (const fieldName of ['note0', 'note1'] as const) {
-        const text = entry[fieldName];
-        if (!text) continue;
-        try {
-          const field = form.getTextField(`day.${jd}.${fieldName}`);
-          if (this.#textOverflows(font, text, field)) {
-            noteOverflowed = true;
-            break;
-          }
-        } catch {
-          /* field not found, skip */
-        }
-      }
-      if (noteOverflowed) break;
-    }
-
     form.updateFieldAppearances(font);
-
-    if (noteOverflowed) {
-      this.info.text('Note text overflows at 12pt — viewer will auto-fit').emit();
-      form.acroForm.dict.set(pdfLib.PDFName.of('NeedAppearances'), pdfLib.PDFBool.True);
-    }
 
     const pdfBytes = await doc.save();
     await targetPath.write(pdfBytes);
-  }
-
-  #textOverflows(font: pdfLib.PDFFont, text: string, field: pdfLib.PDFTextField): boolean {
-    const widgets = field.acroField.getWidgets();
-    if (widgets.length === 0) return false;
-    const rect = widgets[0].getRectangle();
-    const lineHeight = font.heightAtSize(12);
-    const lineWidths = text.split('\n').map((line) => font.widthOfTextAtSize(line, 12));
-    const totalLines = lineWidths.reduce(
-      (sum, w) => sum + Math.max(1, Math.ceil(w / rect.width)),
-      0,
-    );
-    return totalLines * lineHeight > rect.height;
   }
 
   async backup(): Promise<FS.File> {

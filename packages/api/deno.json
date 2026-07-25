@@ -27,7 +27,7 @@
   "imports": {
     "@epdoc/strava-core": "../core/src/mod.ts",
     "@epdoc/strava-schema": "../schema/src/mod.ts",
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.4",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.5",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.6",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.3.22",
     "@epdoc/fs": "jsr:@epdoc/fs@^1.6.4",

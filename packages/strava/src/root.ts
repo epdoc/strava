@@ -1,8 +1,10 @@
 import type * as CliApp from '@epdoc/cliapp';
+import { TextBuilder } from '@epdoc/msgbuilder';
 import { Option } from '@epdoc/strava-app';
 import { AthleteCommand } from '@epdoc/strava-athlete';
-import { BaseRootCmdClass, type Ctx, TextBuilder } from '@epdoc/strava-core';
+import { BaseRootCmdClass, type Ctx } from '@epdoc/strava-core';
 import { InfoCommand } from '@epdoc/strava-info';
+import { FdfCommand } from './fdf.ts';
 import { GpxCommand } from './gpx.ts';
 import { KmlCommand } from './kml.ts';
 import { PdfCommand } from './pdf.ts';
@@ -44,6 +46,7 @@ export class RootCommand extends BaseRootCmdClass<RootCmdOpts> {
       new GpxCommand(ctx),
       new KmlCommand(ctx),
       new PdfCommand(ctx),
+      new FdfCommand(ctx),
       new AthleteCommand(ctx),
       new InfoCommand(ctx),
     ];
@@ -59,21 +62,18 @@ export class RootCommand extends BaseRootCmdClass<RootCmdOpts> {
     );
     b.newline();
 
-    b.line.h2('Subcommands:');
-    b.line.label('  gpx').text('  Generate GPX files for GPS devices');
-    b.line.label('  kml').text('  Generate KML files for Google Earth');
-    b.line.label('  forms').text('  Generate XML data for Adobe Acrobat PDF forms');
-
     b.newline();
     b.line.h2('Global Options:');
-    b.line.label('  -i, --imperial').text('  Use imperial units (miles, feet)');
-    b.line.label('  -f, --format <format>')
+    b.indent();
+    b.line.label('-i, --imperial').text('  Use imperial units (miles, feet)');
+    b.line.label('-f, --format <format>')
       .text('  Some commands support different output formats (e.g. -f json)');
+    b.outdent();
 
     b.newline();
     b.line.h2('Examples:');
-    b.line.ibullet().text('Generate Acroforms data since last run');
-    b.line.value('  strava pdf');
+    b.line.ibullet().text('Generate importable Acroforms data file since last run');
+    b.line.value('  strava fdf');
     b.line.ibullet().text('Generate GPX for January 2024 activities');
     b.line.value('  strava gpx --date 20240101-20240131');
     b.line.ibullet().text('Generate KML with activities and starred segments');

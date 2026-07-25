@@ -1,4 +1,3 @@
-import type { DateTime } from '@epdoc/datetime';
 import type { Seconds } from '@epdoc/duration';
 import type * as FS from '@epdoc/fs/fs';
 import type { Ctx } from '@epdoc/strava-core';
@@ -7,39 +6,11 @@ import type * as Activity from '../activity/mod.ts';
 import { Fmt, formatMS } from '../fmt.ts';
 import type * as BikeLog from './types.ts';
 import { Xml, type XmlNode } from './xml.ts';
+import type { BikelogEntry } from './types.ts';
+import type { BikeDef } from '../types.ts';
 
 const REGEX = {
   moto: /^moto$/i,
-};
-
-/**
- * Represents a single day's worth of bikelog data for Adobe Acroforms XML output.
- * This structure maps to the XML schema expected by the bikelog PDF form.
- */
-type BikelogEntry = {
-  /** Julian date number used as the unique identifier for the day */
-  jd: number;
-  /** DateTime object for the entry (with activity's local timezone) */
-  date: DateTime;
-  /** Array of ride events for the day (maximum 2 tracked) */
-  events: Array<{
-    /** Distance in kilometers, rounded to 2 decimal places */
-    distance?: number;
-    /** Bike identifier/name */
-    bike?: string;
-    /** Elevation gain in meters */
-    el?: number;
-    /** Moving time in hours (as decimal) */
-    t?: number;
-    /** Energy in watt-hours */
-    wh?: number;
-  }>;
-  /** Primary note field containing activity descriptions */
-  note0?: string;
-  /** Secondary note field (currently unused) */
-  note1?: string;
-  /** Weight in kilograms */
-  wt?: number;
 };
 
 /**
@@ -87,7 +58,7 @@ export class Bikelog {
    * // Returns: { weight: "165 kg", description: "Great ride!\nCheck tire pressure" }
    * ```
    */
-  private parseActivityText(
+  static parseActivityText(
     activity: Activity.Item,
   ): { description?: string; [key: string]: unknown } {
     const result: { description?: string; [key: string]: unknown } = {};
@@ -147,7 +118,7 @@ export class Bikelog {
    * toTitleCase("");      // Returns ""
    * ```
    */
-  private toTitleCase(key: string): string {
+  static toTitleCase(key: string): string {
     if (!key || key.length === 0) return key;
     return key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
   }
@@ -171,7 +142,7 @@ export class Bikelog {
    * extractWeight({ other: "value" });     // Returns undefined
    * ```
    */
-  private extractWeight(customProps: Record<string, unknown>): number | undefined {
+  static extractWeight(customProps: Record<string, unknown>): number | undefined {
     for (const [key, value] of Object.entries(customProps)) {
       if (key.toLowerCase() === 'weight' && value !== undefined) {
         const strValue = String(value).trim();
@@ -198,31 +169,22 @@ export class Bikelog {
    * If multiple rides use the same bike, their distances are combined into a single event.
    *
    * @param activities Array of Strava activities to process
+   * @param opts Output options including bike definitions
    * @returns Dictionary of bikelog entries keyed by Julian date number
    *
    * @example
    * ```ts
    * const activities = [activity1, activity2]; // Two activities on same day
-   * const entries = combineActivities(activities);
+   * const entries = combineActivities(activities, opts);
    * // Returns: { "2460234": { jd: 2460234, date: Date, events: [...], note0: "..." } }
    * ```
    */
-  private combineActivities(activities: Activity.Item[]): Record<string, BikelogEntry> {
+  static combineActivities(
+    activities: Activity.Item[],
+    opts: BikeLog.OutputOpts,
+  ): Record<string, BikelogEntry> {
     const result: Record<string, BikelogEntry> = {};
     activities.forEach((activity) => {
-      // Calculate Julian Day Number from the activity's local calendar date.
-      //
-      // Background: Strava's start_date_local has the local time but no timezone suffix.
-      // The 'timezone' field provides the IANA timezone (e.g., "America/Costa_Rica").
-      //
-      // For PDF bikelog forms, we need an integer Julian Day Number that corresponds
-      // to the LOCAL calendar date (e.g., Nov 22 in Costa Rica), not the UTC date
-      // and not a fractional Julian date. This determines which PDF form field
-      // the activity is placed in.
-      //
-      // Solution: Use the activity's getJulianDay() method which returns the integer
-      // Julian Day Number for the activity's local timezone. This ensures activities
-      // are grouped by calendar date regardless of what time they occurred.
       const jd = activity.getJulianDay();
       const localDateTime = activity.startDateAsDateTime;
       const entry: BikelogEntry = result[jd] ?? {
@@ -231,19 +193,15 @@ export class Bikelog {
         events: [],
       };
       if (activity.isRide()) {
-        const bike = activity.gearId && this.#opts.bikes
-          ? this.#opts.bikes[activity.gearId]
+        const bike = activity.gearId && opts.bikes
+          ? opts.bikes[activity.gearId]
           : undefined;
         const isMoto: boolean =
           bike && typeof bike === 'object' && 'name' in bike && typeof bike.name === 'string'
             ? REGEX.moto.test(bike.name)
             : false;
         let note = '';
-        // note += 'Ascend ' + Math.round(activity.total_elevation_gain) + 'm, time ';
-        // note += this.formatHMS(activity.moving_time, { seconds: false });
-        // note += ' (' + this.formatHMS(activity.elapsed_time, { seconds: false }) + ')';
 
-        // Build activity name line
         if (isMoto) {
           note += 'Moto: ' + activity.name;
           note += `\nDistance: ${activity.distanceRoundedKm()}, Elevation: ${
@@ -257,7 +215,6 @@ export class Bikelog {
           note += 'Bike: ' + activity.name;
         }
 
-        // Add timing metadata first (before description)
         const times: string[] = [];
         if (activity.movingTime) {
           times.push('Moving: ' + Bikelog.secondsToString(activity.movingTime));
@@ -269,30 +226,23 @@ export class Bikelog {
           note += '\n' + times.join(', ');
         }
 
-        // TODO: Add EBike energy data from detailed activity
+        const customProps = Bikelog.parseActivityText(activity);
 
-        // Add custom description and private note from activity (if available)
-        const customProps = this.parseActivityText(activity);
-
-        // Extract weight if present and set entry.wt
-        const weight = this.extractWeight(customProps);
+        const weight = Bikelog.extractWeight(customProps);
         if (weight !== undefined) {
           entry.wt = weight;
         }
 
-        // Add description text first
         if (customProps.description && _.isString(customProps.description)) {
           note += '\n' + customProps.description;
         }
 
-        // Add all other key/value pairs (excluding description and weight)
         for (const [key, value] of Object.entries(customProps)) {
           if (key !== 'description' && key.toLowerCase() !== 'weight' && value !== undefined) {
-            note += '\n' + this.toTitleCase(key) + ': ' + String(value);
+            note += '\n' + Bikelog.toTitleCase(key) + ': ' + String(value);
           }
         }
 
-        // Add starred segment efforts at the end (if available)
         const segments = activity.segments;
         if (_.isArray(segments) && segments.length > 0) {
           const segs: string[] = [];
@@ -300,7 +250,6 @@ export class Bikelog {
           for (const segment of segments) {
             const time = segment.elapsed_time || segment.moving_time || 0;
             const timeStr = formatMS(time);
-            // Use segment.name first (contains alias from app.ts), fall back to segment.segment?.name
             const name = segment.name || segment.segment?.name || 'Unknown';
             segs.push(`${prefix}${name} [${timeStr}]`);
             prefix = 'up ';
@@ -314,14 +263,13 @@ export class Bikelog {
           entry.note0 = note;
         }
 
-        // Only track non-moto bike rides in events
         if (bike && !isMoto && typeof bike === 'object' && 'name' in bike) {
           const dobj = {
             distance: activity.distanceRoundedKm(),
-            bike: this.bikeMap(bike.name as string),
+            bike: Bikelog.bikeMap(bike.name as string, opts.selectedBikes),
             el: Math.round(activity.totalElevationGain),
             t: Math.round(activity.movingTime / 36) / 100,
-            wh: 0, // TODO: Add kilojoules support from detailed activity data
+            wh: 0,
           };
 
           if (entry.events.length < 2) {
@@ -336,7 +284,6 @@ export class Bikelog {
               }
             }
             if (!bDone) {
-              // Could not combine, just add as new event if there's room
               if (entry.events.length < 2) {
                 entry.events.push(dobj);
               }
@@ -344,30 +291,25 @@ export class Bikelog {
           }
         }
       } else {
-        // Non-ride activities (Run, Swim, etc.)
         const distance = Math.round(activity.distance / 10) / 100;
         let note = activity.type + ': ' + activity.name + '\n';
         note += 'Distance: ' + distance + ' km; Duration: ' +
           Fmt.hms(activity.movingTime, { seconds: false });
 
-        // Add custom description and private note from activity (if available)
-        const customProps = this.parseActivityText(activity);
+        const customProps = Bikelog.parseActivityText(activity);
 
-        // Extract weight if present and set entry.wt
-        const weight = this.extractWeight(customProps);
+        const weight = Bikelog.extractWeight(customProps);
         if (weight !== undefined) {
           entry.wt = weight;
         }
 
-        // Add description text first
         if (customProps.description && _.isString(customProps.description)) {
           note += '\n' + customProps.description;
         }
 
-        // Add all other key/value pairs (excluding description and weight)
         for (const [key, value] of Object.entries(customProps)) {
           if (key !== 'description' && key.toLowerCase() !== 'weight' && value !== undefined) {
-            note += '\n' + this.toTitleCase(key) + ': ' + String(value);
+            note += '\n' + Bikelog.toTitleCase(key) + ': ' + String(value);
           }
         }
 
@@ -419,11 +361,10 @@ export class Bikelog {
    * bikeMap("Specialized");       // Returns "Specialized" (no mapping)
    * ```
    */
-  private bikeMap(stravaBikeName: string): string {
-    // Map Strava bike names to bikelog names based on selectedBikes patterns
-    if (_.isArray(this.#opts.selectedBikes)) {
-      for (let idx = 0; idx < this.#opts.selectedBikes.length; ++idx) {
-        const item = this.#opts.selectedBikes[idx];
+  static bikeMap(stravaBikeName: string, selectedBikes?: BikeDef[]): string {
+    if (_.isArray(selectedBikes)) {
+      for (let idx = 0; idx < selectedBikes.length; ++idx) {
+        const item = selectedBikes[idx];
         if (item.pattern.toLowerCase() === stravaBikeName.toLowerCase()) {
           return item.name;
         }
@@ -465,7 +406,7 @@ export class Bikelog {
     stravaActivities: Activity.Item[],
   ): Promise<void> {
     // Combine activities by day
-    const activities = this.combineActivities(stravaActivities);
+    const activities = Bikelog.combineActivities(stravaActivities, this.#opts);
 
     // Create the  writer
     this.#writer = await fsFile.writer();

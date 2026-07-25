@@ -23,7 +23,7 @@
   "imports": {
     "@epdoc/strava-app": "../app/src/mod.ts",
     "@epdoc/strava-core": "../core/src/mod.ts",
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.4",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.5",
     "@epdoc/daterange": "jsr:@epdoc/daterange@^3.0.15",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.6",
     "@epdoc/table": "jsr:@epdoc/table@^0.1.46",

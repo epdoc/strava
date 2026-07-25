@@ -3,10 +3,11 @@ import type { DateRanges } from '@epdoc/daterange';
 import { buildDateHelp, dateOptionDef } from '@epdoc/daterange';
 import * as App from '@epdoc/strava-app';
 import { Activity, Option, OutputTypes } from '@epdoc/strava-app';
-import { BaseRootCmdClass, Ctx, TextBuilder } from '@epdoc/strava-core';
+import { BaseRootCmdClass, Ctx } from '@epdoc/strava-core';
 import { isAthleteId, type Types } from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
+import { TextBuilder } from '@epdoc/msgbuilder';
 
 const REG = {
   commuteOnly: new RegExp(/^(yes)$/i),

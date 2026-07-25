@@ -1,48 +1,42 @@
 import * as CliApp from '@epdoc/cliapp';
-import { style } from '@epdoc/cliapp';
 import { buildDateHelp, dateOptionDef, DateRanges } from '@epdoc/daterange';
 import { DateTime } from '@epdoc/datetime';
-import * as FS from '@epdoc/fs/fs';
 import { TextBuilder } from '@epdoc/msgbuilder';
 import * as App from '@epdoc/strava-app';
-import { Activity, OutputTypes } from '@epdoc/strava-app';
+import { Activity, Option, OutputTypes } from '@epdoc/strava-app';
 import { BaseRootCmdClass, Ctx } from '@epdoc/strava-core';
 import { isAthleteId } from '@epdoc/strava-schema';
-import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 
-type PdfCmdOptions = CliApp.LogCmdOptions & {
+type FdfCmdOptions = CliApp.LogCmdOptions & {
   athleteId?: string;
   date: DateRanges;
-  pdf?: string;
+  output?: string;
   imperial?: boolean;
 };
 
-export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
+export class FdfCommand extends BaseRootCmdClass<FdfCmdOptions> {
   override defineMetadata() {
-    this.description = 'Fill form fields of an existing Bikelog PDF with Strava activity data';
-    this.name = 'pdf';
+    this.description = 'Generate Adobe Acroforms XML files to import into Bikelog PDF file';
+    this.name = 'fdf';
   }
 
   override defineOptions(): void {
     this.option('--athleteId <id>', 'Athlete ID (defaults to authenticated user)').emit();
     const help = buildDateHelp(new Ctx.CustomMsgBuilder()).format();
     this.option({ ...dateOptionDef, help: help } as CliApp.OptionDef).emit();
-    this.option(
-      '--pdf <path>',
-      'Path to bikelog PDF file. Defaults to ~/CloudStation/PDFDocs/BIKE/bikelog_{yyyy}.pdf',
-    )
-      .emit();
+    this.option(Option.def.output).emit();
     this.addHelpText(this.helpText());
   }
 
   override async execute(
-    options: PdfCmdOptions,
+    options: FdfCmdOptions,
     _args: CliApp.CmdArgs,
   ): Promise<void> {
     const ctx = this.activeContext();
     assert(ctx);
 
+    // Initialize app with Strava API and user settings
     const app = new App.Main(ctx);
     if (isAthleteId(options.athleteId)) {
       app.setAthleteId(options.athleteId);
@@ -51,10 +45,12 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
     await app.init({ strava: true, userSettings: true, state: true });
 
     ctx.log.info.section().emit();
-    ctx.log.info.h1('PDF Form Filler').emit();
+    ctx.log.info.h1('Acroforms Generator').emit();
 
+    // Get last updated timestamp for incremental updates
     const lastUpdated = app.getLastUpdated(OutputTypes.Acroforms);
 
+    // Determine date ranges
     let dateRanges: DateRanges;
     if (options.date && options.date.hasRanges()) {
       dateRanges = options.date;
@@ -67,86 +63,63 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
       );
     }
 
+    // Ensure we have athlete info (for bike list)
     if (!app.athlete) {
       await app.getAthlete();
     }
 
+    // Fetch activities for the date range
     const activities = new Activity.Collection(ctx);
     await activities.getForDateRange(dateRanges);
 
-    // Resolve the template PDF path
-    let templateFile: FS.File;
-    if (_.isNonEmptyString(options.pdf)) {
-      templateFile = FS.File.home(options.pdf);
-    } else {
-      const year = DateTime.now().year;
-      templateFile = FS.File.home('CloudStation', 'PDFDocs', 'BIKE', `bikelog_${year}.pdf`);
+    // Resolve the output file path
+    const resolveOpts = { output: options.output, type: OutputTypes.Acroforms };
+    const outputPath = activities.resolveOutputFile(resolveOpts);
+    if (!outputPath) {
+      const err = new Error(
+        'Output path could not be determined. Specify --output or set gpxFolder in user settings.',
+      );
+      ctx.log.error(err.message).emit();
+      throw err;
     }
-
-    if (!(await templateFile.isFile())) {
-      throw new Error(`PDF template file not found: ${templateFile.path}`);
-    }
-    ctx.log.info.text('Using PDF template').fs(templateFile).emit();
 
     if (activities.length === 0) {
       ctx.log.info.text('No activities found for the specified date range').emit();
       return;
     }
 
+    // Get detailed activity data (needed for descriptions and private notes)
     await activities.getDetailsAndSegments({ detailed: true });
 
-    // Fill form fields and get back output file + BikelogPdf wrapper
-    if (ctx.dryRun === true) {
-      const downloadFile = FS.File.home('Downloads', templateFile.filename);
-      ctx.log.info.dryRun().text('Saving filled PDF to').fs(downloadFile).emit();
-      await app.fillPdf({
-        activities,
-        templateFile,
-        targetPath: downloadFile,
-      });
-      return;
-    }
+    // Build PDF options
+    const pdfOpts: App.BikeLog.Opts = {
+      output: outputPath,
+      activities: activities,
+    };
 
-    const { outputFile, pdfFile } = await app.fillPdf({
-      activities,
-      templateFile,
-    });
-
-    // Clean up old backups (> 3 months)
-    await pdfFile.cleanupOldBackups();
-
-    // Backup current PDF to .backup folder
-    await pdfFile.backup();
-
-    // Replace original with filled PDF
-    await pdfFile.replaceFrom(outputFile);
-
-    // Update state
-    await app.updatePdfState(OutputTypes.Acroforms, activities);
+    // Generate the PDF/XML file
+    await app.getPdf(pdfOpts, OutputTypes.Acroforms);
   }
 
   helpText(): string {
     const b = new TextBuilder();
     b.newline();
-    b.line.h1('PDF Form Filling');
+    b.line.h1('PDF/XML Form Data Generation');
     b.newline();
-    b.line.text('Fill form fields of an existing')
-      .code('Bikelog PDF').text('with Strava activity data.');
+    b.line.text(
+      'Generate Adobe Acroforms XML files from Strava activities for import into bikelog PDF forms.',
+    );
     b.newline();
 
     b.line.h2('Output Behavior:');
-    b.line.ibullet()
-      .text('Opens the bikelog PDF, fills form fields with activity data, and does a')
-      .warn('full save').text('in place');
-    b.line.ibullet().text('Original PDF is backed up to')
-      .path('.backup/').text('folder with timestamp');
     b.line.ibullet().text(
-      'Backups older than 90 days are automatically deleted',
+      'XML files can be imported into Adobe Acrobat to populate form fields',
     );
-    b.line.ibullet().text('Use')
-      .stylize(style.flag, '--pdf')
-      .text('to specify the PDF file').iarrow().text('default:')
-      .path('~/CloudStation/PDFDocs/BIKE/bikelog_{yyyy}.pdf');
+    b.line.ibullet().text('Default filename is set by acroformsFile in user settings')
+      .relative('~/.config/epdoc/strava/user.settings.json'),
+      b.line.ibullet().text(
+        'Use --output to specify a custom filename (relative to current directory)',
+      );
     b.newline();
 
     b.line.h2('Activity Data:');
@@ -159,18 +132,18 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
     b.newline();
 
     b.line.h2('Incremental Updates:');
-    b.line.ibullet().text('After first run, subsequent runs fetch only new activities');
-    b.line.ibullet().text('Last update time is stored in')
-      .path('~/.config/epdoc/strava/user.state.json');
-    b.line.ibullet().text('Use').stylize(style.flag, '--date')
-      .text('to override and fetch specific date ranges');
+    b.line.ibullet().text('After first run, subsequent runs fetch only on new activities');
+    b.line.ibullet().text('Last update time is stored in ~/.strava/user.state.json');
+    b.line.ibullet().text('Use --date to override and fetch specific date ranges');
     b.newline();
 
     b.line.h2('Examples:');
-    b.line.ibullet().text('Fill PDF with all activities in 2024');
+    b.line.ibullet().text('Generate XML for all activities in 2024');
     b.line.label('  ').value('--date 20240101-20241231');
-    b.line.ibullet().text('Fill with a custom PDF template');
-    b.line.label('  ').value('--date 7d-now --pdf ~/PDFDocs/BIKE/bikelog_2026.pdf');
+    b.line.ibullet().text('Generate XML with custom filename');
+    b.line.label('  ').value('--date 20240101-20241231 --output bikelog2024.xml');
+    b.line.ibullet().text('Generate XML for activities in the last 7 days');
+    b.line.label('  ').value('--date 7d-now');
     b.line.ibullet().text('Incremental update: fetch only activities since last run');
     b.line.label('  ').value('(no --date, after first run)');
 

@@ -505,6 +505,53 @@ export class Main extends BaseClass {
     }
   }
 
+  async fillPdf(
+    pdfOpts: BikeLog.Opts & { templateFile: FS.File; targetPath?: FS.File },
+  ): Promise<{ outputFile: FS.File; pdfFile: BikeLog.BikelogPdf }> {
+    const activities = pdfOpts.activities;
+
+    this.log.info.h2('Filling PDF form fields:').emit();
+
+    const bikes: Record<string, Schema.Gear.Summary> = {};
+    if (this.athlete && 'bikes' in this.athlete) {
+      const athleteBikes = this.athlete.bikes;
+      if (_.isArray(athleteBikes)) {
+        athleteBikes.forEach((bike: Schema.Gear.Summary) => {
+          if (bike && bike.id) {
+            bikes[bike.id] = bike;
+          }
+        });
+      }
+    }
+
+    const bikelogOpts: BikeLog.OutputOpts = {
+      more: true,
+      dates: activities.getDateRange(),
+      bikes,
+    };
+
+    const entries = BikeLog.Bikelog.combineActivities(activities.activities, bikelogOpts);
+
+    const pdfFile = new BikeLog.BikelogPdf(this.ctx, pdfOpts.templateFile);
+
+    const outputFile = pdfOpts.targetPath ?? await FS.File.makeTemp({ suffix: '.pdf' });
+    this.log.info.text('PDF File').fs(outputFile).emit();
+    await pdfFile.fill(entries, outputFile);
+    this.log.info.icheck().text('PDF form fields filled successfully').fs(outputFile).emit();
+
+    return { outputFile, pdfFile };
+  }
+
+  async updatePdfState(outputType: OutputType, activities: Activity.Collection): Promise<void> {
+    if (outputType && this.#stateFile && activities.length > 0) {
+      if (this.ctx.dryRun === true) {
+        this.log.info.warn('DRY RUN').text('Skipping state update').emit();
+        return;
+      }
+      await this.#stateFile.updateLastUpdated(outputType, activities);
+    }
+  }
+
   /**
    * Refreshes the cache of the user's starred segments.
    *

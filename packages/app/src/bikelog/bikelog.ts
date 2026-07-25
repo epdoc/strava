@@ -193,9 +193,7 @@ export class Bikelog {
         events: [],
       };
       if (activity.isRide()) {
-        const bike = activity.gearId && opts.bikes
-          ? opts.bikes[activity.gearId]
-          : undefined;
+        const bike = activity.gearId && opts.bikes ? opts.bikes[activity.gearId] : undefined;
         const isMoto: boolean =
           bike && typeof bike === 'object' && 'name' in bike && typeof bike.name === 'string'
             ? REGEX.moto.test(bike.name)

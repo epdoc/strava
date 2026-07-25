@@ -29,7 +29,9 @@ function makeTestEntry(
     : [];
   return {
     jd,
-    date: { format: (_fmt: string) => '2024-01-01' } as unknown as import('@epdoc/datetime').DateTime,
+    date: {
+      format: (_fmt: string) => '2024-01-01',
+    } as unknown as import('@epdoc/datetime').DateTime,
     events,
     note0: overrides.note0,
     note1: overrides.note1,
@@ -259,7 +261,10 @@ describe('BikelogPdf', () => {
       // Second fill uses the output of first fill as template (incremental mode)
       const pdf2 = new BikelogPdf(ctx, targetFile);
       const targetFile2 = FS.File.from(testDir, 'note-concat-test2.pdf');
-      await pdf2.fill({ '2459000': makeTestEntry(2459000, { note0: 'Second entry' }) }, targetFile2);
+      await pdf2.fill(
+        { '2459000': makeTestEntry(2459000, { note0: 'Second entry' }) },
+        targetFile2,
+      );
 
       const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
       const form = doc.getForm();
@@ -305,7 +310,14 @@ describe('BikelogPdf', () => {
       const pdf2 = new BikelogPdf(ctx, targetFile);
       const targetFile2 = FS.File.from(testDir, 'numeric-fuzzy-test2.pdf');
       await pdf2.fill(
-        { '2459000': makeTestEntry(2459000, { dist: 0.1999999, el: 99.9999999, t: 1.500000001, wt: 87.300000001 }) },
+        {
+          '2459000': makeTestEntry(2459000, {
+            dist: 0.1999999,
+            el: 99.9999999,
+            t: 1.500000001,
+            wt: 87.300000001,
+          }),
+        },
         targetFile2,
       );
 

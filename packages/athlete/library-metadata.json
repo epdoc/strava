@@ -1,0 +1,24 @@
+{
+  "identity": {
+    "name": "@epdoc/strava-athlete",
+    "purpose": "CLI command for displaying Strava athlete info and bikes",
+    "type": "cli",
+    "complexity": "simple"
+  },
+  "quickStart": {
+    "pattern": "Import AthleteCommand, pass to root command",
+    "code": "import { AthleteCommand } from '@epdoc/strava-athlete';\nconst cmd = new AthleteCommand(ctx, { root: true });\nawait cmd.init();"
+  },
+  "exports": [
+    {
+      "name": "AthleteCommand",
+      "role": "main_entry",
+      "description": "CLI command for athlete info display"
+    }
+  ],
+  "patterns": [],
+  "relationships": {
+    "dependsOn": ["@epdoc/strava-app", "@epdoc/strava-core", "@epdoc/cliapp"],
+    "usedBy": ["@epdoc/strava"]
+  }
+}

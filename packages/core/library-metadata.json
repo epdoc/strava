@@ -1,0 +1,45 @@
+{
+  "identity": {
+    "name": "@epdoc/strava-core",
+    "purpose": "Core context, base classes, and logging for Strava apps",
+    "type": "framework",
+    "complexity": "moderate"
+  },
+  "quickStart": {
+    "pattern": "import { Context, BaseClass } from '@epdoc/strava-core'; extend BaseClass for domain classes",
+    "code": "import { BaseClass, Ctx } from '@epdoc/strava-core';\nconst ctx = new Ctx.Context(pkg);\nawait ctx.setupLogging({ pkg: 'my-app' });\nclass MyService extends BaseClass { logMsg() { this.info.text('hello').emit(); } }"
+  },
+  "exports": [
+    {
+      "name": "BaseClass",
+      "role": "base_class",
+      "description": "Abstract base for domain classes with logging"
+    },
+    {
+      "name": "BaseRootCmdClass",
+      "role": "base_class",
+      "description": "Abstract base for root CLI commands"
+    },
+    {
+      "name": "Ctx.Context",
+      "role": "main_entry",
+      "description": "Application context for DI and config"
+    },
+    {
+      "name": "Ctx.CustomMsgBuilder",
+      "role": "helper",
+      "description": "Logging builder with .fs(), .activity(), .dateRange()"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Create Context",
+      "when": "Starting any CLI app",
+      "code": "const ctx = new Ctx.Context(pkg);\nawait ctx.setupLogging({ pkg: 'my-app' });\nctx.online = true;\nctx.imperial = false;"
+    }
+  ],
+  "relationships": {
+    "dependsOn": ["@epdoc/cliapp", "@epdoc/logger", "@epdoc/daterange", "@epdoc/datetime", "@epdoc/fs"],
+    "usedBy": ["@epdoc/strava-api", "@epdoc/strava-app", "@epdoc/strava-athlete", "@epdoc/strava-info"]
+  }
+}

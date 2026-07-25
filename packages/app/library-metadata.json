@@ -1,0 +1,65 @@
+{
+  "identity": {
+    "name": "@epdoc/strava-app",
+    "purpose": "Business logic for Strava KML/GPX/PDF generation",
+    "type": "service",
+    "complexity": "complex"
+  },
+  "quickStart": {
+    "pattern": "new Main(ctx) → init() → getKml()/getGpx()/getPdf()",
+    "code": "const app = new Main(ctx);\nawait app.init(ctx, { strava: true, userSettings: true });\nawait app.getKml(ctx, { dates: dateRanges, output: 'out.kml' });"
+  },
+  "exports": [
+    {
+      "name": "Main",
+      "role": "main_entry",
+      "description": "Central business logic coordinator"
+    },
+    {
+      "name": "BaseClass",
+      "role": "base_class",
+      "description": "Extends core BaseClass with app/api accessors"
+    },
+    {
+      "name": "Activity",
+      "role": "namespace",
+      "description": "Activity filtering and processing submodule"
+    },
+    {
+      "name": "Track",
+      "role": "namespace",
+      "description": "KML/GPX track generation submodule"
+    },
+    {
+      "name": "BikeLog",
+      "role": "namespace",
+      "description": "PDF Acroforms XML generation submodule"
+    },
+    {
+      "name": "Segment",
+      "role": "namespace",
+      "description": "Segment data and cache management"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "KML Export",
+      "when": "Generating Google Earth KML files",
+      "code": "await app.init(ctx, { strava: true, userSettings: true });\nawait app.getKml(ctx, { dates, output, activities: true });"
+    },
+    {
+      "name": "GPX Export",
+      "when": "Generating GPS Exchange files",
+      "code": "await app.init(ctx, { strava: true, userSettings: true });\nawait app.getGpx(ctx, { dates, output, activities: true, laps: true });"
+    },
+    {
+      "name": "PDF Export",
+      "when": "Generating Acroforms XML for PDF forms",
+      "code": "await app.init(ctx, { strava: true, userSettings: true });\nawait app.getPdf(ctx, { dates, output });"
+    }
+  ],
+  "relationships": {
+    "dependsOn": ["@epdoc/strava-api", "@epdoc/strava-core", "@epdoc/strava-schema", "@epdoc/fs", "@epdoc/daterange", "@epdoc/datetime", "pdf-lib"],
+    "usedBy": ["@epdoc/strava-athlete", "@epdoc/strava-info", "@epdoc/strava"]
+  }
+}

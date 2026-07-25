@@ -1,0 +1,45 @@
+{
+  "identity": {
+    "name": "@epdoc/strava",
+    "purpose": "Main CLI for KML/GPX/PDF generation from Strava activities",
+    "type": "cli",
+    "complexity": "moderate"
+  },
+  "quickStart": {
+    "pattern": "main.ts → RootCommand → subcommands (kml/gpx/pdf/segments)",
+    "code": "deno task run kml -d 2025-01- -o january.kml\ndeno task run gpx -d 2025-01- -o ~/gpx/\ndeno task run pdf -d 2025-01- -o bikelog.xml"
+  },
+  "exports": [
+    {
+      "name": "RootCommand",
+      "role": "main_entry",
+      "description": "Root CLI command with subcommands"
+    },
+    {
+      "name": "KmlCommand",
+      "role": "subcommand",
+      "description": "KML Google Earth export command"
+    },
+    {
+      "name": "GpxCommand",
+      "role": "subcommand",
+      "description": "GPX GPS export command"
+    },
+    {
+      "name": "PdfCommand",
+      "role": "subcommand",
+      "description": "PDF Acroforms XML export command"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Run CLI",
+      "when": "Starting the application",
+      "code": "cd packages/strava && deno task run --help"
+    }
+  ],
+  "relationships": {
+    "dependsOn": ["@epdoc/strava-app", "@epdoc/strava-athlete", "@epdoc/strava-core", "@epdoc/strava-info", "@epdoc/cliapp", "@epdoc/fs"],
+    "usedBy": []
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "identity": {
+    "name": "@epdoc/strava-api",
+    "purpose": "Strava HTTP client with OAuth, activities, segments, streams",
+    "type": "service",
+    "complexity": "complex"
+  },
+  "quickStart": {
+    "pattern": "new Api(ctx, credsFile, clientCreds) → init() → getAthlete()",
+    "code": "const api = new Strava.Api(ctx, '~/.strava/credentials.json');\nawait api.init();\nconst athlete = await api.getAthlete();\nconst acts = await api.getActivities({ query: { per_page: 5 } });"
+  },
+  "exports": [
+    {
+      "name": "Api",
+      "role": "main_entry",
+      "description": "HTTP client for Strava REST API"
+    },
+    {
+      "name": "Activity",
+      "role": "helper",
+      "description": "Activity data wrapper with method accessors"
+    },
+    {
+      "name": "Creds",
+      "role": "helper",
+      "description": "Strava OAuth credential management"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Get Activities with Streams",
+      "when": "Fetching activities for export",
+      "code": "const activities = await api.getActivities(ctx, opts);\nfor (const act of activities) {\n  await act.getTrackPoints(ctx, streamTypes);\n  act.filterTrackPoints(true, blackoutZones);\n}"
+    }
+  ],
+  "relationships": {
+    "dependsOn": ["@epdoc/strava-core", "@epdoc/strava-schema", "@epdoc/cliapp", "@epdoc/fs", "@epdoc/type"],
+    "usedBy": ["@epdoc/strava-app"]
+  }
+}

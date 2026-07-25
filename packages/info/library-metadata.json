@@ -1,0 +1,34 @@
+{
+  "identity": {
+    "name": "@epdoc/strava-info",
+    "purpose": "CLI for querying Strava activity information",
+    "type": "cli",
+    "complexity": "simple"
+  },
+  "quickStart": {
+    "pattern": "Import InfoCommand, pass to root command",
+    "code": "import { InfoCommand } from '@epdoc/strava-info';\nconst cmd = new InfoCommand(ctx, { root: true });\nawait cmd.init();"
+  },
+  "exports": [
+    {
+      "name": "InfoCommand",
+      "role": "main_entry",
+      "description": "CLI command for activity info queries"
+    },
+    {
+      "name": "InfoTool",
+      "role": "helper",
+      "description": "Query tool for activity data"
+    },
+    {
+      "name": "InfoOptions",
+      "role": "type",
+      "description": "Options type for info queries"
+    }
+  ],
+  "patterns": [],
+  "relationships": {
+    "dependsOn": ["@epdoc/strava-app", "@epdoc/strava-core", "@epdoc/cliapp", "@epdoc/table"],
+    "usedBy": ["@epdoc/strava"]
+  }
+}

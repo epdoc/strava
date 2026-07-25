@@ -19,9 +19,7 @@ export class AthleteTool extends App.BaseClass {
 
       await this.app.init({ strava: true, userSettings: true });
 
-      const athleteId = this.#opts.athleteId
-        ? Number(this.#opts.athleteId)
-        : undefined;
+      const athleteId = this.#opts.athleteId ? Number(this.#opts.athleteId) : undefined;
 
       this.log.info.section().emit();
       this.log.info.h1('Retrieve Athlete Information').emit();

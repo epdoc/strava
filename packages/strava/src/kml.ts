@@ -2,13 +2,13 @@ import type * as CliApp from '@epdoc/cliapp';
 import type { DateRanges } from '@epdoc/daterange';
 import { buildDateHelp, dateOptionDef } from '@epdoc/daterange';
 import * as FS from '@epdoc/fs/fs';
+import { TextBuilder } from '@epdoc/msgbuilder';
 import * as App from '@epdoc/strava-app';
 import { Activity, Option, OutputTypes } from '@epdoc/strava-app';
 import { BaseRootCmdClass, Ctx } from '@epdoc/strava-core';
 import { isAthleteId, type Types } from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
-import { TextBuilder } from '@epdoc/msgbuilder';
 
 const REG = {
   commuteOnly: new RegExp(/^(yes)$/i),
@@ -121,7 +121,7 @@ export class KmlCommand extends BaseRootCmdClass<KmlCmdOptions> {
         commuteOnly: REG.commuteOnly.test(options.commute || 'all'),
         nonCommuteOnly: REG.nonCommuteOnly.test(options.commute || 'all'),
         include: options.type ? options.type as Types.ActivityType[] : undefined,
-        regions: options.region ? options.region as Activity.Region.Code[] : undefined,
+        regions: options.region ? options.region as App.Region.Code[] : undefined,
       };
       const preFilter = activities.length;
       await activities.filter(filter);

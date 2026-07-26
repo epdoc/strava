@@ -59,7 +59,15 @@
     }
   ],
   "relationships": {
-    "dependsOn": ["@epdoc/strava-api", "@epdoc/strava-core", "@epdoc/strava-schema", "@epdoc/fs", "@epdoc/daterange", "@epdoc/datetime", "pdf-lib"],
+    "dependsOn": [
+      "@epdoc/strava-api",
+      "@epdoc/strava-core",
+      "@epdoc/strava-schema",
+      "@epdoc/fs",
+      "@epdoc/daterange",
+      "@epdoc/datetime",
+      "pdf-lib"
+    ],
     "usedBy": ["@epdoc/strava-athlete", "@epdoc/strava-info", "@epdoc/strava"]
   }
 }

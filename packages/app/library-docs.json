@@ -1017,7 +1017,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
                       "line": 544,
                       "col": 2,
-                      "byteIndex": 20925
+                      "byteIndex": 20931
                     }
                   },
                   {
@@ -1049,7 +1049,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
                       "line": 560,
                       "col": 2,
-                      "byteIndex": 21509
+                      "byteIndex": 21515
                     }
                   },
                   {
@@ -1125,7 +1125,7 @@
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
                                       "line": 620,
                                       "col": 12,
-                                      "byteIndex": 24268
+                                      "byteIndex": 24274
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -1140,7 +1140,7 @@
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
                                       "line": 620,
                                       "col": 31,
-                                      "byteIndex": 24287
+                                      "byteIndex": 24293
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -1155,7 +1155,7 @@
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
                                       "line": 620,
                                       "col": 54,
-                                      "byteIndex": 24310
+                                      "byteIndex": 24316
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -1177,7 +1177,7 @@
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
                                       "line": 620,
                                       "col": 79,
-                                      "byteIndex": 24335
+                                      "byteIndex": 24341
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -1223,7 +1223,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
                       "line": 619,
                       "col": 2,
-                      "byteIndex": 24237
+                      "byteIndex": 24243
                     }
                   },
                   {
@@ -1258,7 +1258,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
                       "line": 768,
                       "col": 2,
-                      "byteIndex": 29352
+                      "byteIndex": 29358
                     }
                   },
                   {
@@ -1311,7 +1311,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/app.ts",
                       "line": 797,
                       "col": 2,
-                      "byteIndex": 30455
+                      "byteIndex": 30461
                     }
                   }
                 ],
@@ -3034,32 +3034,42 @@
                                   }
                                 ],
                                 "returnType": {
-                                  "repr": "Record",
+                                  "repr": "Promise",
                                   "kind": "typeRef",
                                   "value": {
                                     "typeParams": [
                                       {
-                                        "repr": "string",
-                                        "kind": "keyword",
-                                        "value": "string"
-                                      },
-                                      {
-                                        "repr": "BikelogEntry",
+                                        "repr": "Record",
                                         "kind": "typeRef",
                                         "value": {
-                                          "typeName": "BikelogEntry",
-                                          "resolution": {
-                                            "kind": "import",
-                                            "specifier": "./types.ts",
-                                            "name": "BikelogEntry"
-                                          }
+                                          "typeParams": [
+                                            {
+                                              "repr": "string",
+                                              "kind": "keyword",
+                                              "value": "string"
+                                            },
+                                            {
+                                              "repr": "BikelogEntry",
+                                              "kind": "typeRef",
+                                              "value": {
+                                                "typeName": "BikelogEntry",
+                                                "resolution": {
+                                                  "kind": "import",
+                                                  "specifier": "./types.ts",
+                                                  "name": "BikelogEntry"
+                                                }
+                                              }
+                                            }
+                                          ],
+                                          "typeName": "Record"
                                         }
                                       }
                                     ],
-                                    "typeName": "Record"
+                                    "typeName": "Promise"
                                   }
                                 },
-                                "hasBody": true
+                                "hasBody": true,
+                                "isAsync": true
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
@@ -3120,9 +3130,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
-                                "line": 340,
+                                "line": 347,
                                 "col": 2,
-                                "byteIndex": 12346
+                                "byteIndex": 12562
                               }
                             },
                             {
@@ -3189,9 +3199,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
-                                "line": 361,
+                                "line": 368,
                                 "col": 2,
-                                "byteIndex": 13222
+                                "byteIndex": 13438
                               }
                             },
                             {
@@ -3296,9 +3306,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/bikelog.ts",
-                                "line": 400,
+                                "line": 407,
                                 "col": 2,
-                                "byteIndex": 14916
+                                "byteIndex": 15132
                               }
                             }
                           ]
@@ -3312,9 +3322,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                          "line": 13,
+                          "line": 23,
                           "col": 0,
-                          "byteIndex": 403
+                          "byteIndex": 535
                         },
                         "declarationKind": "export",
                         "kind": "class",
@@ -3360,9 +3370,9 @@
                               ],
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 19,
+                                "line": 29,
                                 "col": 2,
-                                "byteIndex": 572
+                                "byteIndex": 704
                               }
                             }
                           ],
@@ -3372,9 +3382,9 @@
                               "name": "BACKUP_RETENTION_MS",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 14,
+                                "line": 24,
                                 "col": 2,
-                                "byteIndex": 449
+                                "byteIndex": 581
                               }
                             },
                             {
@@ -3390,9 +3400,9 @@
                               "name": "IGNORED_FIELDS",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 15,
+                                "line": 25,
                                 "col": 2,
-                                "byteIndex": 501
+                                "byteIndex": 633
                               }
                             }
                           ],
@@ -3417,9 +3427,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 24,
+                                "line": 34,
                                 "col": 2,
-                                "byteIndex": 665
+                                "byteIndex": 797
                               }
                             },
                             {
@@ -3494,9 +3504,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 28,
+                                "line": 38,
                                 "col": 2,
-                                "byteIndex": 717
+                                "byteIndex": 849
                               }
                             },
                             {
@@ -3529,9 +3539,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 112,
+                                "line": 255,
                                 "col": 2,
-                                "byteIndex": 3823
+                                "byteIndex": 8122
                               }
                             },
                             {
@@ -3575,9 +3585,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 133,
+                                "line": 276,
                                 "col": 2,
-                                "byteIndex": 4564
+                                "byteIndex": 8863
                               }
                             },
                             {
@@ -3604,9 +3614,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 138,
+                                "line": 281,
                                 "col": 2,
-                                "byteIndex": 4735
+                                "byteIndex": 9034
                               }
                             }
                           ],

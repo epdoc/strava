@@ -11,6 +11,16 @@ type FieldType = 'string' | 'numeric' | 'note';
 
 const NUMERIC_TOLERANCE = 1e-6;
 
+const COVER_TABLE = {
+  startX: 640,
+  startY: 1100,
+  labelW: 75,
+  colW: 58,
+  rowH: 17,
+  fontSize: 8,
+  headingFontSize: 8,
+};
+
 export class BikelogPdf extends BaseClass {
   static BACKUP_RETENTION_MS = BACKUP_RETENTION_MS;
   private static IGNORED_FIELDS = new Set(['wh']);
@@ -89,6 +99,11 @@ export class BikelogPdf extends BaseClass {
 
     const font = await doc.embedStandardFont(pdfLib.StandardFonts.Helvetica);
 
+    // Add cover page summary table
+    const pages = doc.getPages();
+    const coverPage = pages[0];
+    this.#addCoverSummaryTable(form, entries, coverPage);
+
     for (const [jd, entry] of Object.entries(entries)) {
       for (const fieldName of ['note0', 'note1']) {
         if (!entry[fieldName as 'note0' | 'note1']) continue;
@@ -108,6 +123,134 @@ export class BikelogPdf extends BaseClass {
 
     const pdfBytes = await doc.save();
     await targetPath.write(pdfBytes);
+  }
+
+  #addCoverSummaryTable(
+    form: pdfLib.PDFForm,
+    entries: Record<string, BikelogEntry>,
+    page: pdfLib.PDFPage,
+  ): void {
+    const entryValues = Object.values(entries);
+    if (entryValues.length === 0) return;
+
+    const REGEX_AWAY = /^Away\s*\(([^)]+)\)$/m;
+    const getRegionForEntry = (entry: BikelogEntry): string => {
+      if (entry.note1) {
+        const match = entry.note1.match(REGEX_AWAY);
+        if (match) return match[1];
+      }
+      return 'Costa Rica';
+    };
+
+    // Collect unique bikes from entries, preserving insertion order
+    const bikeSet = new Set<string>();
+    for (const entry of entryValues) {
+      for (const evt of entry.events) {
+        if (evt.bike) bikeSet.add(evt.bike);
+      }
+    }
+    const bikes = Array.from(bikeSet);
+
+    // Determine unique regions from note1 fields
+    const regionSet = new Set<string>();
+    for (const entry of entryValues) {
+      regionSet.add(getRegionForEntry(entry));
+    }
+    const regions = Array.from(regionSet).sort();
+    const nBikes = bikes.length;
+    const nRegions = regions.length;
+
+    // Build distance matrix: region -> bike -> sum
+    const matrix: Record<string, Record<string, number>> = {};
+
+    for (const region of [...regions, 'Total']) {
+      matrix[region] = {};
+      for (const bike of [...bikes, 'Total']) matrix[region][bike] = 0;
+    }
+
+    // Aggregate distances by region (from note1)
+    for (const entry of entryValues) {
+      const region = getRegionForEntry(entry);
+      for (const evt of entry.events) {
+        if (evt.bike && evt.distance) {
+          matrix[region][evt.bike] += evt.distance;
+          matrix[region]['Total'] += evt.distance;
+        }
+      }
+    }
+
+    // Calculate grand totals per bike across all regions
+    for (const bike of [...bikes, 'Total']) {
+      let sum = 0;
+      for (const region of regions) {
+        sum += matrix[region][bike];
+      }
+      matrix['Total'][bike] = sum;
+    }
+
+    // Helper to get or create a read-only text field on the cover page
+    const getOrCreateField = (
+      name: string,
+      x: number,
+      y: number,
+      w: number,
+      h: number,
+    ): pdfLib.PDFTextField => {
+      try {
+        return form.getTextField(name);
+      } catch {
+        const f = form.createTextField(name);
+        f.addToPage(page, { x, y, width: w, height: h });
+        f.enableReadOnly();
+        f.setFontSize(COVER_TABLE.fontSize);
+        return f;
+      }
+    };
+
+    const setCell = (
+      row: number,
+      col: number,
+      text: string,
+      opts?: { isHeading?: boolean },
+    ) => {
+      const x = COVER_TABLE.startX +
+        (col === 0 ? 0 : COVER_TABLE.labelW + (col - 1) * COVER_TABLE.colW);
+      const y = COVER_TABLE.startY - row * COVER_TABLE.rowH;
+      const w = col === 0 ? COVER_TABLE.labelW : COVER_TABLE.colW;
+      const name = `cover.r${row}c${col}`;
+      const field = getOrCreateField(name, x, y, w, COVER_TABLE.rowH);
+      if (opts?.isHeading) {
+        field.setFontSize(COVER_TABLE.headingFontSize);
+      }
+      field.setText(text);
+    };
+
+    // Row 0: column headings (bike names + Total)
+    setCell(0, 0, '', { isHeading: true });
+    for (let ci = 0; ci < nBikes; ci++) {
+      setCell(0, ci + 1, bikes[ci], { isHeading: true });
+    }
+    setCell(0, nBikes + 1, 'Total', { isHeading: true });
+
+    // Region data rows
+    for (let ri = 0; ri < nRegions; ri++) {
+      const region = regions[ri];
+      setCell(ri + 1, 0, region);
+      for (let ci = 0; ci < nBikes; ci++) {
+        setCell(ri + 1, ci + 1, matrix[region][bikes[ci]].toFixed(1));
+      }
+      setCell(ri + 1, nBikes + 1, matrix[region]['Total'].toFixed(1));
+    }
+
+    // Totals row
+    const totalRow = nRegions + 1;
+    setCell(totalRow, 0, 'Total');
+    for (let ci = 0; ci < nBikes; ci++) {
+      setCell(totalRow, ci + 1, matrix['Total'][bikes[ci]].toFixed(1));
+    }
+    setCell(totalRow, nBikes + 1, matrix['Total']['Total'].toFixed(1));
+
+    this.info.text('Cover page summary table added').emit();
   }
 
   async backup(): Promise<FS.File> {

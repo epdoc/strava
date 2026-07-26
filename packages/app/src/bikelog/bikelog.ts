@@ -179,12 +179,12 @@ export class Bikelog {
    * // Returns: { "2460234": { jd: 2460234, date: Date, events: [...], note0: "..." } }
    * ```
    */
-  static combineActivities(
+  static async combineActivities(
     activities: Activity.Item[],
     opts: BikeLog.OutputOpts,
-  ): Record<string, BikelogEntry> {
+  ): Promise<Record<string, BikelogEntry>> {
     const result: Record<string, BikelogEntry> = {};
-    activities.forEach((activity) => {
+    for (const activity of activities) {
       const jd = activity.getJulianDay();
       const localDateTime = activity.startDateAsDateTime;
       const entry: BikelogEntry = result[jd] ?? {
@@ -288,6 +288,13 @@ export class Bikelog {
             }
           }
         }
+
+        if (!entry.note1) {
+          const region = await activity.getRegion();
+          if (region && region.id !== 'CR') {
+            entry.note1 = `Away (${region.name})`;
+          }
+        }
       } else {
         const distance = Math.round(activity.distance / 10) / 100;
         let note = activity.type + ': ' + activity.name + '\n';
@@ -318,7 +325,7 @@ export class Bikelog {
         }
       }
       result[jd] = entry;
-    });
+    }
     return result;
   }
 
@@ -404,7 +411,7 @@ export class Bikelog {
     stravaActivities: Activity.Item[],
   ): Promise<void> {
     // Combine activities by day
-    const activities = Bikelog.combineActivities(stravaActivities, this.#opts);
+    const activities = await Bikelog.combineActivities(stravaActivities, this.#opts);
 
     // Create the  writer
     this.#writer = await fsFile.writer();

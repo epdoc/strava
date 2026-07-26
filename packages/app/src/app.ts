@@ -530,7 +530,7 @@ export class Main extends BaseClass {
       bikes,
     };
 
-    const entries = BikeLog.Bikelog.combineActivities(activities.activities, bikelogOpts);
+    const entries = await BikeLog.Bikelog.combineActivities(activities.activities, bikelogOpts);
 
     const pdfFile = new BikeLog.BikelogPdf(this.ctx, pdfOpts.templateFile);
 

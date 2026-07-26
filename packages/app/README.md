@@ -15,13 +15,13 @@ primary entry point used by CLI commands.
 
 ## Submodules
 
-| Submodule | Description |
-|-----------|-------------|
-| `activity/` | Activity filtering and processing |
-| `bikelog/` | PDF Acroforms XML generation |
-| `segment/` | Segment data and cache management |
-| `state/` | State management for export operations |
-| `track/` | KML and GPX track generation |
+| Submodule   | Description                            |
+| ----------- | -------------------------------------- |
+| `activity/` | Activity filtering and processing      |
+| `bikelog/`  | PDF Acroforms XML generation           |
+| `segment/`  | Segment data and cache management      |
+| `state/`    | State management for export operations |
+| `track/`    | KML and GPX track generation           |
 
 ## Usage
 

@@ -34,7 +34,13 @@
     }
   ],
   "relationships": {
-    "dependsOn": ["@epdoc/strava-core", "@epdoc/strava-schema", "@epdoc/cliapp", "@epdoc/fs", "@epdoc/type"],
+    "dependsOn": [
+      "@epdoc/strava-core",
+      "@epdoc/strava-schema",
+      "@epdoc/cliapp",
+      "@epdoc/fs",
+      "@epdoc/type"
+    ],
     "usedBy": ["@epdoc/strava-app"]
   }
 }

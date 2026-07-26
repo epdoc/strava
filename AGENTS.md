@@ -5,6 +5,8 @@
 Deno/TypeScript monorepo for generating KML/GPX/PDF files from Strava activities. Modern rewrite of
 the legacy [epdoc-strava](https://github.com/jpravetz/epdoc-strava) Node.js app.
 
+Read global deno-guidelines skill.
+
 ## Package Architecture
 
 ```
@@ -33,34 +35,44 @@ schema (types only) → core (base classes, context) → api (HTTP client)
 ## Package Details
 
 ### `schema` - @epdoc/strava-schema
+
 Pure TS interfaces + lightweight type guards. No Zod. Namespace exports: `Schema.Activity.Summary`,
 `Schema.Athlete.Detailed`, etc. See `packages/schema/AI.md` for full docs.
 
 ### `core` - @epdoc/strava-core
+
 - `Ctx.Context` - Application context (extends cliapp's AbstractBase)
 - `CustomMsgBuilder` - Logging with `.fs()`, `.activity()`, `.dateRange()` helpers
 - `BaseClass` - Extend for domain classes with logging access
 - `BaseRootCmdClass` - Base for root CLI commands
 
 ### `api` - @epdoc/strava-api
-- `Api` - HTTP client: `getAthlete()`, `getActivities()`, `getStreamCoords()`, `getDetailedActivity()`, `getSegment()`, `getSegmentEfforts()`
-- `Activity` - Wraps activity data with `getTrackPoints()`, `filterTrackPoints()`, `attachStarredSegments()`, timezone handling
+
+- `Api` - HTTP client: `getAthlete()`, `getActivities()`, `getStreamCoords()`,
+  `getDetailedActivity()`, `getSegment()`, `getSegmentEfforts()`
+- `Activity` - Wraps activity data with `getTrackPoints()`, `filterTrackPoints()`,
+  `attachStarredSegments()`, timezone handling
 - Auto-refreshes OAuth tokens, handles pagination for starred segments
 
 ### `app` - @epdoc/strava-app
-- `Main` - Central business logic in `src/app.ts`: `init()`, `getKml()`, `getGpx()`, `getPdf()`, `getAthlete()`
+
+- `Main` - Central business logic in `src/app.ts`: `init()`, `getKml()`, `getGpx()`, `getPdf()`,
+  `getAthlete()`
 - Subdirs: `activity/`, `bikelog/`, `segment/`, `state/`, `track/`
 - `BaseClass` provides `this.app` and `this.api` accessors
 - Supports blackout zones, dedup, activity type/commute filtering
 
 ### `athlete` - @epdoc/strava-athlete
+
 - Simple CLI: displays athlete info and bikes. Exports `AthleteCommand`.
 
 ### `info` - @epdoc/strava-info
+
 - CLI for querying activity information. Exports `InfoCommand`, `InfoTool`, `InfoOptions`.
 - Uses `@epdoc/table` for formatted output.
 
 ### `strava` - @epdoc/strava CLI
+
 - Main application entry: `main.ts` → `RootCommand`
 - Commands: `kml`, `gpx`, `pdf` (export commands)
 - Each command defined in its own file under `packages/strava/src/`
@@ -73,11 +85,13 @@ Pure TS interfaces + lightweight type guards. No Zod. Namespace exports: `Schema
 - **Options**: Commander.js, global + command-specific, defined in the command file
 - **Type safety**: Schema type guards (`Activity.isSummary(data)`) for API responses
 - **Streams**: `getStreamCoords()` returns `TrackPoint[]` with lat/lng/altitude/time
-- **Timezones**: Strava uses `"(GMT±HH:MM) IANA/Timezone"` format; parse with regex, use `@epdoc/datetime`
+- **Timezones**: Strava uses `"(GMT±HH:MM) IANA/Timezone"` format; parse with regex, use
+  `@epdoc/datetime`
 
 ## Configuration
 
 Files in `~/.strava/`:
+
 - `credentials.json` - OAuth tokens (auto-managed)
 - `clientapp.secrets.json` - API client ID/secret
 - `user.settings.json` - Preferences (line styles, blackout zones, segment aliases)
@@ -102,19 +116,19 @@ deno task ok      # fmt + lint + check + test + docs
 
 ## External Dependencies
 
-| Library | Location | Purpose |
-|---------|----------|---------|
-| @epdoc/cliapp | jsr | CLI framework |
-| @epdoc/logger | jsr | Logging |
-| @epdoc/fs | jsr | Filesystem operations |
-| @epdoc/type | jsr | Type guards |
-| @epdoc/datetime | jsr | DateTime handling |
-| @epdoc/daterange | jsr | Date ranges |
-| @epdoc/duration | jsr | Duration formatting |
-| @epdoc/table | jsr | Terminal tables (info) |
-| pdf-lib | npm | PDF generation |
+| Library          | Location | Purpose                |
+| ---------------- | -------- | ---------------------- |
+| @epdoc/cliapp    | jsr      | CLI framework          |
+| @epdoc/logger    | jsr      | Logging                |
+| @epdoc/fs        | jsr      | Filesystem operations  |
+| @epdoc/type      | jsr      | Type guards            |
+| @epdoc/datetime  | jsr      | DateTime handling      |
+| @epdoc/daterange | jsr      | Date ranges            |
+| @epdoc/duration  | jsr      | Duration formatting    |
+| @epdoc/table     | jsr      | Terminal tables (info) |
+| pdf-lib          | npm      | PDF generation         |
 
 ## Legacy Reference
 
-Old Node.js implementation at `/Users/jpravetz/dev/epdoc/epdoc-strava/` - consult for output/option
-requirements when implementing features.
+Old Node.js implementation at `/Users/jpravetz/dev/epdoc/epdoc-strava/` - we no longer need to
+consult this project, as the current project is now robust and battle tested.

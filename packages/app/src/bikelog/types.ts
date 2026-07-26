@@ -24,7 +24,7 @@ export type Opts = {
 
 export type BikelogEntry = {
   jd: number;
-  date: DateTime;
+  date?: DateTime;
   events: Array<{
     distance?: number;
     bike?: string;

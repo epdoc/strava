@@ -30,4 +30,4 @@ export * from './types.ts';
 export { ActivityCollection as Collection, type GetActivitiesOpts } from './collection.ts';
 
 // Region types and functions for geographic filtering
-export * as Region from './region.ts';
+export * as Region from '../region/region.ts';

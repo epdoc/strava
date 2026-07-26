@@ -2,7 +2,7 @@ import type * as CliApp from '@epdoc/cliapp';
 import { Ctx } from '@epdoc/strava-core';
 import { Types } from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
-import type * as Region from './activity/region.ts';
+import type * as Region from './region/mod.ts';
 
 // const regionChoices: Region.Code[] = await Region.db.choices();
 

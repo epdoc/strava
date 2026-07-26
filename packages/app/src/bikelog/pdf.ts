@@ -1,7 +1,14 @@
+import { DateRange } from '@epdoc/daterange';
+import { DateTime } from '@epdoc/datetime';
 import { Icon } from '@epdoc/fmt';
 import * as FS from '@epdoc/fs/fs';
 import { BaseClass, type Ctx } from '@epdoc/strava-core';
+import { _ } from '@epdoc/type';
+import type { Integer } from '@epdoc/type/types';
+import { assert } from '@std/assert/assert';
 import * as pdfLib from 'pdf-lib';
+import config from '../consts.ts';
+import type * as Region from '../region/mod.ts';
 import type { BikelogEntry } from './types.ts';
 
 const BACKUP_RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
@@ -10,6 +17,7 @@ type FieldResult = 'missing' | 'skipped' | 'filled';
 type FieldType = 'string' | 'numeric' | 'note';
 
 const NUMERIC_TOLERANCE = 1e-6;
+const REGEX_AWAY = /^Away\s*\(([^)]+)\)$/m;
 
 const COVER_TABLE = {
   startX: 640,
@@ -26,20 +34,52 @@ export class BikelogPdf extends BaseClass {
   private static IGNORED_FIELDS = new Set(['wh']);
 
   #file: FS.File;
+  #doc?: pdfLib.PDFDocument;
+  #form?: pdfLib.PDFForm;
+  #coverPage?: pdfLib.PDFPage;
+  #defaultRegion?: string;
 
   constructor(ctx: Ctx.Context, file: FS.File) {
     super(ctx);
     this.#file = file;
   }
 
+  async init(): Promise<void> {
+    if (!this.#doc) {
+      const bytes = await this.#file.readAsBytes();
+      this.#doc = await pdfLib.PDFDocument.load(bytes);
+      this.#form = this.#doc.getForm();
+      const pages = this.#doc.getPages();
+      this.#coverPage = pages[0];
+
+      const contents = await config.paths.userRegions.readJson<Region.File>();
+      this.#defaultRegion = contents && contents.regions.length
+        ? contents.regions[0].name
+        : 'Costa Rica';
+    }
+  }
+
   get file(): FS.File {
     return this.#file;
   }
 
+  get doc(): pdfLib.PDFDocument {
+    assert(this.#doc, 'BikelogPdf has not been initialized');
+    return this.#doc;
+  }
+
+  get form(): pdfLib.PDFForm {
+    assert(this.#form, 'BikelogPdf has not been initialized');
+    return this.#form;
+  }
+
+  get coverPage(): pdfLib.PDFPage {
+    assert(this.#coverPage, 'BikelogPdf has not been initialized');
+    return this.#coverPage;
+  }
+
   async fill(entries: Record<string, BikelogEntry>, targetPath: FS.File): Promise<void> {
-    const bytes = await this.#file.readAsBytes();
-    const doc = await pdfLib.PDFDocument.load(bytes);
-    const form = doc.getForm();
+    await this.init();
 
     let filled = 0;
     let skipped = 0;
@@ -50,7 +90,7 @@ export class BikelogPdf extends BaseClass {
       value: string | undefined,
       fieldType: FieldType,
     ) => {
-      const result = this.#trySetField(form, name, value, fieldType);
+      const result = this.#trySetField(name, value, fieldType);
       if (result === 'filled') filled++;
       else if (result === 'skipped') skipped++;
       else if (result === 'missing') missing++;
@@ -82,11 +122,11 @@ export class BikelogPdf extends BaseClass {
         'numeric',
       );
       if (missing === missingSoFar) {
-        this.info.icheck().text('Filled in').date(entry.date.format('yyyy-MM-dd'))
+        this.info.icheck().text('Filled in').date(entry.date!.format('yyyy-MM-dd'))
           .text(`(julian day: ${jd})`).emit();
       } else {
         this.info.ierror().text('There were problems filling in')
-          .date(entry.date.format('yyyy-MM-dd'))
+          .date(entry.date!.format('yyyy-MM-dd'))
           .text(`(julian day: ${jd})`).emit();
       }
     }
@@ -97,18 +137,16 @@ export class BikelogPdf extends BaseClass {
       .text('missing').value(missing)
       .emit();
 
-    const font = await doc.embedStandardFont(pdfLib.StandardFonts.Helvetica);
+    const font = await this.doc.embedStandardFont(pdfLib.StandardFonts.Helvetica);
 
     // Add cover page summary table
-    const pages = doc.getPages();
-    const coverPage = pages[0];
-    this.#addCoverSummaryTable(form, entries, coverPage);
+    this.#addCoverSummaryTable();
 
     for (const [jd, entry] of Object.entries(entries)) {
       for (const fieldName of ['note0', 'note1']) {
         if (!entry[fieldName as 'note0' | 'note1']) continue;
         try {
-          const field = form.getTextField(`day.${jd}.${fieldName}`);
+          const field = this.form.getTextField(`day.${jd}.${fieldName}`);
           field.acroField.dict.set(
             pdfLib.PDFName.of('DA'),
             pdfLib.PDFString.of('/Helv 12 Tf 0 g'),
@@ -119,138 +157,182 @@ export class BikelogPdf extends BaseClass {
       }
     }
 
-    form.updateFieldAppearances(font);
+    this.form.updateFieldAppearances(font);
 
-    const pdfBytes = await doc.save();
+    const pdfBytes = await this.doc.save();
     await targetPath.write(pdfBytes);
   }
 
-  #addCoverSummaryTable(
-    form: pdfLib.PDFForm,
-    entries: Record<string, BikelogEntry>,
-    page: pdfLib.PDFPage,
-  ): void {
-    const entryValues = Object.values(entries);
-    if (entryValues.length === 0) return;
-
-    const REGEX_AWAY = /^Away\s*\(([^)]+)\)$/m;
-    const getRegionForEntry = (entry: BikelogEntry): string => {
-      if (entry.note1) {
-        const match = entry.note1.match(REGEX_AWAY);
-        if (match) return match[1];
-      }
-      return 'Costa Rica';
+  getEntry(jd: number): BikelogEntry {
+    const result: BikelogEntry = {
+      jd: jd,
+      events: [{
+        bike: this.getTextField(`day.${jd}.0.bike`),
+        distance: this.getNumberField(`day.${jd}.0.dist`),
+        el: this.getNumberField(`day.${jd}.0.el`),
+        t: this.getNumberField(`day.${jd}.0.t`),
+        wh: this.getNumberField(`day.${jd}.0.wh`),
+      }, {
+        bike: this.getTextField(`day.${jd}.1.bike`),
+        distance: this.getNumberField(`day.${jd}.1.dist`),
+        el: this.getNumberField(`day.${jd}.1.el`),
+        t: this.getNumberField(`day.${jd}.1.t`),
+        wh: this.getNumberField(`day.${jd}.1.wh`),
+      }],
+      note0: this.getTextField(`day.${jd}.note0`),
+      note1: this.getTextField(`day.${jd}.note1`),
+      wt: this.getNumberField(`day.${jd}.wt`),
     };
+    return result;
+  }
 
-    // Collect unique bikes from entries, preserving insertion order
-    const bikeSet = new Set<string>();
-    for (const entry of entryValues) {
-      for (const evt of entry.events) {
-        if (evt.bike) bikeSet.add(evt.bike);
+  #addCoverSummaryTable(): void {
+    // Set the default year to this year, but this is overridden if we get it from the first field in the table
+    const year = this.getCoverYear();
+
+    function* jdEntries(): Generator<[string, number]> {
+      const start = DateTime.fromComponents(year, 1, 1).startOfDay();
+      const yearEnd = DateTime.fromComponents(year, 12, 31).endOfDay();
+      const now = DateTime.now();
+      const end = now.isBefore(yearEnd) ? now.withTz('local').startOfDay() : yearEnd;
+
+      for (const dt of DateRange.from(start, end).iterate('day')) {
+        yield [dt.toISODate(), dt.julianDayInTz()];
       }
     }
-    const bikes = Array.from(bikeSet);
 
-    // Determine unique regions from note1 fields
-    const regionSet = new Set<string>();
-    for (const entry of entryValues) {
-      regionSet.add(getRegionForEntry(entry));
-    }
-    const regions = Array.from(regionSet).sort();
-    const nBikes = bikes.length;
-    const nRegions = regions.length;
+    //
+    const entries: BikelogEntry[] = [];
+    const matrix = new Map<string, Map<string, number>>();
+    const regions = new Set<string>();
+    const bikes = new Set<string>();
+    const regionTotals = new Map<string, number>();
+    const bikeTotals = new Map<string, number>();
+    let grandTotal = 0;
 
-    // Build distance matrix: region -> bike -> sum
-    const matrix: Record<string, Record<string, number>> = {};
-
-    for (const region of [...regions, 'Total']) {
-      matrix[region] = {};
-      for (const bike of [...bikes, 'Total']) matrix[region][bike] = 0;
-    }
-
-    // Aggregate distances by region (from note1)
-    for (const entry of entryValues) {
-      const region = getRegionForEntry(entry);
+    for (const [_dateStr, jdn] of jdEntries()) {
+      const entry = this.getEntry(jdn);
+      const region = this.getRegionForEntry(entry);
+      regions.add(region);
       for (const evt of entry.events) {
         if (evt.bike && evt.distance) {
-          matrix[region][evt.bike] += evt.distance;
-          matrix[region]['Total'] += evt.distance;
+          bikes.add(evt.bike);
+
+          let bikeMap = matrix.get(region);
+          if (!bikeMap) {
+            bikeMap = new Map<string, number>();
+            matrix.set(region, bikeMap);
+          }
+          bikeMap.set(evt.bike, (bikeMap.get(evt.bike) ?? 0) + evt.distance);
+          // B. Update Row Subtotals (Region)
+          regionTotals.set(region, (regionTotals.get(region) ?? 0) + evt.distance);
+
+          // C. Update Column Subtotals (Bike)
+          bikeTotals.set(evt.bike, (bikeTotals.get(evt.bike) ?? 0) + evt.distance);
+
+          // D. Update Grand Total
+          grandTotal += evt.distance;
         }
       }
+      entries.push(entry);
     }
 
-    // Calculate grand totals per bike across all regions
-    for (const bike of [...bikes, 'Total']) {
-      let sum = 0;
-      for (const region of regions) {
-        sum += matrix[region][bike];
-      }
-      matrix['Total'][bike] = sum;
-    }
-
-    // Helper to get or create a read-only text field on the cover page
-    const getOrCreateField = (
-      name: string,
-      x: number,
-      y: number,
-      w: number,
-      h: number,
-    ): pdfLib.PDFTextField => {
-      try {
-        return form.getTextField(name);
-      } catch {
-        const f = form.createTextField(name);
-        f.addToPage(page, { x, y, width: w, height: h });
-        f.enableReadOnly();
-        f.setFontSize(COVER_TABLE.fontSize);
-        return f;
-      }
-    };
-
-    const setCell = (
-      row: number,
-      col: number,
-      text: string,
-      opts?: { isHeading?: boolean },
-    ) => {
-      const x = COVER_TABLE.startX +
-        (col === 0 ? 0 : COVER_TABLE.labelW + (col - 1) * COVER_TABLE.colW);
-      const y = COVER_TABLE.startY - row * COVER_TABLE.rowH;
-      const w = col === 0 ? COVER_TABLE.labelW : COVER_TABLE.colW;
-      const name = `cover.r${row}c${col}`;
-      const field = getOrCreateField(name, x, y, w, COVER_TABLE.rowH);
-      if (opts?.isHeading) {
-        field.setFontSize(COVER_TABLE.headingFontSize);
-      }
-      field.setText(text);
-    };
+    if (entries.length === 0) return;
 
     // Row 0: column headings (bike names + Total)
-    setCell(0, 0, '', { isHeading: true });
-    for (let ci = 0; ci < nBikes; ci++) {
-      setCell(0, ci + 1, bikes[ci], { isHeading: true });
+    for (let ci = 0; ci < bikes.size; ci++) {
+      this.setCoverCell(0, ci + 1, Array.from(bikes)[ci], { isHeading: true });
     }
-    setCell(0, nBikes + 1, 'Total', { isHeading: true });
+    this.setCoverCell(0, bikes.size + 1, 'Total', { isHeading: true });
 
     // Region data rows
-    for (let ri = 0; ri < nRegions; ri++) {
-      const region = regions[ri];
-      setCell(ri + 1, 0, region);
-      for (let ci = 0; ci < nBikes; ci++) {
-        setCell(ri + 1, ci + 1, matrix[region][bikes[ci]].toFixed(1));
+    for (let ri = 0; ri < regions.size; ri++) {
+      const region = Array.from(regions)[ri];
+      this.setCoverCell(ri + 1, 0, region);
+      for (let ci = 0; ci < bikes.size; ci++) {
+        const bike = Array.from(bikes)[ci];
+        const b = matrix.get(region);
+        const val: number = (b ? b.get(bike) : 0) || 0;
+        this.setCoverCell(ri + 1, ci + 1, val.toFixed(1));
       }
-      setCell(ri + 1, nBikes + 1, matrix[region]['Total'].toFixed(1));
+      const total: number = regionTotals.get(region) || 0;
+      this.setCoverCell(ri + 1, bikes.size + 1, total.toFixed(1));
     }
 
     // Totals row
-    const totalRow = nRegions + 1;
-    setCell(totalRow, 0, 'Total');
-    for (let ci = 0; ci < nBikes; ci++) {
-      setCell(totalRow, ci + 1, matrix['Total'][bikes[ci]].toFixed(1));
-    }
-    setCell(totalRow, nBikes + 1, matrix['Total']['Total'].toFixed(1));
 
     this.info.text('Cover page summary table added').emit();
+  }
+
+  getRegionForEntry(entry: BikelogEntry): string {
+    if (entry.note1) {
+      const match = entry.note1.match(REGEX_AWAY);
+      if (match) return match[1];
+    }
+    assert(this.#defaultRegion);
+    return this.#defaultRegion;
+  }
+
+  getCoverYear(): Integer {
+    const name = 'cover.r0c0';
+    let f: pdfLib.PDFTextField;
+    try {
+      f = this.form.getTextField(name);
+    } catch (_e) {
+      f = this.form.createTextField(name);
+      const pages = this.doc.getPages();
+      const coverPage = pages[0];
+      f.addToPage(coverPage, {
+        x: COVER_TABLE.startX,
+        y: COVER_TABLE.startY,
+        width: COVER_TABLE.labelW,
+        height: COVER_TABLE.rowH,
+      });
+      f.setFontSize(COVER_TABLE.fontSize);
+      f.setText(String(DateTime.now().year));
+    }
+    const year = _.asInt(f.getText());
+    return year > 1975 ? year : DateTime.now().year;
+  }
+
+  setCoverCell(
+    row: number,
+    col: number,
+    text: string,
+    opts?: { isHeading?: boolean },
+  ) {
+    const x = COVER_TABLE.startX +
+      (col === 0 ? 0 : COVER_TABLE.labelW + (col - 1) * COVER_TABLE.colW);
+    const y = COVER_TABLE.startY - row * COVER_TABLE.rowH;
+    const w = col === 0 ? COVER_TABLE.labelW : COVER_TABLE.colW;
+    const name = `cover.r${row}c${col}`;
+    const field = this.getOrCreateField(name, x, y, w, COVER_TABLE.rowH);
+    if (opts?.isHeading) {
+      field.setFontSize(COVER_TABLE.headingFontSize);
+    }
+    field.setText(text);
+  }
+
+  // Helper to get or create a read-only text field on the cover page
+  getOrCreateField(
+    name: string,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+  ): pdfLib.PDFTextField {
+    const pages = this.doc.getPages();
+    const coverPage = pages[0];
+
+    try {
+      return this.form.getTextField(name);
+    } catch {
+      const f = this.form.createTextField(name);
+      f.addToPage(coverPage, { x, y, width: w, height: h });
+      f.enableReadOnly();
+      f.setFontSize(COVER_TABLE.fontSize);
+      return f;
+    }
   }
 
   async backup(): Promise<FS.File> {
@@ -304,18 +386,48 @@ export class BikelogPdf extends BaseClass {
     return deleted;
   }
 
+  getTextField(name: string): string | undefined {
+    try {
+      const f = this.form.getTextField(name);
+      return f.getText() ?? undefined;
+    } catch (_e) {
+      return undefined;
+    }
+  }
+
+  getNumberField(name: string): number | undefined {
+    try {
+      const f = this.form.getTextField(name);
+      const s = f.getText() ?? undefined;
+      if (s) {
+        return _.asFloat(s);
+      }
+    } catch (_e) {
+      return undefined;
+    }
+  }
+
+  getDropdownField(name: string): string | undefined {
+    try {
+      const f = this.form.getDropdown(name);
+      const selected = f.getSelected();
+      return selected && selected.length ? selected[0] : undefined;
+    } catch (_e) {
+      return undefined;
+    }
+  }
+
   #trySetField(
-    form: pdfLib.PDFForm,
     name: string,
     value: string | undefined,
     fieldType: FieldType,
   ): FieldResult {
     if (value === undefined) return 'skipped';
 
-    const textResult = this.#trySetTextField(form, name, value, fieldType);
+    const textResult = this.#trySetTextField(name, value, fieldType);
     if (textResult !== 'missing') return textResult;
 
-    const dropdownResult = this.#trySetDropdown(form, name, value);
+    const dropdownResult = this.#trySetDropdown(name, value);
     if (dropdownResult !== 'missing') return dropdownResult;
 
     if (BikelogPdf.IGNORED_FIELDS.has(name.split('.').pop()!)) {
@@ -327,13 +439,12 @@ export class BikelogPdf extends BaseClass {
   }
 
   #trySetTextField(
-    form: pdfLib.PDFForm,
     name: string,
     value: string,
     fieldType: FieldType,
   ): FieldResult {
     try {
-      const field = form.getTextField(name);
+      const field = this.form.getTextField(name);
       const existing = field.getText() ?? '';
 
       if (fieldType === 'numeric') {
@@ -394,12 +505,11 @@ export class BikelogPdf extends BaseClass {
   }
 
   #trySetDropdown(
-    form: pdfLib.PDFForm,
     name: string,
     value: string,
   ): FieldResult {
     try {
-      const dropdown = form.getDropdown(name);
+      const dropdown = this.form.getDropdown(name);
       const selected = dropdown.getSelected();
       const existing = selected.length > 0 ? selected[0] : '';
 

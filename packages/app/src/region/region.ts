@@ -1,55 +1,17 @@
 import type * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import config from '../consts.ts';
+import type * as Region from './types.ts';
 
-export type Code = string;
+export class RegionService {
+  #regions: Region.Def[] = [];
 
-/**
- * A rectangular boundary defined by min/max lat/lng.
- */
-export type Rect = {
-  minLat: Schema.Types.Latitude;
-  maxLat: Schema.Types.Latitude;
-  minLng: Schema.Types.Longitude;
-  maxLng: Schema.Types.Longitude;
-};
-
-/**
- * Result of region detection for an activity.
- */
-export type Result = {
-  id: string;
-  name: string;
-};
-
-/**
- * A geographic region with one or more bounding rectangles.
- */
-export type Def = {
-  id: Code;
-  name: string;
-  skip: boolean;
-  rectangles: Rect[];
-};
-
-/**
- * Structure of the user.regions.json configuration file.
- */
-export type File = {
-  description: string;
-  lastModified: string;
-  regions: Def[];
-};
-
-export class Region {
-  #regions: Def[] = [];
-
-  readonly WORLD: Result = {
+  readonly WORLD: Region.Result = {
     id: 'WORLD',
     name: 'World',
   };
 
-  async regions(): Promise<Def[]> {
+  async regions(): Promise<Region.Def[]> {
     if (!_.isNonEmptyArray(this.#regions)) {
       await this.load();
     }
@@ -63,12 +25,12 @@ export class Region {
    * @returns Array of active (non-skipped) regions
    */
   async load(): Promise<void> {
-    const contents = await config.paths.userRegions.readJson<File>();
+    const contents = await config.paths.userRegions.readJson<Region.File>();
     // const contents = await this.#file.readJson<File>();
     this.#regions = contents.regions;
   }
 
-  async choices(): Promise<Code[]> {
+  async choices(): Promise<Region.Code[]> {
     const regions = await this.regions();
     return regions.map((region) => {
       return region.id;
@@ -88,7 +50,7 @@ export class Region {
   async findForLatLng(
     lat: Schema.Types.Latitude,
     lng: Schema.Types.Longitude,
-  ): Promise<Def | undefined> {
+  ): Promise<Region.Def | undefined> {
     const regions = await this.regions();
     for (const region of regions) {
       if (!region.skip && isPointInRegion(lat, lng, region)) {
@@ -110,7 +72,7 @@ export class Region {
   async findResultForLatLng(
     lat: Schema.Types.Latitude,
     lng: Schema.Types.Longitude,
-  ): Promise<Result> {
+  ): Promise<Region.Result> {
     const region = await this.findForLatLng(lat, lng);
     if (region) {
       return { id: region.id, name: region.name };
@@ -130,7 +92,7 @@ export class Region {
 export function isPointInRect(
   lat: Schema.Types.Latitude,
   lng: Schema.Types.Longitude,
-  rect: Rect,
+  rect: Region.Rect,
 ): boolean {
   return lat >= rect.minLat &&
     lat <= rect.maxLat &&
@@ -149,9 +111,9 @@ export function isPointInRect(
 export function isPointInRegion(
   lat: Schema.Types.Latitude,
   lng: Schema.Types.Longitude,
-  region: Def,
+  region: Region.Def,
 ): boolean {
   return region.rectangles.some((rect) => isPointInRect(lat, lng, rect));
 }
 
-export const db: Region = new Region();
+export const db: RegionService = new RegionService();

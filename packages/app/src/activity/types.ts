@@ -1,7 +1,7 @@
 import type * as FS from '@epdoc/fs/fs';
 import type { State } from '@epdoc/strava-app';
 import type * as Schema from '@epdoc/strava-schema';
-import type { Region } from './mod.ts';
+import type * as Region from '../region/mod.ts';
 
 /**
  * Filter options for activities.

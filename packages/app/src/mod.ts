@@ -3,6 +3,7 @@ export { Main } from './app.ts';
 export { BaseClass } from './base.ts';
 export * as BikeLog from './bikelog/mod.ts';
 export * as Option from './options.ts';
+export type * as Region from './region/mod.ts';
 export * as Segment from './segment/mod.ts';
 export * as State from './state/mod.ts';
 export { OutputTypes } from './state/types.ts';

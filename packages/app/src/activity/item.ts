@@ -2,7 +2,7 @@ import * as Api from '@epdoc/strava-api';
 import type * as Schema from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
-import * as Region from './region.ts';
+import * as Region from '../region/mod.ts';
 import type * as Activity from './types.ts';
 
 /**
@@ -53,7 +53,7 @@ export class ActivityItem extends Api.Activity {
       // Find the region for this activity
       const activityRegion = await this.getRegion();
       const matchingRegion = filter.regions.find((regionCode) =>
-        activityRegion.id.toLowerCase() === regionCode.toLowerCase()
+        _.isString(regionCode) && activityRegion.id.toLowerCase() === regionCode.toLowerCase()
       );
       if (_.isNullOrUndefined(matchingRegion)) {
         // this.log.info.activity(this).text('is not in region').value(filter.regions).emit();

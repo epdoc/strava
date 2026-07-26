@@ -1,3 +1,4 @@
+import * as CliApp from '@epdoc/cliapp';
 import { DateRange } from '@epdoc/daterange';
 import { DateTime } from '@epdoc/datetime';
 import { Icon } from '@epdoc/fmt';
@@ -23,7 +24,7 @@ const COVER_TABLE = {
   startX: 640,
   startY: 1100,
   labelW: 75,
-  colW: 58,
+  colW: 20,
   rowH: 17,
   fontSize: 8,
   headingFontSize: 8,
@@ -140,7 +141,8 @@ export class BikelogPdf extends BaseClass {
     const font = await this.doc.embedStandardFont(pdfLib.StandardFonts.Helvetica);
 
     // Add cover page summary table
-    this.#addCoverSummaryTable();
+    this.info.text('Adding cover page summary').ellipsis().emit();
+    await this.#addCoverSummaryTable();
 
     for (const [jd, entry] of Object.entries(entries)) {
       for (const fieldName of ['note0', 'note1']) {
@@ -163,41 +165,20 @@ export class BikelogPdf extends BaseClass {
     await targetPath.write(pdfBytes);
   }
 
-  getEntry(jd: number): BikelogEntry {
-    const result: BikelogEntry = {
-      jd: jd,
-      events: [{
-        bike: this.getTextField(`day.${jd}.0.bike`),
-        distance: this.getNumberField(`day.${jd}.0.dist`),
-        el: this.getNumberField(`day.${jd}.0.el`),
-        t: this.getNumberField(`day.${jd}.0.t`),
-        wh: this.getNumberField(`day.${jd}.0.wh`),
-      }, {
-        bike: this.getTextField(`day.${jd}.1.bike`),
-        distance: this.getNumberField(`day.${jd}.1.dist`),
-        el: this.getNumberField(`day.${jd}.1.el`),
-        t: this.getNumberField(`day.${jd}.1.t`),
-        wh: this.getNumberField(`day.${jd}.1.wh`),
-      }],
-      note0: this.getTextField(`day.${jd}.note0`),
-      note1: this.getTextField(`day.${jd}.note1`),
-      wt: this.getNumberField(`day.${jd}.wt`),
-    };
-    return result;
-  }
-
-  #addCoverSummaryTable(): void {
+  async #addCoverSummaryTable(): Promise<void> {
     // Set the default year to this year, but this is overridden if we get it from the first field in the table
     const year = this.getCoverYear();
 
-    function* jdEntries(): Generator<[string, number]> {
-      const start = DateTime.fromComponents(year, 1, 1).startOfDay();
-      const yearEnd = DateTime.fromComponents(year, 12, 31).endOfDay();
-      const now = DateTime.now();
-      const end = now.isBefore(yearEnd) ? now.withTz('local').startOfDay() : yearEnd;
+    const start = DateTime.fromComponents(year, 1, 1).startOfDay();
+    const yearEnd = DateTime.fromComponents(year, 12, 31).endOfDay();
+    const now = DateTime.now();
+    const end = now.isBefore(yearEnd) ? now.withTz('local').startOfDay() : yearEnd;
+    const durMs = end.toInstant().epochMilliseconds - start.toInstant().epochMilliseconds;
+    const totalDays = Math.ceil(durMs / (1000 * 60 * 60 * 24));
 
+    function* jdEntries(): Generator<[DateTime, number]> {
       for (const dt of DateRange.from(start, end).iterate('day')) {
-        yield [dt.toISODate(), dt.julianDayInTz()];
+        yield [dt, dt.julianDayInTz()];
       }
     }
 
@@ -210,32 +191,54 @@ export class BikelogPdf extends BaseClass {
     const bikeTotals = new Map<string, number>();
     let grandTotal = 0;
 
-    for (const [_dateStr, jdn] of jdEntries()) {
-      const entry = this.getEntry(jdn);
-      const region = this.getRegionForEntry(entry);
-      regions.add(region);
-      for (const evt of entry.events) {
-        if (evt.bike && evt.distance) {
-          bikes.add(evt.bike);
+    let interrupted = false;
+    const handler = () => {
+      interrupted = true;
+    };
+    Deno.addSignalListener('SIGINT', handler);
 
-          let bikeMap = matrix.get(region);
-          if (!bikeMap) {
-            bikeMap = new Map<string, number>();
-            matrix.set(region, bikeMap);
-          }
-          bikeMap.set(evt.bike, (bikeMap.get(evt.bike) ?? 0) + evt.distance);
-          // B. Update Row Subtotals (Region)
-          regionTotals.set(region, (regionTotals.get(region) ?? 0) + evt.distance);
+    this.info.text('Summarizing distances by region and bike').ellipsis()
+      .start({ type: 'horizontal', total: totalDays, width: 20, color: 0xff0000 });
 
-          // C. Update Column Subtotals (Bike)
-          bikeTotals.set(evt.bike, (bikeTotals.get(evt.bike) ?? 0) + evt.distance);
-
-          // D. Update Grand Total
-          grandTotal += evt.distance;
+    try {
+      let count = 0;
+      for (const [dt, jdn] of jdEntries()) {
+        const entry = this.getEntry(jdn);
+        const region = this.getRegionForEntry(entry);
+        regions.add(region);
+        this.info.text('Reading').date(dt.format('yyyy-MM-dd')).value(grandTotal.toFixed(0))
+          .update(++count);
+        if (interrupted) {
+          Deno.removeSignalListener('SIGINT', handler); // clean up
+          throw new CliApp.SilentError('Interrupted by user');
         }
+        await new Promise((resolve) => setTimeout(resolve, 0)); //  allow SIGINT
+        for (const evt of entry.events) {
+          if (evt.bike && evt.distance) {
+            bikes.add(evt.bike);
+
+            let bikeMap = matrix.get(region);
+            if (!bikeMap) {
+              bikeMap = new Map<string, number>();
+              matrix.set(region, bikeMap);
+            }
+            bikeMap.set(evt.bike, (bikeMap.get(evt.bike) ?? 0) + evt.distance);
+            // B. Update Row Subtotals (Region)
+            regionTotals.set(region, (regionTotals.get(region) ?? 0) + evt.distance);
+
+            // C. Update Column Subtotals (Bike)
+            bikeTotals.set(evt.bike, (bikeTotals.get(evt.bike) ?? 0) + evt.distance);
+
+            // D. Update Grand Total
+            grandTotal += evt.distance;
+          }
+        }
+        entries.push(entry);
       }
-      entries.push(entry);
+    } catch (_e) {
+      this.info.ierror().warn('Error summaring totals by region and bike').stop();
     }
+    this.info.icheck().text('Finished summaring totals by region and bike').stop();
 
     if (entries.length === 0) return;
 
@@ -271,6 +274,39 @@ export class BikelogPdf extends BaseClass {
     }
     assert(this.#defaultRegion);
     return this.#defaultRegion;
+  }
+
+  getEntry(jd: number): BikelogEntry {
+    const result: BikelogEntry = {
+      jd: jd,
+      events: [],
+      note0: this.getTextField(`day.${jd}.note0`),
+      note1: this.getTextField(`day.${jd}.note1`),
+      wt: this.getNumberField(`day.${jd}.wt`),
+    };
+    const bike0 = this.getDropdownField(`day.${jd}.0.bike`);
+    if (bike0) {
+      const event0 = {
+        bike: bike0,
+        distance: this.getNumberField(`day.${jd}.0.dist`),
+        el: this.getNumberField(`day.${jd}.0.el`),
+        t: this.getNumberField(`day.${jd}.0.t`),
+        wh: this.getNumberField(`day.${jd}.0.wh`),
+      };
+      result.events.push(event0);
+      const bike1 = this.getDropdownField(`day.${jd}.0.bike1`);
+      if (bike1) {
+        const event1 = {
+          bike: bike1,
+          distance: this.getNumberField(`day.${jd}.1.dist`),
+          el: this.getNumberField(`day.${jd}.1.el`),
+          t: this.getNumberField(`day.${jd}.1.t`),
+          wh: this.getNumberField(`day.${jd}.1.wh`),
+        };
+        result.events.push(event1);
+      }
+    }
+    return result;
   }
 
   getCoverYear(): Integer {

@@ -24,15 +24,19 @@
       "git push*": "deny",
       "git tag*": "deny",
       "dtask audit*": "allow",
-      "deno run *": "ask",
+      "deno run *": "deny",
+      "deno check *": "allow",
+      "deno lint *": "allow",
+      "deno fmt *": "deny",
+      "deno test *": "allow",
       "deno run *-n*": "allow",
       "deno run *--dry-run*": "allow",
-      "deno test *": "allow",
       "deno task fmt*": "deny",
       "deno task lint*": "allow",
       "deno task check*": "allow",
       "deno task test*": "allow",
-      "deno task *": "ask",
+      "deno task ok*": "deny",
+      "deno task *": "deny",
       "rm -rf *": "deny"
     }
   },
@@ -54,8 +58,11 @@
           "git push*": "ask",
           "git tag*": "ask",
           "deno run *": "allow",
-          "deno task fmt*": "deny",
+          "deno task fmt*": "allow",
+          "deno check *": "allow",
+          "deno lint *": "allow",
           "deno task lint*": "allow",
+          "deno task ok": "allow",
           "deno task *": "allow"
         }
       }

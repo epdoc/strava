@@ -1,7 +1,7 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/cliapp@^2.3.5": "2.3.5",
+    "jsr:@epdoc/cliapp@^2.3.6": "2.3.6",
     "jsr:@epdoc/colors@^1.1.2": "1.1.3",
     "jsr:@epdoc/colors@^1.1.3": "1.1.3",
     "jsr:@epdoc/daterange@^3.0.15": "3.0.15",
@@ -9,9 +9,9 @@
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
     "jsr:@epdoc/fmt@^1.0.18": "1.0.18",
     "jsr:@epdoc/fs@^1.6.4": "1.6.4",
-    "jsr:@epdoc/logger@^1003.3.72": "1003.3.72",
+    "jsr:@epdoc/logger@^1003.3.72": "1003.3.73",
+    "jsr:@epdoc/logger@^1003.3.73": "1003.3.73",
     "jsr:@epdoc/loglevels@^1.0.14": "1.0.14",
-    "jsr:@epdoc/msgbuilder@1": "1.0.1",
     "jsr:@epdoc/msgbuilder@^1.0.1": "1.0.1",
     "jsr:@epdoc/progress@~0.1.15": "0.1.15",
     "jsr:@epdoc/table@~0.1.46": "0.1.46",
@@ -53,14 +53,14 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/cliapp@2.3.5": {
-      "integrity": "2e6deda65db5735c97ef63c896cfa74e7aaf3bfa6a20cea5fef0156490a89784",
+    "@epdoc/cliapp@2.3.6": {
+      "integrity": "7abcf07b7f54884f0ca3c578cd4732b11f7112aab54a332e2a13f9ba89b00e81",
       "dependencies": [
         "jsr:@epdoc/colors@^1.1.3",
         "jsr:@epdoc/datetime",
-        "jsr:@epdoc/logger",
+        "jsr:@epdoc/logger@^1003.3.72",
         "jsr:@epdoc/loglevels",
-        "jsr:@epdoc/msgbuilder@1",
+        "jsr:@epdoc/msgbuilder",
         "jsr:@epdoc/progress",
         "jsr:@epdoc/type",
         "jsr:@std/assert@^1.0.19",
@@ -117,13 +117,13 @@
         "jsr:@std/yaml"
       ]
     },
-    "@epdoc/logger@1003.3.72": {
-      "integrity": "d788c26ee7e75ae2e8101c4c04c74ce1614760f2de23a2858c7a16144318a080",
+    "@epdoc/logger@1003.3.73": {
+      "integrity": "e24dc1da5f0655ecfc8bcf24f0464296b50bb6f1c73bece67c2385f301554b91",
       "dependencies": [
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/duration",
         "jsr:@epdoc/loglevels",
-        "jsr:@epdoc/msgbuilder@1",
+        "jsr:@epdoc/msgbuilder",
         "jsr:@epdoc/text",
         "jsr:@epdoc/type",
         "jsr:@std/assert@^1.0.19",
@@ -162,7 +162,6 @@
         "jsr:@epdoc/colors@^1.1.2",
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/fmt",
-        "jsr:@epdoc/type",
         "jsr:@std/fmt"
       ]
     },
@@ -460,7 +459,7 @@
     "members": {
       "packages/api": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.5",
+          "jsr:@epdoc/cliapp@^2.3.6",
           "jsr:@epdoc/datetime@^4.2.6",
           "jsr:@epdoc/duration@~0.3.22",
           "jsr:@epdoc/fs@^1.6.4",
@@ -474,7 +473,7 @@
       },
       "packages/app": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.5",
+          "jsr:@epdoc/cliapp@^2.3.6",
           "jsr:@epdoc/daterange@^3.0.15",
           "jsr:@epdoc/datetime@^4.2.6",
           "jsr:@epdoc/duration@~0.3.22",
@@ -493,7 +492,7 @@
       },
       "packages/athlete": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.5",
+          "jsr:@epdoc/cliapp@^2.3.6",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19",
@@ -503,18 +502,18 @@
       },
       "packages/core": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.5",
+          "jsr:@epdoc/cliapp@^2.3.6",
           "jsr:@epdoc/daterange@^3.0.15",
           "jsr:@epdoc/datetime@^4.2.6",
           "jsr:@epdoc/fs@^1.6.4",
-          "jsr:@epdoc/logger@^1003.3.72",
+          "jsr:@epdoc/logger@^1003.3.73",
           "jsr:@std/expect@^1.0.20",
           "jsr:@std/testing@^1.0.19"
         ]
       },
       "packages/info": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.5",
+          "jsr:@epdoc/cliapp@^2.3.6",
           "jsr:@epdoc/daterange@^3.0.15",
           "jsr:@epdoc/datetime@^4.2.6",
           "jsr:@epdoc/table@~0.1.46",
@@ -535,7 +534,7 @@
       },
       "packages/strava": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.5",
+          "jsr:@epdoc/cliapp@^2.3.6",
           "jsr:@epdoc/daterange@^3.0.15",
           "jsr:@epdoc/datetime@^4.2.6",
           "jsr:@epdoc/fs@^1.6.4",

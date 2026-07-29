@@ -218,10 +218,10 @@ export class Api extends BaseClass {
     try {
       const resp = await fetch(url.toString(), reqOpts);
       if (!resp.ok) {
-        this.log.error.error('Failed to get activities:').error(resp.statusText).path(
-          url.toString(),
-        )
-          .emit();
+        // this.log.error.error('Failed to get activities:').error(resp.statusText).path(
+        //   url.toString(),
+        // )
+        //   .emit();
         throw new Error(`Failed to get activities: ${resp.statusText}`);
       }
 

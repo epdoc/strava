@@ -150,13 +150,38 @@ export class BikelogPdf extends BaseClass {
           if (fieldName === 'note0' && this.#font) {
             const rect = field.acroField.getWidgets()[0]?.getRectangle();
             if (rect) {
-              const maxWordWidth = text.split(/\s+/).reduce(
+              const pad = 2;
+              const availW = rect.width - pad * 2;
+              const spaceW = this.#font.widthOfTextAtSize(' ', 12);
+              const fontH = this.#font.heightAtSize(12);
+              const lineH = fontH * 1.2;
+              const words = text.split(/\s+/);
+
+              const maxWordWidth = words.reduce(
                 (max, w) => Math.max(max, this.#font!.widthOfTextAtSize(w, 12)),
                 0,
               );
-              if (maxWordWidth > rect.width - 2) {
-                const ratio = (rect.width - 2) / maxWordWidth;
-                fontSize = Math.max(6, Math.round(ratio * 12 * 2) / 2);
+
+              let lines = 1;
+              let curLine = 0;
+              for (const word of words) {
+                const ww = this.#font!.widthOfTextAtSize(word, 12);
+                if (curLine === 0) {
+                  curLine = ww + spaceW;
+                } else if (curLine + ww <= availW) {
+                  curLine += ww + spaceW;
+                } else {
+                  lines++;
+                  curLine = ww + spaceW;
+                }
+              }
+
+              const widthRatio = availW / maxWordWidth;
+              const heightRatio = rect.height / (lines * lineH);
+              const ratio = Math.min(widthRatio, heightRatio);
+
+              if (ratio < 1) {
+                fontSize = Math.max(6, Math.round(12 * ratio * 2) / 2);
               }
             }
           }

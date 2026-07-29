@@ -89,38 +89,43 @@ export class ActivityCollection extends BaseClass {
 
     this.log.info.text('Retrieving activities ...').dateRange(date).start();
 
-    const athleteId: Schema.Athlete.Id = (this.athlete && Strava.isStravaId(this.athlete.id))
-      ? this.athlete.id
-      : 0;
+    try {
+      const athleteId: Schema.Athlete.Id = (this.athlete && Strava.isStravaId(this.athlete.id))
+        ? this.athlete.id
+        : 0;
 
-    // Get activities for each date range
-    for (const dateRange of date.ranges) {
-      const apiOpts: Strava.ActivityOpts = {
-        athleteId,
-        query: {
-          per_page: 200,
-          after: Math.floor(
-            (dateRange.after
-              ? dateRange.after.epochMilliseconds
-              : DateTime.fromEpochMilliseconds(0).epochMilliseconds) /
-              1000,
-          ),
-          before: Math.floor(
-            ((dateRange.before && !dateRange.before.isNearMax())
-              ? dateRange.before.epochMilliseconds
-              : DateTime.now().add({ days: 7 }).epochMilliseconds) / 1000,
-          ),
-        },
-      };
+      // Get activities for each date range
+      for (const dateRange of date.ranges) {
+        const apiOpts: Strava.ActivityOpts = {
+          athleteId,
+          query: {
+            per_page: 200,
+            after: Math.floor(
+              (dateRange.after
+                ? dateRange.after.epochMilliseconds
+                : DateTime.fromEpochMilliseconds(0).epochMilliseconds) /
+                1000,
+            ),
+            before: Math.floor(
+              ((dateRange.before && !dateRange.before.isNearMax())
+                ? dateRange.before.epochMilliseconds
+                : DateTime.now().add({ days: 7 }).epochMilliseconds) / 1000,
+            ),
+          },
+        };
 
-      const apiActivities = await this.api.getActivities(apiOpts, ActivityItem);
-      for (const activity of apiActivities) {
-        this._activities.push(activity);
+        const apiActivities = await this.api.getActivities(apiOpts, ActivityItem);
+        for (const activity of apiActivities) {
+          this._activities.push(activity);
+        }
       }
+      this.sort();
+      this._generateSuggestedFilename();
+    } catch (e) {
+      const err = _.asError(e, { silent: true });
+      this.log.info.ierror().text('Retrieve activities error').error(err.message).stop();
+      throw err;
     }
-    this.sort();
-    this._generateSuggestedFilename();
-
     this.log.info.icheck().text('Retrieved a list of').count(this.length)
       .text('Strava activity', 'Strava activities').dateRange(date).stop();
   }

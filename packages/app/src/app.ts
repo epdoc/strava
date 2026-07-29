@@ -557,9 +557,9 @@ export class Main extends BaseClass {
 
     const entries = await BikeLog.Bikelog.combineActivities(activities.activities, bikelogOpts);
 
-    this.log.info.text('PDF File').fs(files.output).emit();
+    // this.log.info.text('PDF File').fs(files.output).emit();
     await files.pdf.fill(entries, { overwrite: fillOpts.overwrite });
-    this.log.info.icheck().text('PDF form fields filled successfully').fs(files.output).emit();
+    this.log.info.icheck().text('PDF form fields filled successfully').emit();
   }
 
   /**
@@ -585,7 +585,15 @@ export class Main extends BaseClass {
    * @param files - The PDF file bundle with output destination
    */
   async savePdf(files: BikeLog.File) {
-    await files.pdf.close(files.output);
+    this.info.text('Saving PDF Bikelog as').relative(files.output).ellipsis().start();
+    try {
+      await files.pdf.close(files.output);
+    } catch (e) {
+      const err = _.asError(e, { silent: true });
+      this.info.ierror().text('Failed to save PDF').relative(files.output).stop();
+      throw err;
+    }
+    this.info.icheck().text('Saved PDF Bikelog as').relative(files.output).stop();
   }
 
   /**

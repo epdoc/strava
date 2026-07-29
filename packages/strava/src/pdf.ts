@@ -58,6 +58,7 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
       activities: options.totalOnly !== true,
       totals: options.total || options.totalOnly,
     };
+    console.log(update);
 
     const app = new App.Main(ctx);
     if (isAthleteId(options.athleteId)) {
@@ -91,7 +92,7 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
     };
 
     if (ctx.dryRun) {
-      ctx.log.info.dryRun().text('Saving filled PDF to').relative(files.output).emit();
+      ctx.log.info.dryRun().text('Will save final PDF to').relative(files.output).emit();
     }
 
     let updatePdfState: () => void = async () => {

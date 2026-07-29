@@ -7,7 +7,7 @@ if (import.meta.main) {
   const ctx = new Ctx.Context(pkg);
   await ctx.setupLogging({ pkg: 'strava' });
 
-  const cmd = new RootCommand(ctx, { root: true, dryRun: true });
+  const cmd = new RootCommand(ctx, { root: { dryRun: true, trace: false } });
   await cmd.init();
 
   await CliApp.run(ctx, cmd);

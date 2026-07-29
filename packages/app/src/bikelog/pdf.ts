@@ -222,14 +222,36 @@ export class BikelogPdf extends BaseClass {
       }
     }
 
-    //
-    const entries: BikelogEntry[] = [];
+    // Build a fast field lookup map to avoid O(N) tree traversal per field
+    const fieldMap = new Map<string, pdfLib.PDFField>();
+    for (const field of this.form.getFields()) {
+      fieldMap.set(field.getName(), field);
+    }
+
+    const getText = (name: string): string | undefined => {
+      const f = fieldMap.get(name);
+      return f instanceof pdfLib.PDFTextField ? f.getText() ?? undefined : undefined;
+    };
+    const getNum = (name: string): number | undefined => {
+      const val = getText(name);
+      return val ? _.asFloat(val) : undefined;
+    };
+    const getDropdown = (name: string): string | undefined => {
+      const f = fieldMap.get(name);
+      if (f instanceof pdfLib.PDFDropdown) {
+        const sel = f.getSelected();
+        return sel.length > 0 ? sel[0] : undefined;
+      }
+      return undefined;
+    };
+
     const matrix = new Map<string, Map<string, number>>();
     const regions = new Set<string>();
     const bikes = new Set<string>();
     const regionTotals = new Map<string, number>();
     const bikeTotals = new Map<string, number>();
     let grandTotal = 0;
+    let hasEntries = false;
 
     let interrupted = false;
     const handler = () => {
@@ -243,44 +265,45 @@ export class BikelogPdf extends BaseClass {
     try {
       let count = 0;
       for (const [dt, jdn] of jdEntries()) {
-        const entry = this.getEntry(jdn);
-        const region = this.getRegionForEntry(entry);
+        const note1 = getText(`day.${jdn}.note1`) ?? '';
+        const match = note1.match(REGEX_AWAY);
+        const region = match ? match[1] : this.#defaultRegion!;
+
         regions.add(region);
         this.info.text('Reading').date(dt.format('yyyy-MM-dd')).value(grandTotal.toFixed(0))
           .update(++count);
         if (interrupted) {
-          Deno.removeSignalListener('SIGINT', handler); // clean up
+          Deno.removeSignalListener('SIGINT', handler);
           throw new CliApp.SilentError('Interrupted by user');
         }
-        await new Promise((resolve) => setTimeout(resolve, 0)); //  allow SIGINT
-        for (const evt of entry.events) {
-          if (evt.bike && evt.distance) {
-            bikes.add(evt.bike);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        for (const idx of ['0', '1']) {
+          const bike = getDropdown(`day.${jdn}.${idx}.bike`);
+          if (!bike) continue;
+          const dist = getNum(`day.${jdn}.${idx}.dist`);
+          if (dist && dist > 0) {
+            hasEntries = true;
+            bikes.add(bike);
 
             let bikeMap = matrix.get(region);
             if (!bikeMap) {
               bikeMap = new Map<string, number>();
               matrix.set(region, bikeMap);
             }
-            bikeMap.set(evt.bike, (bikeMap.get(evt.bike) ?? 0) + evt.distance);
-            // B. Update Row Subtotals (Region)
-            regionTotals.set(region, (regionTotals.get(region) ?? 0) + evt.distance);
-
-            // C. Update Column Subtotals (Bike)
-            bikeTotals.set(evt.bike, (bikeTotals.get(evt.bike) ?? 0) + evt.distance);
-
-            // D. Update Grand Total
-            grandTotal += evt.distance;
+            bikeMap.set(bike, (bikeMap.get(bike) ?? 0) + dist);
+            regionTotals.set(region, (regionTotals.get(region) ?? 0) + dist);
+            bikeTotals.set(bike, (bikeTotals.get(bike) ?? 0) + dist);
+            grandTotal += dist;
           }
         }
-        entries.push(entry);
       }
     } catch (_e) {
       this.info.ierror().warn('Error summaring totals by region and bike').stop();
     }
     this.info.icheck().text('Finished summaring totals by region and bike').stop();
 
-    if (entries.length === 0) return;
+    if (!hasEntries) return;
 
     // Row 0: column headings (bike names + Total)
     for (let ci = 0; ci < bikes.size; ci++) {

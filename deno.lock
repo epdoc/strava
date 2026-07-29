@@ -175,6 +175,7 @@
         "jsr:@epdoc/colors@^1.1.2",
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/fmt",
+        "jsr:@epdoc/type",
         "jsr:@std/fmt"
       ]
     },
@@ -504,7 +505,7 @@
       },
       "packages/info": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.7",
+          "jsr:@epdoc/cliapp@^2.3.8",
           "jsr:@epdoc/daterange@^3.0.15",
           "jsr:@epdoc/datetime@^4.2.6",
           "jsr:@epdoc/table@~0.1.46",

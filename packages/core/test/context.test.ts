@@ -1,43 +1,38 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { assertExists } from '@std/assert';
 import { Ctx } from '../src/mod.ts';
 
-const _pkg = { name: 'test-pkg', version: '1.0.0', description: 'Test package' };
-
-describe('Context', () => {
-  it('should create context with package info', () => {
-    const ctx = new Ctx.Context({
-      name: 'test-pkg',
-      version: '1.0.0',
-      description: 'Test package',
-    });
-
-    expect(ctx).toBeDefined();
+Deno.test('Context should create context with package info', () => {
+  const ctx = new Ctx.Context({
+    name: 'test-pkg',
+    version: '1.0.0',
+    description: 'Test package',
   });
 
-  it('should setup logging', async () => {
-    const ctx = new Ctx.Context({
-      name: 'test-pkg',
-      version: '1.0.0',
-      description: 'Test package',
-    });
+  assertExists(ctx);
+});
 
-    await ctx.setupLogging({ pkg: 'test' });
-
-    expect(ctx.log).toBeDefined();
+Deno.test('Context should setup logging', async () => {
+  const ctx = new Ctx.Context({
+    name: 'test-pkg',
+    version: '1.0.0',
+    description: 'Test package',
   });
 
-  it('should inherit from parent context', async () => {
-    const parent = new Ctx.Context({
-      name: 'parent',
-      version: '1.0.0',
-      description: 'Parent package',
-    });
-    await parent.setupLogging();
+  await ctx.setupLogging({ pkg: 'test' });
 
-    const child = new Ctx.Context(parent);
+  assertExists(ctx.log);
+});
 
-    expect(child).toBeDefined();
-    expect(child.log).toBeDefined();
+Deno.test('Context should inherit from parent context', async () => {
+  const parent = new Ctx.Context({
+    name: 'parent',
+    version: '1.0.0',
+    description: 'Parent package',
   });
+  await parent.setupLogging();
+
+  const child = new Ctx.Context(parent);
+
+  assertExists(child);
+  assertExists(child.log);
 });

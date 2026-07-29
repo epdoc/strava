@@ -43,6 +43,14 @@ export class KmlWriter extends TrackWriter {
   private lineStyles: Stream.KmlLineStyleDefs = defaultKmlLineStyles;
   private trackIndex: number = 0;
 
+  /**
+   * Returns the stream types needed for KML output.
+   *
+   * Always requests LatLng. If lap waypoints are enabled, also requests
+   * Time and Altitude streams for coordinate matching.
+   *
+   * @returns Array of stream type keys to fetch from Strava
+   */
   override streamTypes(): Schema.Stream.StreamKey[] {
     const types: Schema.Stream.StreamKey[] = [Schema.Consts.StreamKeys.LatLng];
 

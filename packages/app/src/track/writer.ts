@@ -5,6 +5,17 @@ import { _ } from '@epdoc/type';
 import { BaseClass } from '../base.ts';
 import type * as Stream from './types.ts';
 
+/**
+ * Base class for track file writers (KML and GPX).
+ *
+ * Provides buffered writing infrastructure and shared option handling for
+ * generating GPS track files from Strava activity data. Subclasses implement
+ * format-specific output via {@link outputData} and customize stream type
+ * requirements via {@link streamTypes}.
+ *
+ * The buffering system accumulates output in a string buffer and flushes it
+ * to a file writer in batches, improving write performance for large files.
+ */
 export class TrackWriter extends BaseClass {
   protected opts: Stream.Opts = {};
   protected buffer: string = '';
@@ -26,10 +37,16 @@ export class TrackWriter extends BaseClass {
     this.opts = opts;
   }
 
+  /**
+   * Whether track output is enabled (controlled by the noTracks option).
+   */
   writeTracks(): boolean {
     return this.opts.noTracks !== true;
   }
 
+  /**
+   * Whether waypoint output is enabled (controlled by the laps option).
+   */
   writeWaypoints(): boolean {
     return this.opts.laps === true;
   }
@@ -75,6 +92,12 @@ export class TrackWriter extends BaseClass {
     // this.buffer.write( indent + s + "\n", 'utf8' );
   }
 
+  /**
+   * Writes multiple strings with the same indentation, each followed by a newline.
+   *
+   * @param indent - The indentation level or string
+   * @param lines - The strings to write
+   */
   protected writelns(indent: string | number, lines: string[]): void {
     for (const line of lines) {
       this.writeln(indent, line);

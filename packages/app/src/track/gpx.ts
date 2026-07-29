@@ -15,25 +15,22 @@ const REG = {
 };
 
 /**
- * Generates KML (Keyhole Markup Language) files for visualizing Strava activities in Google Earth.
+ * Generates GPX (GPS Exchange Format) files from Strava activities.
  *
- * This class handles the complete workflow of converting Strava activities and segments into
- * KML format suitable for viewing in Google Earth. It provides:
- * - Activity routes as colored line strings (color-coded by activity type)
- * - Lap markers as clickable point placemarks
- * - Segment routes with hierarchical folder organization by region
- * - Custom line styles for different activity types (Ride, Run, Swim, etc.)
- * - Support for both imperial and metric units
- * - Detailed activity descriptions when --more flag is enabled
+ * Produces standard GPX 1.1 files containing activity tracks with waypoints.
+ * Supports both single-file output (all activities in one GPX) and per-activity
+ * file output (one GPX per activity in a folder). Each track point includes
+ * latitude, longitude, elevation, and timestamp.
  *
- * The generated KML files include proper styling, descriptions, and folder organization
- * for easy navigation in Google Earth.
+ * Lap waypoints are generated when the `--laps` option is enabled, providing
+ * distance, elevation, and gradient metrics at each lap boundary.
  *
  * @example
  * ```ts
- * const kml = new KmlMain({ activities: true, laps: true, imperial: false });
- * kml.setLineStyles(ctx, customStyles);
- * await kml.outputData(ctx, 'output.kml', activities, segments);
+ * const gpx = new GpxWriter({ activities: true, laps: true, imperial: false });
+ * await gpx.outputData('activities.gpx', activities);
+ * // Or output to a folder:
+ * await gpx.outputData('./gpx-output/', activities);
  * ```
  */
 export class GpxWriter extends TrackWriter {
@@ -46,29 +43,14 @@ export class GpxWriter extends TrackWriter {
   }
 
   /**
-   * Generates a complete GPX file from Strava activities.
+   * Generates GPX files from Strava activities.
    *
-   * This is the main public method that orchestrates the entire KML generation process.
-   * It creates a GPX file containing:
-   * - Header with custom line styles and lap marker styles
-   * - Activities folder with route placemarks and optional lap markers
-   * - Segments folder with hierarchical or flat organization
-   * - Footer to close the KML document
+   * If `folderpath` ends with `.gpx`, all activities are written to a single GPX file.
+   * Otherwise, `folderpath` is treated as a directory and one GPX file per activity
+   * is generated with the filename format `YYYYMMDD_Activity_Name.gpx`.
    *
-   * The method uses buffered writing for performance and ensures proper resource cleanup
-   * via try/catch blocks.
-   *
-   * @param ctx Application context with logging
-   * @param filepath Output file path for the KML file
-   * @param activities Array of Strava activities with track points
-   * @param segments Array of starred segments with coordinates
-   *
-   * @example
-   * ```ts
-   * const kml = new KmlMain({ activities: true, segments: true, laps: true });
-   * await kml.outputData(ctx, 'strava.kml', activities, segments);
-   * // Creates strava.kml ready for Google Earth
-   * ```
+   * @param folderpath - Output file path (`.gpx`) or folder path for per-activity files
+   * @param activities - Array of Strava activities with track points
    */
   async outputData(
     folderpath: FS.FolderPath,
@@ -188,6 +170,12 @@ export class GpxWriter extends TrackWriter {
     }
   }
 
+  /**
+   * Outputs a single activity's track points as a GPX track segment.
+   *
+   * @param activity - The activity with coordinate data
+   * @returns The number of track points output
+   */
   async outputActivityTrack(activity: Activity.Item): Promise<Integer> {
     await this.#openTrackSegment(activity);
     // Output track points

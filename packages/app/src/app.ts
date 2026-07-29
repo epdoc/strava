@@ -71,6 +71,11 @@ export class Main extends BaseClass {
    * @returns The API client configured with user credentials
    * @throws Error if API not initialized (should not happen in normal usage)
    */
+  /**
+   * The configured Strava API client, initialized with the user's OAuth credentials.
+   *
+   * @throws Error if the API has not been initialized (call init() first)
+   */
   get api(): Strava.Api {
     if (!this.#api) {
       throw new Error('API not initialized. Call initClient() first.');
@@ -181,6 +186,12 @@ export class Main extends BaseClass {
    * @returns A promise that resolves to `true` if online, `false` otherwise.
    * @todo Implement a more robust internet connectivity check.
    */
+  /**
+   * Checks whether internet access is available.
+   *
+   * @returns A promise resolving to true (currently always returns true;
+   * actual connectivity check is not yet implemented)
+   */
   checkInternetAccess(_ctx: Ctx.Context): Promise<boolean> {
     // Simple internet check - for now just return true
     // TODO: Implement actual internet connectivity check
@@ -192,6 +203,12 @@ export class Main extends BaseClass {
    *
    * @param _id - The athlete ID to set.
    * @todo Implement athlete ID storage and usage.
+   */
+  /**
+   * Sets the athlete ID for API calls.
+   *
+   * @param _id - The athlete ID to set
+   * @todo Implement athlete ID storage and usage. Currently a no-op.
    */
   setAthleteId(_id: Schema.Athlete.Id): Promise<void> {
     // TODO: Implement athlete ID storage and usage
@@ -505,6 +522,16 @@ export class Main extends BaseClass {
     }
   }
 
+  /**
+   * Fills a bikelog PDF form with activity data.
+   *
+   * Combines activity data into daily entries (up to 2 bike events per day
+   * with distance, bike name, elevation, time, and notes) and writes them
+   * to the PDF form fields. Supports incremental updates via the overwrite option.
+   *
+   * @param files - The PDF file bundle (instance + output path)
+   * @param fillOpts - Options including the activity collection and overwrite flag
+   */
   async fillPdf(files: BikeLog.File, fillOpts: BikeLog.Opts): Promise<void> {
     const activities = fillOpts.activities;
 
@@ -535,15 +562,41 @@ export class Main extends BaseClass {
     this.log.info.icheck().text('PDF form fields filled successfully').fs(files.output).emit();
   }
 
+  /**
+   * Updates the cover page summary table with distance totals by region and bike.
+   *
+   * Reads all existing form field data from the PDF, computes yearly totals
+   * organized by region and bike, and writes them to the cover page table.
+   * This can be called independently of fillPdf() via the --total-only flag.
+   *
+   * @param files - The PDF file bundle
+   */
   async updatePdfTotals(files: BikeLog.File): Promise<void> {
     this.info.text('Adding cover page summary').ellipsis().emit();
     await files.pdf.addCoverSummaryTable();
   }
 
+  /**
+   * Saves the modified PDF to the output file.
+   *
+   * Serializes the in-memory PDF document to bytes and writes them to
+   * the output file specified in the files bundle.
+   *
+   * @param files - The PDF file bundle with output destination
+   */
   async savePdf(files: BikeLog.File) {
     await files.pdf.close(files.output);
   }
 
+  /**
+   * Updates the persistent state file with the latest activity timestamp for PDF output.
+   *
+   * Records the most recent activity date so subsequent runs (without --date)
+   * can fetch only new activities since the last PDF generation.
+   *
+   * @param outputType - The output type identifier
+   * @param activities - The collection of processed activities
+   */
   async updatePdfState(outputType: OutputType, activities: Activity.Collection): Promise<void> {
     if (outputType && this.#stateFile && activities.length > 0) {
       if (this.ctx.dryRun === true) {

@@ -19,11 +19,14 @@ export type FilterOpts = {
   regions?: Region.Code[];
 };
 
+/**
+ * Options for resolving an output file path from user-provided input.
+ */
 export type ResolveFileOpts = {
   /** A filename, path or path and filename */
   output?: string;
-  /** One of acroforms, kml, gpx  */
+  /** The output type (controls default extension and folder) */
   type: State.OutputType;
-  /** not used */
+  /** @deprecated Not currently used */
   defaultFolder?: FS.FolderPath;
 };

@@ -177,7 +177,8 @@ Deno.test('BikelogPdf fill should fill form fields with entry data', async () =>
     }),
   };
 
-  await pdf.fill(entries, targetFile);
+  await pdf.fill(entries);
+  await pdf.close(targetFile);
 
   assertEquals(await targetFile.exists(), true);
 
@@ -210,11 +211,13 @@ Deno.test('BikelogPdf fill should skip fields that are already filled with the s
     }),
   };
 
-  await pdf.fill(entries, targetFile);
+  await pdf.fill(entries);
+  await pdf.close(targetFile);
 
   const pdf2 = new BikelogPdf(ctx, targetFile);
   const targetFile2 = FS.File.from(testDir, 'filled-skip-test2.pdf');
-  await pdf2.fill(entries, targetFile2);
+  await pdf2.fill(entries);
+  await pdf2.close(targetFile2);
 
   const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
   const form = doc.getForm();
@@ -230,11 +233,13 @@ Deno.test('BikelogPdf fill should concatenate notes that already have different 
 
   const pdf = new BikelogPdf(ctx, testPdf);
 
-  await pdf.fill({ '2459000': makeTestEntry(2459000, { note0: 'First entry' }) }, targetFile);
+  await pdf.fill({ '2459000': makeTestEntry(2459000, { note0: 'First entry' }) });
+  await pdf.close(targetFile);
 
   const pdf2 = new BikelogPdf(ctx, targetFile);
   const targetFile2 = FS.File.from(testDir, 'note-concat-test2.pdf');
-  await pdf2.fill({ '2459000': makeTestEntry(2459000, { note0: 'Second entry' }) }, targetFile2);
+  await pdf2.fill({ '2459000': makeTestEntry(2459000, { note0: 'Second entry' }) });
+  await pdf2.close(targetFile2);
 
   const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
   const form = doc.getForm();
@@ -253,12 +258,13 @@ Deno.test('BikelogPdf fill should skip notes that already contain the new conten
 
   await pdf.fill(
     { '2459000': makeTestEntry(2459000, { note0: 'Part of larger text' }) },
-    targetFile,
   );
+  await pdf.close(targetFile);
 
   const pdf2 = new BikelogPdf(ctx, targetFile);
   const targetFile2 = FS.File.from(testDir, 'note-includes-test2.pdf');
-  await pdf2.fill({ '2459000': makeTestEntry(2459000, { note0: 'larger' }) }, targetFile2);
+  await pdf2.fill({ '2459000': makeTestEntry(2459000, { note0: 'larger' }) });
+  await pdf2.close(targetFile2);
 
   const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
   const form = doc.getForm();
@@ -275,8 +281,8 @@ Deno.test('BikelogPdf fill should use fuzzy comparison for numeric fields', asyn
 
   await pdf.fill(
     { '2459000': makeTestEntry(2459000, { dist: 0.2, el: 100, t: 1.5, wt: 87.3 }) },
-    targetFile,
   );
+  await pdf.close(targetFile);
 
   const pdf2 = new BikelogPdf(ctx, targetFile);
   const targetFile2 = FS.File.from(testDir, 'numeric-fuzzy-test2.pdf');
@@ -287,7 +293,8 @@ Deno.test('BikelogPdf fill should use fuzzy comparison for numeric fields', asyn
       t: 1.500000001,
       wt: 87.300000001,
     }),
-  }, targetFile2);
+  });
+  await pdf2.close(targetFile2);
 
   const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
   const form = doc.getForm();

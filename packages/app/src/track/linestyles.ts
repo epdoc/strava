@@ -1,7 +1,14 @@
-// Colors are aabbggrr
-
 import type { KmlLineStyleDefs } from './types.ts';
 
+/**
+ * Default KML line style definitions for activity track rendering.
+ *
+ * Colors use the `aabbggrr` hex format (alpha, blue, green, red). Each style
+ * maps an activity type or virtual style name to a color and line width.
+ *
+ * Includes styles for: Default, Ride, EBikeRide, Moto, Segment, Commute,
+ * Hike, Walk, StandUpPaddling, and NordicSki.
+ */
 export const defaultKmlLineStyles: KmlLineStyleDefs = {
   Default: {
     color: 'C00000FF',

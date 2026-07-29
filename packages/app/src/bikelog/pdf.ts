@@ -140,10 +140,6 @@ export class BikelogPdf extends BaseClass {
       .text('missing').value(missing)
       .emit();
 
-    // // Add cover page summary table
-    // this.info.text('Adding cover page summary').ellipsis().emit();
-    // await this.addCoverSummaryTable();
-
     for (const [jd, entry] of Object.entries(entries)) {
       for (const fieldName of ['note0', 'note1']) {
         const text = entry[fieldName as 'note0' | 'note1'];

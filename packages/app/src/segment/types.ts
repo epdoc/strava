@@ -3,6 +3,7 @@ import type { Seconds } from '@epdoc/duration';
 import type * as Strava from '@epdoc/strava-api';
 import type * as Schema from '@epdoc/strava-schema';
 
+/** A GPS coordinate value in decimal degrees. */
 export type GpsDegrees = number;
 
 /**
@@ -33,6 +34,10 @@ export interface IData {
   state: string;
 }
 
+/**
+ * Base segment data with optional fields. Used to construct a SegmentBase
+ * instance with any subset of core segment properties.
+ */
 export type Base = Partial<{
   id: Schema.Segment.Id;
   elapsedTime: Seconds;
@@ -52,4 +57,5 @@ export type CacheFile = {
   segments: Record<Schema.Segment.Id, CacheEntry>; // Keyed by segment ID as string
 };
 
+/** An in-memory map of segment IDs to their cached entries. */
 export type CacheMap = Map<Schema.Segment.Id, CacheEntry>;

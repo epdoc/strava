@@ -22,9 +22,20 @@ export type UserState = Partial<Record<OutputType, { lastUpdated?: ISODate }>>;
 // // Create a type derived from the object's values
 // export type OutputType = (typeof OutputType)[keyof typeof OutputType];
 
+/**
+ * Branded type for output type identifiers (e.g., "kml", "gpx", "acroforms").
+ */
 export type OutputType = Brand<string, 'OutputType'>;
+
+/**
+ * Branded type for file extension strings (e.g., ".kml", ".gpx", ".xml").
+ */
 export type FileExtension = Brand<string, 'FileExtension'>;
 
+/**
+ * Enum-like constant mapping logical output types to their string identifiers.
+ * Used as keys in the user state file and throughout the application.
+ */
 export const OutputTypes = {
   Kml: 'kml' as OutputType,
   Acroforms: 'acroforms' as OutputType,

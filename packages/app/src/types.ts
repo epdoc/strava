@@ -5,19 +5,31 @@ import type { Dict, Integer } from '@epdoc/type';
 import type { OutputType } from './state/mod.ts';
 import type { KmlLineStyle as LineStyle } from './track/types.ts';
 
+/**
+ * @deprecated Segment configuration is now handled by SegmentFile.
+ */
 export type SegmentConfig = {
   description: string;
   alias: Dict;
   data: Dict;
 };
 
+/**
+ * Initialization options for the application's Main class.
+ * Controls which subsystems are initialized.
+ */
 export type Opts = Partial<{
+  /** Initialize the Strava API client with OAuth authentication */
   strava: boolean;
+  /** Load user settings from ~/.strava/user.settings.json */
   userSettings: boolean;
+  /** Load configuration files */
   config: boolean;
+  /** Load the persistent state file */
   state: boolean;
 }>;
 
+/** A bike identifier string from Strava's gear system. */
 export type BikeId = string;
 
 export type FileUserSettings = {
@@ -90,6 +102,12 @@ export type ConfigFile = {
   };
 };
 
+/**
+ * Structure of the Strava OAuth credentials file (~/.strava/user.creds.json).
+ *
+ * Contains the OAuth tokens and associated athlete information returned by
+ * the Strava API during the OAuth authorization flow.
+ */
 export type CredsFile = {
   token_type: 'Bearer';
   expires_at: Integer;

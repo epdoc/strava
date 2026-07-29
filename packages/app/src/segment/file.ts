@@ -23,15 +23,31 @@ export class SegmentFile extends BaseClass {
   #fsFile: FileSpec;
   #segments: Segment.CacheMap = new Map(); // Keyed by segment ID
 
+  /**
+   * @param ctx - Application context for logging
+   * @param fsFile - Path to the segments cache JSON file
+   */
   constructor(ctx: Ctx.Context, fsFile: FileSpec) {
     super(ctx);
     this.#fsFile = fsFile;
   }
 
+  /**
+   * The in-memory segment cache. Keyed by segment ID.
+   */
   get segments(): Segment.CacheMap {
     return this.#segments;
   }
 
+  /**
+   * Loads or refreshes the segment cache from the local file or Strava API.
+   *
+   * If `opts.refresh` is true, fetches fresh data from the Strava API and
+   * writes it to the cache file. Otherwise, reads from the local cache file.
+   * Falls back to fetching from the API if reading the cache file fails.
+   *
+   * @param opts - Options controlling whether to refresh from the API
+   */
   async get(opts: { refresh?: boolean }): Promise<void> {
     try {
       if (opts.refresh) {
@@ -81,6 +97,13 @@ export class SegmentFile extends BaseClass {
     }
   }
 
+  /**
+   * Reads segment data from the local cache file.
+   *
+   * Loads the JSON cache file and populates the in-memory segment map.
+   * Segment IDs stored as string keys in JSON are converted back to numbers.
+   * If the file doesn't exist, logs a warning but does not throw.
+   */
   async read(): Promise<void> {
     this.log.info.text('Reading').text('Starred segments from').fs(this.#fsFile).start();
     const isFile = await this.#fsFile.isFile();
@@ -99,6 +122,12 @@ export class SegmentFile extends BaseClass {
     }
   }
 
+  /**
+   * Writes the in-memory segment cache to the local cache file.
+   *
+   * Serializes the segment map as a JSON object keyed by segment ID.
+   * Includes metadata fields (description, lastModified) in the output.
+   */
   async write(): Promise<void> {
     this.log.info.text('Writing').count(this.#segments.size).text('starred segment')
       .text('to').fs(this.#fsFile).start();

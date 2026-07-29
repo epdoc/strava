@@ -4,8 +4,17 @@ import { Types } from '@epdoc/strava-schema';
 import { _ } from '@epdoc/type';
 import type * as Region from './region/mod.ts';
 
-// const regionChoices: Region.Code[] = await Region.db.choices();
-
+/**
+ * Shared option definitions for CLI commands.
+ *
+ * These definitions are consumed by CLI command classes via the `@epdoc/cliapp`
+ * framework. Each entry provides the option name, parameters, description, and
+ * optional custom argument parser. The `output` entry includes an inline help
+ * generator.
+ *
+ * Available options: commute, type, region, output, segments, blackout, format,
+ * imperial, more, laps, noTracks, efforts, allowDups, splitRegions.
+ */
 export const def: CliApp.OptionDefMap = {
   commute: {
     name: 'commute',

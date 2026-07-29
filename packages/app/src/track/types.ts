@@ -5,11 +5,16 @@ import type * as Schema from '@epdoc/strava-schema';
 import type { Dict } from '@epdoc/type';
 import type * as Activity from '../activity/mod.ts';
 
+/** A KML line style definition with color (aabbggrr hex) and width in pixels. */
 export type KmlLineStyle = {
   color: string;
   width: number;
 };
 
+/**
+ * Extended activity type that includes standard Strava types plus virtual
+ * style names used in the KML line-style system.
+ */
 export type ActivityExType =
   | Schema.Types.ActivityType
   | 'Segment'
@@ -18,6 +23,7 @@ export type ActivityExType =
   | 'Default';
 
 // LineStyleDefs supports ActivityTypes plus custom style names (Commute, Moto, Segment, Default, etc.)
+/** A map of activity types to their KML line style definitions. */
 export type KmlLineStyleDefs = Partial<Record<ActivityExType, KmlLineStyle>>;
 
 /**
@@ -60,9 +66,11 @@ export type StreamOpts = {
   splitRegions?: boolean;
 };
 
+/** Combined stream generation options from all option subsets. */
 export type Opts = CommonOpts & ActivityOpts & StreamSegmentOpts & StreamOpts;
 
-export type Coord = [number, number]; // [lat, lng] - deprecated, use CoordData instead
+/** @deprecated Use TrackPoint from Strava schema instead. Represents [lat, lng]. */
+export type Coord = [number, number];
 
 export type KmlPlacemarkParams = {
   description?: string;

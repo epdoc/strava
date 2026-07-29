@@ -12,7 +12,8 @@ import config from '../consts.ts';
 import type * as Region from '../region/mod.ts';
 import type { BikelogEntry, IOverwrite } from './types.ts';
 
-const BACKUP_RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+const BACKUP_RETENTION_MS = 90 * DAY_MS;
 
 type FieldResult = 'missing' | 'skipped' | 'filled';
 type FieldType = 'string' | 'numeric' | 'note';
@@ -24,7 +25,7 @@ const COVER_TABLE = {
   startX: 640,
   startY: 1100,
   labelW: 75,
-  colW: 28,
+  colW: 35,
   rowH: 17,
   fontSize: 8,
   headingFontSize: 8,
@@ -204,12 +205,13 @@ export class BikelogPdf extends BaseClass {
   }
 
   async addCoverSummaryTable(): Promise<void> {
+    await this.init();
     // Set the default year to this year, but this is overridden if we get it from the first field in the table
     const year = this.getCoverYear();
 
     const start = DateTime.fromComponents(year, 1, 1).startOfDay();
     const yearEnd = DateTime.fromComponents(year, 12, 31).endOfDay();
-    const now = DateTime.now();
+    const now = DateTime.now().endOfDay();
     const end = now.isBefore(yearEnd) ? now.withTz('local').startOfDay() : yearEnd;
     const durMs = end.toInstant().epochMilliseconds - start.toInstant().epochMilliseconds;
     const totalDays = Math.ceil(durMs / (1000 * 60 * 60 * 24));
@@ -301,6 +303,13 @@ export class BikelogPdf extends BaseClass {
     }
 
     // Totals row
+    const totalRow = regions.size + 1;
+    this.setCoverCell(totalRow, 0, 'Total');
+    for (let ci = 0; ci < bikes.size; ci++) {
+      const bike = Array.from(bikes)[ci];
+      this.setCoverCell(totalRow, ci + 1, (bikeTotals.get(bike) ?? 0).toFixed(1));
+    }
+    this.setCoverCell(totalRow, bikes.size + 1, grandTotal.toFixed(1));
 
     this.info.text('Cover page summary table added').emit();
   }

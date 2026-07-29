@@ -1,111 +1,104 @@
 import type * as Schema from '@epdoc/strava-schema';
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { assertEquals, assertExists } from '@std/assert';
 import * as App from '../src/mod.ts';
 
-describe('segment utils', () => {
-  describe('asCacheEntry', () => {
-    it('should convert valid SummarySegment to CacheEntry', () => {
-      const summarySegment: Schema.Segment.Summary = {
-        id: 12345,
-        name: 'Test Segment',
-        distance: 1500,
-        average_grade: 5.2,
-        elevation_high: 200,
-        elevation_low: 150,
-        country: 'USA',
-        state: 'California',
-        // Required fields for SummarySegment
-        activity_type: 'Ride',
-        maximum_grade: 8.0,
-        start_latlng: [37.7749, -122.4194],
-        end_latlng: [37.7750, -122.4195],
-        climb_category: 0,
-        city: 'San Francisco',
-        private: false,
-      };
+Deno.test('segment utils asCacheEntry should convert valid SummarySegment to CacheEntry', () => {
+  const summarySegment: Schema.Segment.Summary = {
+    id: 12345,
+    name: 'Test Segment',
+    distance: 1500,
+    average_grade: 5.2,
+    elevation_high: 200,
+    elevation_low: 150,
+    country: 'USA',
+    state: 'California',
+    activity_type: 'Ride',
+    maximum_grade: 8.0,
+    start_latlng: [37.7749, -122.4194],
+    end_latlng: [37.7750, -122.4195],
+    climb_category: 0,
+    city: 'San Francisco',
+    private: false,
+  };
 
-      const cacheEntry = App.Segment.asCacheEntry(summarySegment);
+  const cacheEntry = App.Segment.asCacheEntry(summarySegment);
 
-      expect(cacheEntry).toBeDefined();
-      if (cacheEntry) {
-        expect(cacheEntry.id).toBe(12345);
-        expect(cacheEntry.name).toBe('Test Segment');
-        expect(cacheEntry.distance).toBe(1500);
-        expect(cacheEntry.gradient).toBe(5.2);
-        expect(cacheEntry.elevation).toBe(50); // elevation_high - elevation_low
-        expect(cacheEntry.country).toBe('USA');
-        expect(cacheEntry.state).toBe('California');
-      }
-    });
+  assertExists(cacheEntry);
+  if (cacheEntry) {
+    assertEquals(cacheEntry.id, 12345);
+    assertEquals(cacheEntry.name, 'Test Segment');
+    assertEquals(cacheEntry.distance, 1500);
+    assertEquals(cacheEntry.gradient, 5.2);
+    assertEquals(cacheEntry.elevation, 50);
+    assertEquals(cacheEntry.country, 'USA');
+    assertEquals(cacheEntry.state, 'California');
+  }
+});
 
-    it('should trim segment name', () => {
-      const summarySegment: Schema.Segment.Summary = {
-        id: 67890,
-        name: '  Padded Segment Name  ',
-        distance: 1000,
-        average_grade: 3.5,
-        elevation_high: 100,
-        elevation_low: 80,
-        country: 'USA',
-        state: 'Oregon',
-        activity_type: 'Ride',
-        maximum_grade: 6.0,
-        start_latlng: [45.5231, -122.6765],
-        end_latlng: [45.5232, -122.6766],
-        climb_category: 0,
-        city: 'Portland',
-        private: false,
-      };
+Deno.test('segment utils asCacheEntry should trim segment name', () => {
+  const summarySegment: Schema.Segment.Summary = {
+    id: 67890,
+    name: '  Padded Segment Name  ',
+    distance: 1000,
+    average_grade: 3.5,
+    elevation_high: 100,
+    elevation_low: 80,
+    country: 'USA',
+    state: 'Oregon',
+    activity_type: 'Ride',
+    maximum_grade: 6.0,
+    start_latlng: [45.5231, -122.6765],
+    end_latlng: [45.5232, -122.6766],
+    climb_category: 0,
+    city: 'Portland',
+    private: false,
+  };
 
-      const cacheEntry = App.Segment.asCacheEntry(summarySegment);
+  const cacheEntry = App.Segment.asCacheEntry(summarySegment);
 
-      expect(cacheEntry).toBeDefined();
-      if (cacheEntry) {
-        expect(cacheEntry.name).toBe('Padded Segment Name');
-      }
-    });
+  assertExists(cacheEntry);
+  if (cacheEntry) {
+    assertEquals(cacheEntry.name, 'Padded Segment Name');
+  }
+});
 
-    it('should return undefined for invalid data with missing required fields', () => {
-      const invalidSegment = {
-        id: 12345,
-        // Missing name
-        distance: 1500,
-        average_grade: 5.2,
-        elevation_high: 200,
-        elevation_low: 150,
-      } as unknown as Schema.Segment.Summary;
+Deno.test('segment utils asCacheEntry should return undefined for invalid data with missing required fields', () => {
+  const invalidSegment = {
+    id: 12345,
+    distance: 1500,
+    average_grade: 5.2,
+    elevation_high: 200,
+    elevation_low: 150,
+  } as unknown as Schema.Segment.Summary;
 
-      const cacheEntry = App.Segment.asCacheEntry(invalidSegment);
+  const cacheEntry = App.Segment.asCacheEntry(invalidSegment);
 
-      expect(cacheEntry).toBeUndefined();
-    });
+  assertEquals(cacheEntry, undefined);
+});
 
-    it('should calculate elevation correctly', () => {
-      const summarySegment: Schema.Segment.Summary = {
-        id: 11111,
-        name: 'Steep Hill',
-        distance: 500,
-        average_grade: 10.0,
-        elevation_high: 350,
-        elevation_low: 250,
-        country: 'USA',
-        state: 'Colorado',
-        activity_type: 'Ride',
-        maximum_grade: 15.0,
-        start_latlng: [39.7392, -104.9903],
-        end_latlng: [39.7393, -104.9904],
-        climb_category: 2,
-        city: 'Denver',
-        private: false,
-      };
+Deno.test('segment utils asCacheEntry should calculate elevation correctly', () => {
+  const summarySegment: Schema.Segment.Summary = {
+    id: 11111,
+    name: 'Steep Hill',
+    distance: 500,
+    average_grade: 10.0,
+    elevation_high: 350,
+    elevation_low: 250,
+    country: 'USA',
+    state: 'Colorado',
+    activity_type: 'Ride',
+    maximum_grade: 15.0,
+    start_latlng: [39.7392, -104.9903],
+    end_latlng: [39.7393, -104.9904],
+    climb_category: 2,
+    city: 'Denver',
+    private: false,
+  };
 
-      const cacheEntry = App.Segment.asCacheEntry(summarySegment);
+  const cacheEntry = App.Segment.asCacheEntry(summarySegment);
 
-      expect(cacheEntry).toBeDefined();
-      if (cacheEntry) {
-        expect(cacheEntry.elevation).toBe(100);
-      }
-    });
-  });
+  assertExists(cacheEntry);
+  if (cacheEntry) {
+    assertEquals(cacheEntry.elevation, 100);
+  }
 });

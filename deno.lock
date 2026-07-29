@@ -469,7 +469,7 @@
       },
       "packages/app": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.7",
+          "jsr:@epdoc/cliapp@^2.3.8",
           "jsr:@epdoc/daterange@^3.0.15",
           "jsr:@epdoc/datetime@^4.2.6",
           "jsr:@epdoc/duration@~0.3.22",

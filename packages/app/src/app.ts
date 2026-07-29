@@ -505,10 +505,8 @@ export class Main extends BaseClass {
     }
   }
 
-  async fillPdf(
-    pdfOpts: BikeLog.Opts & { templateFile: FS.File; targetPath?: FS.File },
-  ): Promise<{ outputFile: FS.File; pdfFile: BikeLog.BikelogPdf }> {
-    const activities = pdfOpts.activities;
+  async fillPdf(files: BikeLog.File, fillOpts: BikeLog.Opts): Promise<void> {
+    const activities = fillOpts.activities;
 
     this.log.info.h2('Filling PDF form fields:').emit();
 
@@ -532,14 +530,18 @@ export class Main extends BaseClass {
 
     const entries = await BikeLog.Bikelog.combineActivities(activities.activities, bikelogOpts);
 
-    const pdfFile = new BikeLog.BikelogPdf(this.ctx, pdfOpts.templateFile);
+    this.log.info.text('PDF File').fs(files.output).emit();
+    await files.pdf.fill(entries, { overwrite: fillOpts.overwrite });
+    this.log.info.icheck().text('PDF form fields filled successfully').fs(files.output).emit();
+  }
 
-    const outputFile = pdfOpts.targetPath ?? await FS.File.makeTemp({ suffix: '.pdf' });
-    this.log.info.text('PDF File').fs(outputFile).emit();
-    await pdfFile.fill(entries, outputFile);
-    this.log.info.icheck().text('PDF form fields filled successfully').fs(outputFile).emit();
+  async updatePdfTotals(files: BikeLog.File): Promise<void> {
+    this.info.text('Adding cover page summary').ellipsis().emit();
+    await files.pdf.addCoverSummaryTable();
+  }
 
-    return { outputFile, pdfFile };
+  async savePdf(files: BikeLog.File) {
+    await files.pdf.close(files.output);
   }
 
   async updatePdfState(outputType: OutputType, activities: Activity.Collection): Promise<void> {

@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { afterAll, beforeAll, beforeEach, describe, it } from '@std/testing/bdd';
+import { assertEquals, assertMatch, assertStringIncludes } from '@std/assert';
 import * as FS from '@epdoc/fs/fs';
 import { Ctx } from '@epdoc/strava-core';
 import * as pdfLib from 'pdf-lib';
@@ -59,272 +58,239 @@ async function createTestPdf(file: FS.File): Promise<void> {
   await file.write(bytes, { safe: true });
 }
 
-describe('BikelogPdf', () => {
-  let testDir: FS.Folder;
-  let ctx: Ctx.Context;
+const testDir = await FS.Folder.makeTemp({ prefix: 'bikelog-pdf-test-' });
+const ctx = new Ctx.Context({
+  name: '@epdoc/strava-app-test',
+  version: '0.0.0',
+  description: 'Test for BikelogPdf',
+});
+await ctx.setupLogging();
 
-  beforeAll(async () => {
-    testDir = await FS.Folder.makeTemp({ prefix: 'bikelog-pdf-test-' });
-    ctx = new Ctx.Context({
-      name: '@epdoc/strava-app-test',
-      version: '0.0.0',
-      description: 'Test for BikelogPdf',
-    });
-    await ctx.setupLogging();
-  });
+Deno.test('BikelogPdf backup should create a backup in .backup/ with correct naming pattern', async () => {
+  const testPdf = FS.File.from(testDir, 'backup-test.pdf');
+  await createTestPdf(testPdf);
 
-  afterAll(async () => {
-    await Deno.remove(testDir.path, { recursive: true });
-  });
+  const pdf = new BikelogPdf(ctx, testPdf);
+  const backupFile = await pdf.backup();
 
-  describe('backup', () => {
-    let testPdf: FS.File;
+  assertEquals(await backupFile.exists(), true);
+  assertStringIncludes(backupFile.path, '.backup/');
+  assertMatch(backupFile.filename, /^\d{8}_\d{6}_backup-test\.pdf$/);
+});
 
-    beforeEach(async () => {
-      testPdf = FS.File.from(testDir, 'backup-test.pdf');
-      await createTestPdf(testPdf);
-    });
+Deno.test('BikelogPdf backup should create a second backup with a different timestamp', async () => {
+  const testPdf = FS.File.from(testDir, 'backup-test.pdf');
+  await createTestPdf(testPdf);
 
-    it('should create a backup in .backup/ with correct naming pattern', async () => {
-      const pdf = new BikelogPdf(ctx, testPdf);
-      const backupFile = await pdf.backup();
+  await new Promise((r) => setTimeout(r, 1100));
 
-      expect(await backupFile.exists()).toBe(true);
-      expect(backupFile.path).toContain('.backup/');
-      expect(backupFile.filename).toMatch(/^\d{8}_\d{6}_backup-test\.pdf$/);
-    });
+  const pdf = new BikelogPdf(ctx, testPdf);
+  await pdf.backup();
 
-    it('should create a second backup with a different timestamp', async () => {
-      await new Promise((r) => setTimeout(r, 1100));
+  await new Promise((r) => setTimeout(r, 200));
+  const bytes = await testPdf.readAsBytes();
+  await testPdf.write(bytes);
+  await new Promise((r) => setTimeout(r, 200));
 
-      const pdf = new BikelogPdf(ctx, testPdf);
-      await pdf.backup();
+  const backupFile2 = await pdf.backup();
 
-      // Wait so the modifiedAt changes (the file got rewritten before this describe block)
-      await new Promise((r) => setTimeout(r, 200));
-      // Touch the file to update its modification time
-      const bytes = await testPdf.readAsBytes();
-      await testPdf.write(bytes);
-      await new Promise((r) => setTimeout(r, 200));
+  const backupDir = FS.Folder.from(testDir, '.backup');
+  const files = await backupDir.getFiles();
+  assertEquals(files.length >= 2, true);
+  assertEquals(await backupFile2.exists(), true);
+});
 
-      const backupFile2 = await pdf.backup();
+Deno.test('BikelogPdf cleanupOldBackups should delete backups older than retention period', async () => {
+  const testPdf = FS.File.from(testDir, 'cleanup-test.pdf');
+  await createTestPdf(testPdf);
 
-      const backupDir = FS.Folder.from(testDir, '.backup');
-      const files = await backupDir.getFiles();
-      expect(files.length).toBeGreaterThanOrEqual(2);
-      expect(await backupFile2.exists()).toBe(true);
-    });
-  });
+  const backupDir = FS.Folder.from(testDir, '.backup');
+  await backupDir.ensureDir();
 
-  describe('cleanupOldBackups', () => {
-    let testPdf: FS.File;
+  const oldPath = FS.File.from(backupDir, '19990101_000000_cleanup-test.pdf');
+  await oldPath.write('fake backup content', { safe: true });
+  await Deno.utime(oldPath.path, new Date(1999, 0, 1), new Date(1999, 0, 1));
 
-    beforeEach(async () => {
-      testPdf = FS.File.from(testDir, 'cleanup-test.pdf');
-      await createTestPdf(testPdf);
-    });
+  const recentFile = FS.File.from(backupDir, '20990101_000000_cleanup-test.pdf');
+  await recentFile.write('fake backup content', { safe: true });
 
-    it('should delete backups older than retention period', async () => {
-      const backupDir = FS.Folder.from(testDir, '.backup');
-      await backupDir.ensureDir();
+  const pdf = new BikelogPdf(ctx, testPdf);
+  const deleted = await pdf.cleanupOldBackups();
 
-      const oldPath = FS.File.from(backupDir, '19990101_000000_cleanup-test.pdf');
-      await oldPath.write('fake backup content', { safe: true });
-      // Set modification time to year 1999
-      await Deno.utime(oldPath.path, new Date(1999, 0, 1), new Date(1999, 0, 1));
+  assertEquals(deleted >= 1, true);
+  assertEquals(await oldPath.exists(), false);
+  assertEquals(await recentFile.exists(), true);
+});
 
-      const recentFile = FS.File.from(backupDir, '20990101_000000_cleanup-test.pdf');
-      await recentFile.write('fake backup content', { safe: true });
+Deno.test('BikelogPdf cleanupOldBackups should not delete recent backups', async () => {
+  const testPdf = FS.File.from(testDir, 'cleanup-test.pdf');
+  await createTestPdf(testPdf);
 
-      const pdf = new BikelogPdf(ctx, testPdf);
-      const deleted = await pdf.cleanupOldBackups();
+  const backupDir = FS.Folder.from(testDir, '.backup');
+  await backupDir.ensureDir();
 
-      expect(deleted).toBeGreaterThanOrEqual(1);
-      expect(await oldPath.exists()).toBe(false);
-      expect(await recentFile.exists()).toBe(true);
-    });
+  const recentFile = FS.File.from(backupDir, '20990101_000000_cleanup-test.pdf');
+  await recentFile.write('fake backup content', { safe: true });
 
-    it('should not delete recent backups', async () => {
-      const backupDir = FS.Folder.from(testDir, '.backup');
-      await backupDir.ensureDir();
+  const pdf = new BikelogPdf(ctx, testPdf);
+  const deleted = await pdf.cleanupOldBackups();
 
-      const recentFile = FS.File.from(backupDir, '20990101_000000_cleanup-test.pdf');
-      await recentFile.write('fake backup content', { safe: true });
+  assertEquals(deleted, 0);
+  assertEquals(await recentFile.exists(), true);
+});
 
-      const pdf = new BikelogPdf(ctx, testPdf);
-      const deleted = await pdf.cleanupOldBackups();
+Deno.test('BikelogPdf replaceFrom should move the source file over the target', async () => {
+  const testPdf = FS.File.from(testDir, 'replace-test.pdf');
+  await createTestPdf(testPdf);
 
-      expect(deleted).toBe(0);
-      expect(await recentFile.exists()).toBe(true);
-    });
-  });
+  const sourceFile = FS.File.from(testDir, 'filled-replace.pdf');
+  await sourceFile.write('replaced content', { safe: true });
 
-  describe('replaceFrom', () => {
-    let testPdf: FS.File;
+  const pdf = new BikelogPdf(ctx, testPdf);
+  await pdf.replaceFrom(sourceFile);
 
-    beforeEach(async () => {
-      testPdf = FS.File.from(testDir, 'replace-test.pdf');
-      await createTestPdf(testPdf);
-    });
+  assertEquals(await sourceFile.exists(), false);
+  assertEquals(await testPdf.exists(), true);
 
-    it('should move the source file over the target', async () => {
-      const sourceFile = FS.File.from(testDir, 'filled-replace.pdf');
-      await sourceFile.write('replaced content', { safe: true });
+  const content = await testPdf.readAsString();
+  assertEquals(content, 'replaced content');
+});
 
-      const pdf = new BikelogPdf(ctx, testPdf);
-      await pdf.replaceFrom(sourceFile);
+Deno.test('BikelogPdf fill should fill form fields with entry data', async () => {
+  const testPdf = FS.File.from(testDir, 'fill-test.pdf');
+  await createTestPdf(testPdf);
 
-      expect(await sourceFile.exists()).toBe(false);
-      expect(await testPdf.exists()).toBe(true);
+  const targetFile = FS.File.from(testDir, 'filled-output.pdf');
 
-      const content = await testPdf.readAsString();
-      expect(content).toBe('replaced content');
-    });
-  });
+  const pdf = new BikelogPdf(ctx, testPdf);
 
-  describe('fill', () => {
-    let testPdf: FS.File;
+  const entries: Record<string, ReturnType<typeof makeTestEntry>> = {
+    '2459000': makeTestEntry(2459000, {
+      bike: 'HB1',
+      dist: 17.65,
+      el: 205,
+      t: 0.76,
+      wh: 100,
+      note0: 'Test note content',
+      note1: 'Test note1 content',
+      wt: 87.3,
+    }),
+  };
 
-    beforeEach(async () => {
-      testPdf = FS.File.from(testDir, 'fill-test.pdf');
-      await createTestPdf(testPdf);
-    });
+  await pdf.fill(entries, targetFile);
 
-    it('should fill form fields with entry data', async () => {
-      const targetFile = FS.File.from(testDir, 'filled-output.pdf');
+  assertEquals(await targetFile.exists(), true);
 
-      const pdf = new BikelogPdf(ctx, testPdf);
+  const doc = await pdfLib.PDFDocument.load(await targetFile.readAsBytes());
+  const form = doc.getForm();
 
-      const entries = {
-        '2459000': makeTestEntry(2459000, {
-          bike: 'HB1',
-          dist: 17.65,
-          el: 205,
-          t: 0.76,
-          wh: 100,
-          note0: 'Test note content',
-          note1: 'Test note1 content',
-          wt: 87.3,
-        }),
-      };
+  assertEquals(form.getTextField('day.2459000.0.bike').getText(), 'HB1');
+  assertEquals(form.getTextField('day.2459000.0.dist').getText(), '17.65');
+  assertEquals(form.getTextField('day.2459000.0.el').getText(), '205');
+  assertStringIncludes(form.getTextField('day.2459000.note0').getText()!, 'Test note content');
+  assertEquals(form.getTextField('day.2459000.wt').getText(), '87.3');
+});
 
-      await pdf.fill(entries, targetFile);
+Deno.test('BikelogPdf fill should skip fields that are already filled with the same value', async () => {
+  const testPdf = FS.File.from(testDir, 'fill-test.pdf');
+  await createTestPdf(testPdf);
 
-      expect(await targetFile.exists()).toBe(true);
+  const targetFile = FS.File.from(testDir, 'filled-skip-test.pdf');
 
-      const doc = await pdfLib.PDFDocument.load(await targetFile.readAsBytes());
-      const form = doc.getForm();
+  const pdf = new BikelogPdf(ctx, testPdf);
 
-      expect(form.getTextField('day.2459000.0.bike').getText()).toBe('HB1');
-      expect(form.getTextField('day.2459000.0.dist').getText()).toBe('17.65');
-      expect(form.getTextField('day.2459000.0.el').getText()).toBe('205');
-      expect(form.getTextField('day.2459000.note0').getText()).toContain('Test note content');
-      expect(form.getTextField('day.2459000.wt').getText()).toBe('87.3');
-    });
+  const entries: Record<string, ReturnType<typeof makeTestEntry>> = {
+    '2459000': makeTestEntry(2459000, {
+      bike: 'HB1',
+      dist: 17.65,
+      el: 205,
+      t: 0.76,
+      note0: 'Already there',
+      wt: 87.3,
+    }),
+  };
 
-    it('should skip fields that are already filled with the same value', async () => {
-      const targetFile = FS.File.from(testDir, 'filled-skip-test.pdf');
+  await pdf.fill(entries, targetFile);
 
-      const pdf = new BikelogPdf(ctx, testPdf);
+  const pdf2 = new BikelogPdf(ctx, targetFile);
+  const targetFile2 = FS.File.from(testDir, 'filled-skip-test2.pdf');
+  await pdf2.fill(entries, targetFile2);
 
-      const entries = {
-        '2459000': makeTestEntry(2459000, {
-          bike: 'HB1',
-          dist: 17.65,
-          el: 205,
-          t: 0.76,
-          note0: 'Already there',
-          wt: 87.3,
-        }),
-      };
+  const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
+  const form = doc.getForm();
+  assertEquals(form.getTextField('day.2459000.0.bike').getText(), 'HB1');
+  assertStringIncludes(form.getTextField('day.2459000.note0').getText()!, 'Already there');
+});
 
-      await pdf.fill(entries, targetFile);
+Deno.test('BikelogPdf fill should concatenate notes that already have different content', async () => {
+  const testPdf = FS.File.from(testDir, 'fill-test.pdf');
+  await createTestPdf(testPdf);
 
-      // Fill again using first output as template
-      const pdf2 = new BikelogPdf(ctx, targetFile);
-      const targetFile2 = FS.File.from(testDir, 'filled-skip-test2.pdf');
-      await pdf2.fill(entries, targetFile2);
+  const targetFile = FS.File.from(testDir, 'note-concat-test.pdf');
 
-      const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
-      const form = doc.getForm();
-      expect(form.getTextField('day.2459000.0.bike').getText()).toBe('HB1');
-      expect(form.getTextField('day.2459000.note0').getText()).toContain('Already there');
-    });
+  const pdf = new BikelogPdf(ctx, testPdf);
 
-    it('should concatenate notes that already have different content', async () => {
-      const targetFile = FS.File.from(testDir, 'note-concat-test.pdf');
+  await pdf.fill({ '2459000': makeTestEntry(2459000, { note0: 'First entry' }) }, targetFile);
 
-      const pdf = new BikelogPdf(ctx, testPdf);
+  const pdf2 = new BikelogPdf(ctx, targetFile);
+  const targetFile2 = FS.File.from(testDir, 'note-concat-test2.pdf');
+  await pdf2.fill({ '2459000': makeTestEntry(2459000, { note0: 'Second entry' }) }, targetFile2);
 
-      await pdf.fill({ '2459000': makeTestEntry(2459000, { note0: 'First entry' }) }, targetFile);
+  const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
+  const form = doc.getForm();
+  const noteText = form.getTextField('day.2459000.note0').getText();
+  assertStringIncludes(noteText!, 'First entry');
+  assertStringIncludes(noteText!, 'Second entry');
+});
 
-      // Second fill uses the output of first fill as template (incremental mode)
-      const pdf2 = new BikelogPdf(ctx, targetFile);
-      const targetFile2 = FS.File.from(testDir, 'note-concat-test2.pdf');
-      await pdf2.fill(
-        { '2459000': makeTestEntry(2459000, { note0: 'Second entry' }) },
-        targetFile2,
-      );
+Deno.test('BikelogPdf fill should skip notes that already contain the new content', async () => {
+  const testPdf = FS.File.from(testDir, 'fill-test.pdf');
+  await createTestPdf(testPdf);
 
-      const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
-      const form = doc.getForm();
-      const noteText = form.getTextField('day.2459000.note0').getText();
-      expect(noteText).toContain('First entry');
-      expect(noteText).toContain('Second entry');
-    });
+  const targetFile = FS.File.from(testDir, 'note-includes-test.pdf');
 
-    it('should skip notes that already contain the new content', async () => {
-      const targetFile = FS.File.from(testDir, 'note-includes-test.pdf');
+  const pdf = new BikelogPdf(ctx, testPdf);
 
-      const pdf = new BikelogPdf(ctx, testPdf);
+  await pdf.fill(
+    { '2459000': makeTestEntry(2459000, { note0: 'Part of larger text' }) },
+    targetFile,
+  );
 
-      await pdf.fill(
-        { '2459000': makeTestEntry(2459000, { note0: 'Part of larger text' }) },
-        targetFile,
-      );
+  const pdf2 = new BikelogPdf(ctx, targetFile);
+  const targetFile2 = FS.File.from(testDir, 'note-includes-test2.pdf');
+  await pdf2.fill({ '2459000': makeTestEntry(2459000, { note0: 'larger' }) }, targetFile2);
 
-      // Fill with a substring of existing, using first output as template
-      const pdf2 = new BikelogPdf(ctx, targetFile);
-      const targetFile2 = FS.File.from(testDir, 'note-includes-test2.pdf');
-      await pdf2.fill(
-        { '2459000': makeTestEntry(2459000, { note0: 'larger' }) },
-        targetFile2,
-      );
+  const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
+  const form = doc.getForm();
+  assertEquals(form.getTextField('day.2459000.note0').getText(), 'Part of larger text');
+});
 
-      const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
-      const form = doc.getForm();
-      expect(form.getTextField('day.2459000.note0').getText()).toBe('Part of larger text');
-    });
+Deno.test('BikelogPdf fill should use fuzzy comparison for numeric fields', async () => {
+  const testPdf = FS.File.from(testDir, 'fill-test.pdf');
+  await createTestPdf(testPdf);
 
-    it('should use fuzzy comparison for numeric fields', async () => {
-      const targetFile = FS.File.from(testDir, 'numeric-fuzzy-test.pdf');
+  const targetFile = FS.File.from(testDir, 'numeric-fuzzy-test.pdf');
 
-      const pdf = new BikelogPdf(ctx, testPdf);
+  const pdf = new BikelogPdf(ctx, testPdf);
 
-      await pdf.fill(
-        { '2459000': makeTestEntry(2459000, { dist: 0.2, el: 100, t: 1.5, wt: 87.3 }) },
-        targetFile,
-      );
+  await pdf.fill(
+    { '2459000': makeTestEntry(2459000, { dist: 0.2, el: 100, t: 1.5, wt: 87.3 }) },
+    targetFile,
+  );
 
-      // Fill again using first output as template
-      const pdf2 = new BikelogPdf(ctx, targetFile);
-      const targetFile2 = FS.File.from(testDir, 'numeric-fuzzy-test2.pdf');
-      await pdf2.fill(
-        {
-          '2459000': makeTestEntry(2459000, {
-            dist: 0.1999999,
-            el: 99.9999999,
-            t: 1.500000001,
-            wt: 87.300000001,
-          }),
-        },
-        targetFile2,
-      );
+  const pdf2 = new BikelogPdf(ctx, targetFile);
+  const targetFile2 = FS.File.from(testDir, 'numeric-fuzzy-test2.pdf');
+  await pdf2.fill({
+    '2459000': makeTestEntry(2459000, {
+      dist: 0.1999999,
+      el: 99.9999999,
+      t: 1.500000001,
+      wt: 87.300000001,
+    }),
+  }, targetFile2);
 
-      const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
-      const form = doc.getForm();
-      expect(form.getTextField('day.2459000.0.dist').getText()).toBe('0.2');
-      expect(form.getTextField('day.2459000.wt').getText()).toBe('87.3');
-    });
-  });
+  const doc = await pdfLib.PDFDocument.load(await targetFile2.readAsBytes());
+  const form = doc.getForm();
+  assertEquals(form.getTextField('day.2459000.0.dist').getText(), '0.2');
+  assertEquals(form.getTextField('day.2459000.wt').getText(), '87.3');
 });

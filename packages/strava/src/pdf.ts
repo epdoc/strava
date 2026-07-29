@@ -15,7 +15,10 @@ type PdfCmdOptions = CliApp.LogCmdOptions & {
   athleteId?: string;
   date: DateRanges;
   pdf?: string;
+  overwrite?: boolean;
   imperial?: boolean;
+  total?: boolean;
+  totalOnly?: boolean;
 };
 
 export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
@@ -25,7 +28,15 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
   }
 
   override defineOptions(): void {
-    this.option('--athleteId <id>', 'Athlete ID (defaults to authenticated user)').emit();
+    this.option(
+      '-t, --total',
+      'Also compute total distances for the year and display on the cover page',
+    ).emit();
+    this.option(
+      '-T, --total-only',
+      'Do not fetch new Strava activites - only compute and update totals for the year',
+    ).emit();
+    this.option('-o, --overwrite', 'Overwrite form fields, even if already filled in').emit();
     const help = buildDateHelp(new Ctx.CustomMsgBuilder()).format();
     this.option({ ...dateOptionDef, help: help } as CliApp.OptionDef).emit();
     this.option(
@@ -33,6 +44,7 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
       'Path to bikelog PDF file. Defaults to ~/CloudStation/PDFDocs/BIKE/bikelog_{yyyy}.pdf',
     )
       .emit();
+    this.option('--athleteId <id>', 'Athlete ID (defaults to authenticated user)').emit();
     this.addHelpText(this.helpText());
   }
 
@@ -42,87 +54,107 @@ export class PdfCommand extends BaseRootCmdClass<PdfCmdOptions> {
   ): Promise<void> {
     const ctx = this.activeContext();
     assert(ctx);
+    const update = {
+      activities: options.totalOnly !== true,
+      totals: options.total || options.totalOnly,
+    };
 
     const app = new App.Main(ctx);
     if (isAthleteId(options.athleteId)) {
       app.setAthleteId(options.athleteId);
     }
     ctx.app = app;
-    await app.init({ strava: true, userSettings: true, state: true });
+    await app.init({ strava: update.activities, userSettings: true, state: update.activities });
 
     ctx.log.info.section().emit();
     ctx.log.info.h1('PDF Form Filler').emit();
 
-    const lastUpdated = app.getLastUpdated(OutputTypes.Acroforms);
-
-    let dateRanges: DateRanges;
-    if (options.date && options.date.hasRanges()) {
-      dateRanges = options.date;
-    } else if (lastUpdated) {
-      dateRanges = DateRanges.from([{ after: DateTime.fromString(lastUpdated) }]);
-      ctx.log.info.text('Retrieving activities since last update').value(lastUpdated).emit();
-    } else {
-      throw new CliApp.SilentError(
-        '--date is required for first run. Specify date range(s) (e.g., 20240101-20241231)',
-      );
-    }
-
-    if (!app.athlete) {
-      await app.getAthlete();
-    }
-
-    const activities = new Activity.Collection(ctx);
-    await activities.getForDateRange(dateRanges);
-
-    // Resolve the template PDF path
-    let templateFile: FS.File;
+    // Resolve the PDF Bikelog path
+    let fsSrcPdf: FS.File;
     if (_.isNonEmptyString(options.pdf)) {
-      templateFile = FS.File.home(options.pdf);
+      fsSrcPdf = FS.File.home(options.pdf);
     } else {
       const year = DateTime.now().year;
-      templateFile = FS.File.home('CloudStation', 'PDFDocs', 'BIKE', `bikelog_${year}.pdf`);
+      fsSrcPdf = FS.File.home('CloudStation', 'PDFDocs', 'BIKE', `bikelog_${year}.pdf`);
     }
 
-    if (!(await templateFile.isFile())) {
-      throw new Error(`PDF template file not found: ${templateFile.path}`);
+    if (!(await fsSrcPdf.isFile())) {
+      throw new Error(`PDF Bikelog file not found: ${fsSrcPdf.path}`);
     }
-    ctx.log.info.text('Using PDF template').fs(templateFile).emit();
+    ctx.log.info.text('Using PDF Bikelog').fs(fsSrcPdf).emit();
 
-    if (activities.length === 0) {
-      ctx.log.info.text('No activities found for the specified date range').emit();
-      return;
-    }
+    const files: App.BikeLog.File = {
+      pdf: new App.BikeLog.BikelogPdf(this.ctx, fsSrcPdf),
+      output: ctx.dryRun
+        ? FS.File.home('Downloads', fsSrcPdf.filename)
+        : await FS.File.makeTemp({ suffix: '.pdf' }),
+    };
 
-    await activities.getDetailsAndSegments({ detailed: true });
-
-    // Fill form fields and get back output file + BikelogPdf wrapper
-    if (ctx.dryRun === true) {
-      const downloadFile = FS.File.home('Downloads', templateFile.filename);
-      ctx.log.info.dryRun().text('Saving filled PDF to').fs(downloadFile).emit();
-      await app.fillPdf({
-        activities,
-        templateFile,
-        targetPath: downloadFile,
-      });
-      return;
+    if (ctx.dryRun) {
+      ctx.log.info.dryRun().text('Saving filled PDF to').relative(files.output).emit();
     }
 
-    const { outputFile, pdfFile } = await app.fillPdf({
-      activities,
-      templateFile,
-    });
+    let updatePdfState: () => void = async () => {
+      await Promise.resolve();
+    };
 
-    // Clean up old backups (> 3 months)
-    await pdfFile.cleanupOldBackups();
+    if (update.activities) {
+      const lastUpdated = app.getLastUpdated(OutputTypes.Acroforms);
 
-    // Backup current PDF to .backup folder
-    await pdfFile.backup();
+      let dateRanges: DateRanges;
+      if (options.date && options.date.hasRanges()) {
+        dateRanges = options.date;
+      } else if (lastUpdated) {
+        dateRanges = DateRanges.from([{ after: DateTime.fromString(lastUpdated) }]);
+        ctx.log.info.text('Retrieving activities since last update').value(lastUpdated).emit();
+      } else {
+        throw new CliApp.SilentError(
+          '--date is required for first run. Specify date range(s) (e.g., 20240101-20241231)',
+        );
+      }
 
-    // Replace original with filled PDF
-    await pdfFile.replaceFrom(outputFile);
+      if (!app.athlete) {
+        await app.getAthlete();
+      }
 
-    // Update state
-    await app.updatePdfState(OutputTypes.Acroforms, activities);
+      const activities = new Activity.Collection(ctx);
+      await activities.getForDateRange(dateRanges);
+
+      if (activities.length === 0) {
+        ctx.log.info.text('No activities found for the specified date range').emit();
+        return;
+      }
+
+      await activities.getDetailsAndSegments({ detailed: true });
+
+      await app.fillPdf(files, { activities, overwrite: !!options.overwrite });
+
+      updatePdfState = async () => {
+        await app.updatePdfState(OutputTypes.Acroforms, activities);
+      };
+    }
+
+    if (update.totals) {
+      await app.updatePdfTotals(files);
+    }
+
+    await app.savePdf(files);
+
+    if (!ctx.dryRun) {
+      // Clean up old backups (> 3 months)
+      await files.pdf.cleanupOldBackups();
+
+      // Backup current PDF to .backup folder
+      await files.pdf.backup();
+
+      // Replace original with filled PDF
+      await files.pdf.replaceFrom(files.output);
+
+      // Update state
+      if (update.activities) {
+        await updatePdfState();
+      }
+    }
   }
 
   helpText(): string {

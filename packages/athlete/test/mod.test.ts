@@ -1,12 +1,9 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { assertEquals } from '@std/assert';
 
-describe('@epdoc/strava-athlete', () => {
-  it('should show help with -h flag', async () => {
-    const cmd = new Deno.Command('deno', {
-      args: ['run', '-A', 'main.ts', '-h'],
-    });
-    const { code } = await cmd.output();
-    expect(code).toBe(0);
+Deno.test('@epdoc/strava-athlete should show help with -h flag', async () => {
+  const cmd = new Deno.Command('deno', {
+    args: ['run', '-A', 'main.ts', '-h'],
   });
+  const { code } = await cmd.output();
+  assertEquals(code, 0);
 });

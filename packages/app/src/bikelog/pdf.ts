@@ -10,7 +10,7 @@ import { assert } from '@std/assert/assert';
 import * as pdfLib from 'pdf-lib';
 import config from '../consts.ts';
 import type * as Region from '../region/mod.ts';
-import type { BikelogEntry } from './types.ts';
+import type { BikelogEntry, IOverwrite } from './types.ts';
 
 const BACKUP_RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
 
@@ -24,7 +24,7 @@ const COVER_TABLE = {
   startX: 640,
   startY: 1100,
   labelW: 75,
-  colW: 20,
+  colW: 28,
   rowH: 17,
   fontSize: 8,
   headingFontSize: 8,
@@ -39,6 +39,7 @@ export class BikelogPdf extends BaseClass {
   #form?: pdfLib.PDFForm;
   #coverPage?: pdfLib.PDFPage;
   #defaultRegion?: string;
+  #font?: pdfLib.PDFFont;
 
   constructor(ctx: Ctx.Context, file: FS.File) {
     super(ctx);
@@ -79,8 +80,9 @@ export class BikelogPdf extends BaseClass {
     return this.#coverPage;
   }
 
-  async fill(entries: Record<string, BikelogEntry>, targetPath: FS.File): Promise<void> {
+  async fill(entries: Record<string, BikelogEntry>, opts: IOverwrite = {}): Promise<void> {
     await this.init();
+    this.#font = await this.doc.embedStandardFont(pdfLib.StandardFonts.Helvetica);
 
     let filled = 0;
     let skipped = 0;
@@ -91,7 +93,7 @@ export class BikelogPdf extends BaseClass {
       value: string | undefined,
       fieldType: FieldType,
     ) => {
-      const result = this.#trySetField(name, value, fieldType);
+      const result = this.#trySetField(name, value, fieldType, opts);
       if (result === 'filled') filled++;
       else if (result === 'skipped') skipped++;
       else if (result === 'missing') missing++;
@@ -138,20 +140,33 @@ export class BikelogPdf extends BaseClass {
       .text('missing').value(missing)
       .emit();
 
-    const font = await this.doc.embedStandardFont(pdfLib.StandardFonts.Helvetica);
-
-    // Add cover page summary table
-    this.info.text('Adding cover page summary').ellipsis().emit();
-    await this.#addCoverSummaryTable();
+    // // Add cover page summary table
+    // this.info.text('Adding cover page summary').ellipsis().emit();
+    // await this.addCoverSummaryTable();
 
     for (const [jd, entry] of Object.entries(entries)) {
       for (const fieldName of ['note0', 'note1']) {
-        if (!entry[fieldName as 'note0' | 'note1']) continue;
+        const text = entry[fieldName as 'note0' | 'note1'];
+        if (!text) continue;
         try {
           const field = this.form.getTextField(`day.${jd}.${fieldName}`);
+          let fontSize = 12;
+          if (fieldName === 'note0' && this.#font) {
+            const rect = field.acroField.getWidgets()[0]?.getRectangle();
+            if (rect) {
+              const maxWordWidth = text.split(/\s+/).reduce(
+                (max, w) => Math.max(max, this.#font!.widthOfTextAtSize(w, 12)),
+                0,
+              );
+              if (maxWordWidth > rect.width - 2) {
+                const ratio = (rect.width - 2) / maxWordWidth;
+                fontSize = Math.max(6, Math.round(ratio * 12 * 2) / 2);
+              }
+            }
+          }
           field.acroField.dict.set(
             pdfLib.PDFName.of('DA'),
-            pdfLib.PDFString.of('/Helv 12 Tf 0 g'),
+            pdfLib.PDFString.of(`/Helv ${fontSize} Tf 0 g`),
           );
         } catch {
           /* field not found, skip */
@@ -159,13 +174,15 @@ export class BikelogPdf extends BaseClass {
       }
     }
 
-    this.form.updateFieldAppearances(font);
-
-    const pdfBytes = await this.doc.save();
-    await targetPath.write(pdfBytes);
+    this.form.updateFieldAppearances(this.#font!);
   }
 
-  async #addCoverSummaryTable(): Promise<void> {
+  async close(output: FS.File): Promise<void> {
+    const pdfBytes = await this.doc.save();
+    await output.write(pdfBytes);
+  }
+
+  async addCoverSummaryTable(): Promise<void> {
     // Set the default year to this year, but this is overridden if we get it from the first field in the table
     const year = this.getCoverYear();
 
@@ -361,7 +378,15 @@ export class BikelogPdf extends BaseClass {
     const coverPage = pages[0];
 
     try {
-      return this.form.getTextField(name);
+      const field = this.form.getTextField(name);
+      const widget = field.acroField.getWidgets()[0];
+      if (widget) {
+        const rect = widget.getRectangle();
+        if (Math.abs(rect.x - x) > 0.5 || Math.abs(rect.width - w) > 0.5) {
+          widget.setRectangle({ x, y, width: w, height: h });
+        }
+      }
+      return field;
     } catch {
       const f = this.form.createTextField(name);
       f.addToPage(coverPage, { x, y, width: w, height: h });
@@ -457,13 +482,14 @@ export class BikelogPdf extends BaseClass {
     name: string,
     value: string | undefined,
     fieldType: FieldType,
+    opts: IOverwrite,
   ): FieldResult {
     if (value === undefined) return 'skipped';
 
-    const textResult = this.#trySetTextField(name, value, fieldType);
+    const textResult = this.#trySetTextField(name, value, fieldType, opts);
     if (textResult !== 'missing') return textResult;
 
-    const dropdownResult = this.#trySetDropdown(name, value);
+    const dropdownResult = this.#trySetDropdown(name, value, opts);
     if (dropdownResult !== 'missing') return dropdownResult;
 
     if (BikelogPdf.IGNORED_FIELDS.has(name.split('.').pop()!)) {
@@ -478,6 +504,7 @@ export class BikelogPdf extends BaseClass {
     name: string,
     value: string,
     fieldType: FieldType,
+    opts: IOverwrite,
   ): FieldResult {
     try {
       const field = this.form.getTextField(name);
@@ -487,53 +514,59 @@ export class BikelogPdf extends BaseClass {
         const existingNum = parseFloat(existing);
         const valueNum = parseFloat(value);
         if (
+          !opts.overwrite &&
           !isNaN(existingNum) && !isNaN(valueNum) &&
           Math.abs(existingNum - valueNum) < NUMERIC_TOLERANCE
         ) {
-          this.info.icheck()
-            .text('Skipping')
-            .value(name)
-            .text('because field is already filled in')
+          this.info.icheck().text('Skipping').label(name)
+            .text('because field is already set to').value(value)
             .emit();
           return 'skipped';
         }
         field.setText(value);
+        this.debug.text('Set').label(name).text('to').value(value).emit();
         return 'filled';
       }
 
       if (fieldType === 'string') {
-        if (existing === value) {
-          this.info.icheck()
-            .text('Skipping')
-            .value(name)
-            .text('because field is already filled in')
+        if (!opts.overwrite && existing === value) {
+          this.info.icheck().text('Skipping').label(name)
+            .text('because field is already set to final value')
             .emit();
           return 'skipped';
         }
-        field.setText(value);
+        if (field.isMultiline()) {
+          field.setText(value);
+        } else {
+          field.setText(value);
+        }
+        this.debug.text('Set').label(name).text('to').value(value).emit();
         return 'filled';
       }
 
-      if (existing === value) {
+      if (!opts.overwrite && existing === value) {
         this.info.icheck()
           .text('Skipping')
-          .value(name)
-          .text('because field is already filled in')
+          .label(name)
+          .text('because field is already set to final value')
           .emit();
         return 'skipped';
       }
 
-      if (existing && existing.includes(value)) {
-        this.info.icheck()
-          .text('Skipping')
-          .value(name)
+      if (!opts.overwrite && existing && existing.includes(value)) {
+        this.info.icheck().text('Skipping').label(name)
           .text('because note already contains new content')
           .emit();
         return 'skipped';
       }
 
-      const concatenated = existing ? existing + '\n' + value : value;
-      field.setText(concatenated);
+      if (!opts.overwrite) {
+        const concatenated = existing ? existing + '\n' + value : value;
+        field.setText(concatenated);
+        this.debug.text('Set').label(name).text('to concatenated').value(concatenated).emit();
+      } else {
+        field.setText(value);
+      }
       return 'filled';
     } catch {
       return 'missing';
@@ -543,18 +576,16 @@ export class BikelogPdf extends BaseClass {
   #trySetDropdown(
     name: string,
     value: string,
+    opts: IOverwrite,
   ): FieldResult {
     try {
       const dropdown = this.form.getDropdown(name);
       const selected = dropdown.getSelected();
       const existing = selected.length > 0 ? selected[0] : '';
 
-      if (existing === value) {
-        this.info.icheck()
-          .text('Skipping')
-          .value(name)
-          .text('because field is already filled in')
-          .emit();
+      if (!opts.overwrite && existing === value) {
+        this.info.icheck().text('Skipping').label(name)
+          .text('because field is already set to').value(value).emit();
         return 'skipped';
       }
 

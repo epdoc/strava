@@ -40,7 +40,7 @@ function makeTestEntry(
 
 async function createTestPdf(file: FS.File): Promise<void> {
   const doc = await pdfLib.PDFDocument.create();
-  doc.addPage([600, 800]);
+  const page = doc.addPage([600, 800]);
   const form = doc.getForm();
 
   for (const jd of ['2459000', '2459001']) {
@@ -49,7 +49,9 @@ async function createTestPdf(file: FS.File): Promise<void> {
         form.createTextField(`day.${jd}.${idx}.${field}`);
       }
     }
-    form.createTextField(`day.${jd}.note0`);
+    const note0 = form.createTextField(`day.${jd}.note0`);
+    note0.addToPage(page, { x: 50, y: 700, width: 200, height: 160 });
+    note0.enableMultiline();
     form.createTextField(`day.${jd}.note1`);
     form.createTextField(`day.${jd}.wt`);
   }
@@ -300,4 +302,87 @@ Deno.test('BikelogPdf fill should use fuzzy comparison for numeric fields', asyn
   const form = doc.getForm();
   assertEquals(form.getTextField('day.2459000.0.dist').getText(), '0.2');
   assertEquals(form.getTextField('day.2459000.wt').getText(), '87.3');
+});
+
+Deno.test('BikelogPdf fill should not modify blank note0 fields (no DA/AP)', async () => {
+  const testPdf = FS.File.from(testDir, 'blank-note0-test.pdf');
+  await createTestPdf(testPdf);
+
+  const targetFile = FS.File.from(testDir, 'blank-note0-output.pdf');
+
+  // Fill a different day so day.2459001.note0 stays blank
+  const pdf = new BikelogPdf(ctx, testPdf);
+  const entries: Record<string, ReturnType<typeof makeTestEntry>> = {
+    '2459000': makeTestEntry(2459000, { note0: 'Some note text' }),
+  };
+  await pdf.fill(entries);
+  await pdf.close(targetFile);
+
+  const doc = await pdfLib.PDFDocument.load(await targetFile.readAsBytes());
+  const form = doc.getForm();
+
+  // The blank note0 (2459001) must have no DA and no AP stream
+  const blankField = form.getTextField('day.2459001.note0');
+  assertEquals(blankField.acroField.getDefaultAppearance(), undefined);
+  const blankWidget = blankField.acroField.getWidgets()[0];
+  assertEquals(blankWidget.getAppearances()?.normal, undefined);
+
+  // The filled note0 (2459000) must have its text and a DA
+  const filledField = form.getTextField('day.2459000.note0');
+  assertEquals(filledField.getText(), 'Some note text');
+  const filledDA = filledField.acroField.getDefaultAppearance();
+  assertStringIncludes(filledDA!, 'Helvetica');
+  assertStringIncludes(filledDA!, 'Tf');
+});
+
+Deno.test('BikelogPdf fill should repair pre-corrupted blank note0 DA/AP', async () => {
+  const testPdf = FS.File.from(testDir, 'corrupt-note0-test.pdf');
+  await createTestPdf(testPdf);
+
+  // Pre-corrupt day.2459001.note0: set DA to 137pt and force an AP stream
+  {
+    const doc = await pdfLib.PDFDocument.load(await testPdf.readAsBytes());
+    const form = doc.getForm();
+    const field = form.getTextField('day.2459001.note0');
+    field.acroField.dict.set(
+      pdfLib.PDFName.of('DA'),
+      pdfLib.PDFString.of('/Helvetica 137 Tf 0 g'),
+    );
+    const font = await doc.embedStandardFont(pdfLib.StandardFonts.Helvetica);
+    form.updateFieldAppearances(font);
+    await testPdf.write(await doc.save(), { safe: true });
+  }
+
+  // Verify corruption is present
+  {
+    const doc = await pdfLib.PDFDocument.load(await testPdf.readAsBytes());
+    const form = doc.getForm();
+    const da = form.getTextField('day.2459001.note0').acroField
+      .getDefaultAppearance();
+    assertStringIncludes(da!, '137');
+  }
+
+  // Now fill a different day and close — repair should strip the corrupted blank note0
+  const pdf = new BikelogPdf(ctx, testPdf);
+  const targetFile = FS.File.from(testDir, 'corrupt-note0-repaired.pdf');
+  const entries: Record<string, ReturnType<typeof makeTestEntry>> = {
+    '2459000': makeTestEntry(2459000, { note0: 'Repair test' }),
+  };
+  await pdf.fill(entries);
+  await pdf.close(targetFile);
+
+  const doc = await pdfLib.PDFDocument.load(await targetFile.readAsBytes());
+  const form = doc.getForm();
+
+  // The blank note0 must have no DA and no AP (repaired)
+  const blankField = form.getTextField('day.2459001.note0');
+  assertEquals(blankField.acroField.getDefaultAppearance(), undefined);
+  const blankWidget = blankField.acroField.getWidgets()[0];
+  assertEquals(blankWidget.getAppearances()?.normal, undefined);
+
+  // The filled note0 must still have its text
+  assertEquals(
+    form.getTextField('day.2459000.note0').getText(),
+    'Repair test',
+  );
 });

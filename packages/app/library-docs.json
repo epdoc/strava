@@ -3757,9 +3757,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 201,
+                                "line": 224,
                                 "col": 2,
-                                "byteIndex": 6702
+                                "byteIndex": 7470
                               }
                             },
                             {
@@ -3786,9 +3786,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 206,
+                                "line": 234,
                                 "col": 2,
-                                "byteIndex": 6833
+                                "byteIndex": 7838
                               }
                             },
                             {
@@ -3823,9 +3823,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 339,
+                                "line": 367,
                                 "col": 2,
-                                "byteIndex": 11889
+                                "byteIndex": 12894
                               }
                             },
                             {
@@ -3860,9 +3860,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 348,
+                                "line": 376,
                                 "col": 2,
-                                "byteIndex": 12124
+                                "byteIndex": 13129
                               }
                             },
                             {
@@ -3886,9 +3886,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 381,
+                                "line": 409,
                                 "col": 2,
-                                "byteIndex": 13195
+                                "byteIndex": 14200
                               }
                             },
                             {
@@ -3938,9 +3938,9 @@
                                             "name": "isHeading",
                                             "location": {
                                               "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                              "line": 407,
+                                              "line": 435,
                                               "col": 13,
-                                              "byteIndex": 13916
+                                              "byteIndex": 14921
                                             },
                                             "optional": true,
                                             "tsType": {
@@ -3963,9 +3963,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 403,
+                                "line": 431,
                                 "col": 2,
-                                "byteIndex": 13837
+                                "byteIndex": 14842
                               }
                             },
                             {
@@ -4039,9 +4039,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 422,
+                                "line": 450,
                                 "col": 2,
-                                "byteIndex": 14483
+                                "byteIndex": 15488
                               }
                             },
                             {
@@ -4074,9 +4074,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 451,
+                                "line": 479,
                                 "col": 2,
-                                "byteIndex": 15254
+                                "byteIndex": 16259
                               }
                             },
                             {
@@ -4120,9 +4120,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 472,
+                                "line": 500,
                                 "col": 2,
-                                "byteIndex": 15995
+                                "byteIndex": 17000
                               }
                             },
                             {
@@ -4149,9 +4149,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 477,
+                                "line": 505,
                                 "col": 2,
-                                "byteIndex": 16166
+                                "byteIndex": 17171
                               }
                             },
                             {
@@ -4189,9 +4189,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 502,
+                                "line": 530,
                                 "col": 2,
-                                "byteIndex": 16885
+                                "byteIndex": 17890
                               }
                             },
                             {
@@ -4229,9 +4229,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 511,
+                                "line": 539,
                                 "col": 2,
-                                "byteIndex": 17085
+                                "byteIndex": 18090
                               }
                             },
                             {
@@ -4269,9 +4269,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/bikelog/pdf.ts",
-                                "line": 523,
+                                "line": 551,
                                 "col": 2,
-                                "byteIndex": 17342
+                                "byteIndex": 18347
                               }
                             }
                           ],

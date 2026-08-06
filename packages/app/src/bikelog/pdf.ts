@@ -190,17 +190,45 @@ export class BikelogPdf extends BaseClass {
             pdfLib.PDFName.of('DA'),
             pdfLib.PDFString.of(`/Helv ${fontSize} Tf 0 g`),
           );
+          this.form.markFieldAsDirty(field.ref);
         } catch {
           /* field not found, skip */
         }
       }
     }
+  }
 
-    this.form.updateFieldAppearances(this.#font!);
+  #restoreBlankNoteFields(): void {
+    for (const field of this.form.getFields()) {
+      if (!(field instanceof pdfLib.PDFTextField)) continue;
+      if (!field.getName().endsWith('.note0')) continue;
+      if (field.getText()) continue;
+      field.acroField.dict.delete(pdfLib.PDFName.of('DA'));
+      for (const widget of field.acroField.getWidgets()) {
+        widget.dict.delete(pdfLib.PDFName.of('AP'));
+      }
+    }
+  }
+
+  #updateModifiedFieldAppearances(font: pdfLib.PDFFont): void {
+    for (const field of this.form.getFields()) {
+      if (
+        this.form.fieldIsDirty(field.ref) &&
+        (field instanceof pdfLib.PDFTextField ||
+          field instanceof pdfLib.PDFDropdown)
+      ) {
+        field.defaultUpdateAppearances(font);
+      }
+    }
   }
 
   async close(output: FS.File): Promise<void> {
-    const pdfBytes = await this.doc.save();
+    if (!this.#font) {
+      this.#font = await this.doc.embedStandardFont(pdfLib.StandardFonts.Helvetica);
+    }
+    this.#restoreBlankNoteFields();
+    this.#updateModifiedFieldAppearances(this.#font);
+    const pdfBytes = await this.doc.save({ updateFieldAppearances: false });
     await output.write(pdfBytes);
   }
 

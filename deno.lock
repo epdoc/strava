@@ -7,7 +7,6 @@
     "jsr:@epdoc/daterange@^3.0.18": "3.0.18",
     "jsr:@epdoc/datetime@^4.2.9": "4.2.9",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
-    "jsr:@epdoc/fmt@^1.0.19": "1.0.20",
     "jsr:@epdoc/fmt@^1.0.20": "1.0.20",
     "jsr:@epdoc/fs@^1.6.10": "1.6.10",
     "jsr:@epdoc/logger@^1003.3.78": "1003.3.78",
@@ -142,7 +141,7 @@
         "jsr:@epdoc/colors",
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/duration",
-        "jsr:@epdoc/fmt@^1.0.20",
+        "jsr:@epdoc/fmt",
         "jsr:@epdoc/type",
         "jsr:@std/fmt"
       ]
@@ -160,7 +159,7 @@
       "dependencies": [
         "jsr:@epdoc/colors",
         "jsr:@epdoc/datetime",
-        "jsr:@epdoc/fmt@^1.0.20",
+        "jsr:@epdoc/fmt",
         "jsr:@epdoc/type",
         "jsr:@std/fmt"
       ]
@@ -456,11 +455,11 @@
       },
       "packages/app": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.14",
+          "jsr:@epdoc/cliapp@^2.3.16",
           "jsr:@epdoc/daterange@^3.0.18",
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/duration@~0.3.22",
-          "jsr:@epdoc/fmt@^1.0.19",
+          "jsr:@epdoc/fmt@^1.0.20",
           "jsr:@epdoc/fs@^1.6.10",
           "jsr:@epdoc/transform@^2.0.9",
           "jsr:@epdoc/type@^2.0.2",

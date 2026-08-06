@@ -444,7 +444,7 @@
     "members": {
       "packages/api": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.14",
+          "jsr:@epdoc/cliapp@^2.3.16",
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/duration@~0.3.22",
           "jsr:@epdoc/fs@^1.6.10",

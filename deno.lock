@@ -1,7 +1,7 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/cliapp@^2.3.16": "2.3.16",
+    "jsr:@epdoc/cliapp@^2.3.17": "2.3.17",
     "jsr:@epdoc/colors@^1.1.4": "1.1.4",
     "jsr:@epdoc/daterange@^3.0.18": "3.0.18",
     "jsr:@epdoc/datetime@^4.2.9": "4.2.9",
@@ -49,8 +49,8 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/cliapp@2.3.16": {
-      "integrity": "79f9b510ff77f3840dc25d1529b76b3cb323ab7f58cd6b8570e6743d49348f36",
+    "@epdoc/cliapp@2.3.17": {
+      "integrity": "c6c8742728e70b0dd9e2f6c9a296205db07ab1451ce444834e5ec46296dca5f1",
       "dependencies": [
         "jsr:@epdoc/colors",
         "jsr:@epdoc/datetime",
@@ -441,7 +441,7 @@
     "members": {
       "packages/api": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.16",
+          "jsr:@epdoc/cliapp@^2.3.17",
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/duration@~0.3.22",
           "jsr:@epdoc/fs@^1.6.10",
@@ -453,7 +453,7 @@
       },
       "packages/app": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.16",
+          "jsr:@epdoc/cliapp@^2.3.17",
           "jsr:@epdoc/daterange@^3.0.18",
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/duration@~0.3.22",
@@ -470,7 +470,7 @@
       },
       "packages/athlete": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.16",
+          "jsr:@epdoc/cliapp@^2.3.17",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",
           "jsr:@std/assert@^1.0.19"
@@ -478,7 +478,7 @@
       },
       "packages/core": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.16",
+          "jsr:@epdoc/cliapp@^2.3.17",
           "jsr:@epdoc/daterange@^3.0.18",
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/fs@^1.6.10",
@@ -488,7 +488,7 @@
       },
       "packages/info": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.16",
+          "jsr:@epdoc/cliapp@^2.3.17",
           "jsr:@epdoc/daterange@^3.0.18",
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/table@~0.1.50",
@@ -506,7 +506,7 @@
       },
       "packages/strava": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.16",
+          "jsr:@epdoc/cliapp@^2.3.17",
           "jsr:@epdoc/daterange@^3.0.18",
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/fs@^1.6.10",

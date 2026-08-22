@@ -54,6 +54,10 @@ async function createTestPdf(file: FS.File): Promise<void> {
     note0.enableMultiline();
     form.createTextField(`day.${jd}.note1`);
     form.createTextField(`day.${jd}.wt`);
+
+    const summaryNote = form.createTextField(`summary.${jd}.note`);
+    summaryNote.addToPage(page, { x: 300, y: 700, width: 200, height: 100 });
+    summaryNote.enableMultiline();
   }
 
   const bytes = await doc.save();
@@ -385,4 +389,57 @@ Deno.test('BikelogPdf fill should repair pre-corrupted blank note0 DA/AP', async
     form.getTextField('day.2459000.note0').getText(),
     'Repair test',
   );
+});
+
+Deno.test('BikelogPdf close should repair blank summary note fields and set auto font size on filled ones', async () => {
+  const testPdf = FS.File.from(testDir, 'summary-note-test.pdf');
+  await createTestPdf(testPdf);
+
+  // Pre-corrupt blank summary.2459001.note (DA 137pt + AP) and give
+  // summary.2459000.note user-entered text with a fixed font size
+  {
+    const doc = await pdfLib.PDFDocument.load(await testPdf.readAsBytes());
+    const form = doc.getForm();
+    const blank = form.getTextField('summary.2459001.note');
+    blank.acroField.dict.set(
+      pdfLib.PDFName.of('DA'),
+      pdfLib.PDFString.of('/Helvetica 137 Tf 0 g'),
+    );
+    const filled = form.getTextField('summary.2459000.note');
+    filled.setText('User entered summary text');
+    filled.acroField.dict.set(
+      pdfLib.PDFName.of('DA'),
+      pdfLib.PDFString.of('/Helvetica 137 Tf 0 g'),
+    );
+    const font = await doc.embedStandardFont(pdfLib.StandardFonts.Helvetica);
+    form.updateFieldAppearances(font);
+    await testPdf.write(await doc.save(), { safe: true });
+  }
+
+  const pdf = new BikelogPdf(ctx, testPdf);
+  const targetFile = FS.File.from(testDir, 'summary-note-repaired.pdf');
+  const entries: Record<string, ReturnType<typeof makeTestEntry>> = {
+    '2459000': makeTestEntry(2459000, { note0: 'Fill something' }),
+  };
+  await pdf.fill(entries);
+  await pdf.close(targetFile);
+
+  const doc = await pdfLib.PDFDocument.load(await targetFile.readAsBytes());
+  const form = doc.getForm();
+
+  // The blank summary note must have no DA and no AP (repaired)
+  const blankField = form.getTextField('summary.2459001.note');
+  assertEquals(blankField.acroField.getDefaultAppearance(), undefined);
+  const blankWidget = blankField.acroField.getWidgets()[0];
+  assertEquals(blankWidget.getAppearances()?.normal, undefined);
+
+  // The filled summary note keeps its text and gets auto font size (0 Tf)
+  const filledField = form.getTextField('summary.2459000.note');
+  assertEquals(filledField.getText(), 'User entered summary text');
+  const da = filledField.acroField.getDefaultAppearance();
+  assertStringIncludes(da!, '0 Tf');
+
+  // Day note0 repair behavior is unchanged
+  const dayBlank = form.getTextField('day.2459001.note0');
+  assertEquals(dayBlank.acroField.getDefaultAppearance(), undefined);
 });

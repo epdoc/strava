@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/strava-app",
-  "version": "2.2.13",
+  "version": "2.2.14",
   "description": "Strava athlete",
   "exports": {
     ".": "./src/mod.ts"

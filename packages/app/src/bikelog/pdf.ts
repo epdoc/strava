@@ -201,8 +201,19 @@ export class BikelogPdf extends BaseClass {
   #restoreBlankNoteFields(): void {
     for (const field of this.form.getFields()) {
       if (!(field instanceof pdfLib.PDFTextField)) continue;
-      if (!field.getName().endsWith('.note0')) continue;
-      if (field.getText()) continue;
+      const name = field.getName();
+      const isDayNote = name.endsWith('.note0');
+      const isSummaryNote = name.startsWith('summary.') && name.endsWith('.note');
+      if (!isDayNote && !isSummaryNote) continue;
+      if (field.getText()) {
+        if (isSummaryNote) {
+          field.acroField.dict.set(
+            pdfLib.PDFName.of('DA'),
+            pdfLib.PDFString.of('/Helv 0 Tf 0 g'),
+          );
+        }
+        continue;
+      }
       field.acroField.dict.delete(pdfLib.PDFName.of('DA'));
       for (const widget of field.acroField.getWidgets()) {
         widget.dict.delete(pdfLib.PDFName.of('AP'));

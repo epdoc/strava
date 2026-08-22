@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/strava-app",
-  "version": "2.2.12",
+  "version": "2.2.13",
   "description": "Strava athlete",
   "exports": {
     ".": "./src/mod.ts"
@@ -26,7 +26,7 @@
     "@epdoc/strava-app": "../app/src/mod.ts",
     "@epdoc/strava-core": "../core/src/mod.ts",
     "@epdoc/strava-schema": "../schema/src/mod.ts",
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.16",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.17",
     "@epdoc/daterange": "jsr:@epdoc/daterange@^3.0.18",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.9",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.3.22",

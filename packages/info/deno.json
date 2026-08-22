@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/strava-info",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "description": "Strava info - query activity information",
   "exports": {
     ".": "./src/mod.ts"
@@ -23,7 +23,7 @@
   "imports": {
     "@epdoc/strava-app": "../app/src/mod.ts",
     "@epdoc/strava-core": "../core/src/mod.ts",
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.16",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.17",
     "@epdoc/daterange": "jsr:@epdoc/daterange@^3.0.18",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.9",
     "@epdoc/table": "jsr:@epdoc/table@^0.1.50",

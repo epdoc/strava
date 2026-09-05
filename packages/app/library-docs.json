@@ -2762,6 +2762,602 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "name": "Region",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/activity/mod.ts",
+                          "line": 32,
+                          "col": 7,
+                          "byteIndex": 1038
+                        },
+                        "declarationKind": "export",
+                        "kind": "namespace",
+                        "def": {
+                          "elements": [
+                            {
+                              "name": "RegionService",
+                              "declarations": [
+                                {
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region/region.ts",
+                                    "line": 5,
+                                    "col": 0,
+                                    "byteIndex": 165
+                                  },
+                                  "declarationKind": "export",
+                                  "kind": "class",
+                                  "def": {
+                                    "properties": [
+                                      {
+                                        "tsType": {
+                                          "repr": "Region.Result",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "Region.Result",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "./types.ts"
+                                            }
+                                          }
+                                        },
+                                        "readonly": true,
+                                        "name": "WORLD",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region/region.ts",
+                                          "line": 8,
+                                          "col": 2,
+                                          "byteIndex": 228
+                                        }
+                                      }
+                                    ],
+                                    "methods": [
+                                      {
+                                        "name": "regions",
+                                        "kind": "method",
+                                        "functionDef": {
+                                          "params": [],
+                                          "returnType": {
+                                            "repr": "Promise",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeParams": [
+                                                {
+                                                  "kind": "array",
+                                                  "value": {
+                                                    "repr": "Region.Def",
+                                                    "kind": "typeRef",
+                                                    "value": {
+                                                      "typeName": "Region.Def",
+                                                      "resolution": {
+                                                        "kind": "import",
+                                                        "specifier": "./types.ts"
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              ],
+                                              "typeName": "Promise"
+                                            }
+                                          },
+                                          "hasBody": true,
+                                          "isAsync": true
+                                        },
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region/region.ts",
+                                          "line": 13,
+                                          "col": 2,
+                                          "byteIndex": 306
+                                        }
+                                      },
+                                      {
+                                        "jsDoc": {
+                                          "doc": "Loads regions from a RegionsFile, filtering out skipped regions.\n",
+                                          "tags": [
+                                            {
+                                              "kind": "param",
+                                              "name": "file",
+                                              "doc": "The regions file data"
+                                            },
+                                            {
+                                              "kind": "return",
+                                              "doc": "Array of active (non-skipped) regions"
+                                            }
+                                          ]
+                                        },
+                                        "name": "load",
+                                        "kind": "method",
+                                        "functionDef": {
+                                          "params": [],
+                                          "returnType": {
+                                            "repr": "Promise",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeParams": [
+                                                {
+                                                  "repr": "void",
+                                                  "kind": "keyword",
+                                                  "value": "void"
+                                                }
+                                              ],
+                                              "typeName": "Promise"
+                                            }
+                                          },
+                                          "hasBody": true,
+                                          "isAsync": true
+                                        },
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region/region.ts",
+                                          "line": 26,
+                                          "col": 2,
+                                          "byteIndex": 636
+                                        }
+                                      },
+                                      {
+                                        "name": "choices",
+                                        "kind": "method",
+                                        "functionDef": {
+                                          "params": [],
+                                          "returnType": {
+                                            "repr": "Promise",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeParams": [
+                                                {
+                                                  "kind": "array",
+                                                  "value": {
+                                                    "repr": "Region.Code",
+                                                    "kind": "typeRef",
+                                                    "value": {
+                                                      "typeName": "Region.Code",
+                                                      "resolution": {
+                                                        "kind": "import",
+                                                        "specifier": "./types.ts"
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              ],
+                                              "typeName": "Promise"
+                                            }
+                                          },
+                                          "hasBody": true,
+                                          "isAsync": true
+                                        },
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region/region.ts",
+                                          "line": 32,
+                                          "col": 2,
+                                          "byteIndex": 847
+                                        }
+                                      },
+                                      {
+                                        "jsDoc": {
+                                          "doc": "Gets the first matching region for a lat/lng point.\nSkips regions with `skip: true`.\n",
+                                          "tags": [
+                                            {
+                                              "kind": "param",
+                                              "name": "lat",
+                                              "doc": "Latitude of the point"
+                                            },
+                                            {
+                                              "kind": "param",
+                                              "name": "lng",
+                                              "doc": "Longitude of the point"
+                                            },
+                                            {
+                                              "kind": "param",
+                                              "name": "regions",
+                                              "doc": "Array of regions to check"
+                                            },
+                                            {
+                                              "kind": "return",
+                                              "doc": "The matching region or `undefined` if no match"
+                                            }
+                                          ]
+                                        },
+                                        "name": "findForLatLng",
+                                        "kind": "method",
+                                        "functionDef": {
+                                          "params": [
+                                            {
+                                              "kind": "identifier",
+                                              "name": "lat",
+                                              "optional": false,
+                                              "tsType": {
+                                                "repr": "Schema.Types.Latitude",
+                                                "kind": "typeRef",
+                                                "value": {
+                                                  "typeName": "Schema.Types.Latitude",
+                                                  "resolution": {
+                                                    "kind": "import",
+                                                    "specifier": "@epdoc/strava-schema"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            {
+                                              "kind": "identifier",
+                                              "name": "lng",
+                                              "optional": false,
+                                              "tsType": {
+                                                "repr": "Schema.Types.Longitude",
+                                                "kind": "typeRef",
+                                                "value": {
+                                                  "typeName": "Schema.Types.Longitude",
+                                                  "resolution": {
+                                                    "kind": "import",
+                                                    "specifier": "@epdoc/strava-schema"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          ],
+                                          "returnType": {
+                                            "repr": "Promise",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeParams": [
+                                                {
+                                                  "kind": "union",
+                                                  "value": [
+                                                    {
+                                                      "repr": "Region.Def",
+                                                      "kind": "typeRef",
+                                                      "value": {
+                                                        "typeName": "Region.Def",
+                                                        "resolution": {
+                                                          "kind": "import",
+                                                          "specifier": "./types.ts"
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "repr": "undefined",
+                                                      "kind": "keyword",
+                                                      "value": "undefined"
+                                                    }
+                                                  ]
+                                                }
+                                              ],
+                                              "typeName": "Promise"
+                                            }
+                                          },
+                                          "hasBody": true,
+                                          "isAsync": true
+                                        },
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region/region.ts",
+                                          "line": 49,
+                                          "col": 2,
+                                          "byteIndex": 1310
+                                        }
+                                      },
+                                      {
+                                        "jsDoc": {
+                                          "doc": "Gets the region result for a lat/lng point.\nReturns WORLD_REGION if no matching region is found.\n",
+                                          "tags": [
+                                            {
+                                              "kind": "param",
+                                              "name": "lat",
+                                              "doc": "Latitude of the point"
+                                            },
+                                            {
+                                              "kind": "param",
+                                              "name": "lng",
+                                              "doc": "Longitude of the point"
+                                            },
+                                            {
+                                              "kind": "param",
+                                              "name": "regions",
+                                              "doc": "Array of regions to check"
+                                            },
+                                            {
+                                              "kind": "return",
+                                              "doc": "RegionResult with id and name"
+                                            }
+                                          ]
+                                        },
+                                        "name": "findResultForLatLng",
+                                        "kind": "method",
+                                        "functionDef": {
+                                          "params": [
+                                            {
+                                              "kind": "identifier",
+                                              "name": "lat",
+                                              "optional": false,
+                                              "tsType": {
+                                                "repr": "Schema.Types.Latitude",
+                                                "kind": "typeRef",
+                                                "value": {
+                                                  "typeName": "Schema.Types.Latitude",
+                                                  "resolution": {
+                                                    "kind": "import",
+                                                    "specifier": "@epdoc/strava-schema"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            {
+                                              "kind": "identifier",
+                                              "name": "lng",
+                                              "optional": false,
+                                              "tsType": {
+                                                "repr": "Schema.Types.Longitude",
+                                                "kind": "typeRef",
+                                                "value": {
+                                                  "typeName": "Schema.Types.Longitude",
+                                                  "resolution": {
+                                                    "kind": "import",
+                                                    "specifier": "@epdoc/strava-schema"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          ],
+                                          "returnType": {
+                                            "repr": "Promise",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeParams": [
+                                                {
+                                                  "repr": "Region.Result",
+                                                  "kind": "typeRef",
+                                                  "value": {
+                                                    "typeName": "Region.Result",
+                                                    "resolution": {
+                                                      "kind": "import",
+                                                      "specifier": "./types.ts"
+                                                    }
+                                                  }
+                                                }
+                                              ],
+                                              "typeName": "Promise"
+                                            }
+                                          },
+                                          "hasBody": true,
+                                          "isAsync": true
+                                        },
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region/region.ts",
+                                          "line": 71,
+                                          "col": 2,
+                                          "byteIndex": 1939
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "name": "isPointInRect",
+                              "declarations": [
+                                {
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region/region.ts",
+                                    "line": 91,
+                                    "col": 0,
+                                    "byteIndex": 2454
+                                  },
+                                  "declarationKind": "export",
+                                  "jsDoc": {
+                                    "doc": "Checks if a lat/lng point falls within a rectangle.\n",
+                                    "tags": [
+                                      {
+                                        "kind": "param",
+                                        "name": "lat",
+                                        "doc": "Latitude of the point"
+                                      },
+                                      {
+                                        "kind": "param",
+                                        "name": "lng",
+                                        "doc": "Longitude of the point"
+                                      },
+                                      {
+                                        "kind": "param",
+                                        "name": "rect",
+                                        "doc": "Rectangle bounds"
+                                      },
+                                      {
+                                        "kind": "return",
+                                        "doc": "`true` if the point is inside the rectangle"
+                                      }
+                                    ]
+                                  },
+                                  "kind": "function",
+                                  "def": {
+                                    "params": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "lat",
+                                        "optional": false,
+                                        "tsType": {
+                                          "repr": "Schema.Types.Latitude",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "Schema.Types.Latitude",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "@epdoc/strava-schema"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "name": "lng",
+                                        "optional": false,
+                                        "tsType": {
+                                          "repr": "Schema.Types.Longitude",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "Schema.Types.Longitude",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "@epdoc/strava-schema"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "name": "rect",
+                                        "optional": false,
+                                        "tsType": {
+                                          "repr": "Region.Rect",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "Region.Rect",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "./types.ts"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "returnType": {
+                                      "repr": "boolean",
+                                      "kind": "keyword",
+                                      "value": "boolean"
+                                    },
+                                    "hasBody": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "name": "isPointInRegion",
+                              "declarations": [
+                                {
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region/region.ts",
+                                    "line": 110,
+                                    "col": 0,
+                                    "byteIndex": 2963
+                                  },
+                                  "declarationKind": "export",
+                                  "jsDoc": {
+                                    "doc": "Checks if a lat/lng point falls within any rectangle of a region.\n",
+                                    "tags": [
+                                      {
+                                        "kind": "param",
+                                        "name": "lat",
+                                        "doc": "Latitude of the point"
+                                      },
+                                      {
+                                        "kind": "param",
+                                        "name": "lng",
+                                        "doc": "Longitude of the point"
+                                      },
+                                      {
+                                        "kind": "param",
+                                        "name": "region",
+                                        "doc": "Region to check against"
+                                      },
+                                      {
+                                        "kind": "return",
+                                        "doc": "`true` if the point is inside any of the region's rectangles"
+                                      }
+                                    ]
+                                  },
+                                  "kind": "function",
+                                  "def": {
+                                    "params": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "lat",
+                                        "optional": false,
+                                        "tsType": {
+                                          "repr": "Schema.Types.Latitude",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "Schema.Types.Latitude",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "@epdoc/strava-schema"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "name": "lng",
+                                        "optional": false,
+                                        "tsType": {
+                                          "repr": "Schema.Types.Longitude",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "Schema.Types.Longitude",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "@epdoc/strava-schema"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "name": "region",
+                                        "optional": false,
+                                        "tsType": {
+                                          "repr": "Region.Def",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "Region.Def",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "./types.ts"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "returnType": {
+                                      "repr": "boolean",
+                                      "kind": "keyword",
+                                      "value": "boolean"
+                                    },
+                                    "hasBody": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "name": "db",
+                              "declarations": [
+                                {
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/strava/packages/app/src/region/region.ts",
+                                    "line": 118,
+                                    "col": 13,
+                                    "byteIndex": 3182
+                                  },
+                                  "declarationKind": "export",
+                                  "kind": "variable",
+                                  "def": {
+                                    "tsType": {
+                                      "repr": "RegionService",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "RegionService",
+                                        "resolution": {
+                                          "kind": "local"
+                                        }
+                                      }
+                                    },
+                                    "kind": "const"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ]
               }

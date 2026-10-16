@@ -444,10 +444,10 @@
     "members": {
       "packages/api": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.18",
+          "jsr:@epdoc/cliapp@^2.3.21",
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/duration@~0.3.22",
-          "jsr:@epdoc/fs@^1.6.10",
+          "jsr:@epdoc/fs@^1.7.1",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@oak/oak@^17.2.0",
           "jsr:@opensrc/deno-open@1",

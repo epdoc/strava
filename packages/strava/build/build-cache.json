@@ -1,5 +1,5 @@
 {
-  "masterHash": "36fae42dd74df38157506b63457ac915d8b596aa47c6c8aa292b01cb2661c093",
+  "masterHash": "e3d31cb427c9ec5be6bf3ec2cccebb0386ec4b6a2efd711f529abe31e6dd979a",
   "files": {
     "@epdoc/strava-api::src/activity.ts": "e15ce1e8601d90196a8ea35fd65bc0001e13d50a",
     "@epdoc/strava-api::src/api.ts": "61e2689bddc60656cd2ced609d9c897cc80da231",
@@ -10,7 +10,7 @@
     "@epdoc/strava-api::src/guards.ts": "1ddac5fa792f9cc5bfeec83476cc382a861d8683",
     "@epdoc/strava-api::src/mod.ts": "1d110550c9708d05118d8ad6f85d73bf31fae10c",
     "@epdoc/strava-api::src/types.ts": "e71a348f638058ecd301f2c4f449a8fac45fc2a2",
-    "@epdoc/strava-app::deno.json": "c9b0ed91f2b3dda9a0b6d71cc1b3e0fd50b666c1",
+    "@epdoc/strava-app::deno.json": "ca1e4c5fb9c6b97cad458b83fc913646f1db50d9",
     "@epdoc/strava-app::src/activity/collection.ts": "e89165086a201f8789601c1af2c206561b5a686b",
     "@epdoc/strava-app::src/activity/item.ts": "f23936d681400f1388ccf0f0b27b3e28dd55bdac",
     "@epdoc/strava-app::src/activity/mod.ts": "bd099857af042d41b51aca55133c9a75b1c84965",
@@ -19,7 +19,7 @@
     "@epdoc/strava-app::src/base.ts": "9763412d6b98dc5305a26a8f4296ab37297a5483",
     "@epdoc/strava-app::src/bikelog/bikelog.ts": "b3d7b9dc497741e5078b5b9e27124ec991e195d2",
     "@epdoc/strava-app::src/bikelog/mod.ts": "32709824838832a5c232af58e40b767843f24674",
-    "@epdoc/strava-app::src/bikelog/pdf.ts": "580a5f2fe098913f5266336c993c93348feceee5",
+    "@epdoc/strava-app::src/bikelog/pdf.ts": "3ae1222f72f8a758bc04a1e2f5cdca33ebbcdc83",
     "@epdoc/strava-app::src/bikelog/types.ts": "c9aad60307a7254eaba11227bb738a3b40e5f5c1",
     "@epdoc/strava-app::src/bikelog/xml.ts": "d07997e9a22896b702ec257930b00b65bdf883c8",
     "@epdoc/strava-app::src/consts.ts": "2825680e38d52c2e596b0945ee193457466827fb",
@@ -80,8 +80,8 @@
     "@epdoc/strava-schema::src/types/units.ts": "55f79fa2fd40e620497609badaab38028fb5d025",
     "@epdoc/strava-schema::src/types/zones.ts": "b640d17ddc232bf462ac81cbbb6ac4b02ef6f0f8",
     "@epdoc/strava-schema::src/zones.ts": "23e9c7fb2f60ebbf90b0a8051d6559d4ffd55a60",
-    "@epdoc/strava::build/build-info.json": "9deae29f76de4fb46c2bf0a9ab078ca0a43e6e0d",
-    "@epdoc/strava::deno.json": "ac336cb4c919b563163325de1d14a365765400d6",
+    "@epdoc/strava::build/build-info.json": "545a3c50eb1245772a637b64ff1844a0b6a5acfa",
+    "@epdoc/strava::deno.json": "c869e18519edd079f199ff38e1bc1510d0ba95a1",
     "@epdoc/strava::main.ts": "38d0c129a22365b0431a8f0de741eb2dd7044d03",
     "@epdoc/strava::src/fdf.ts": "b39357dfe6204cf9df5777d88c0b8d9e150b68fc",
     "@epdoc/strava::src/gpx.ts": "1078fe7760da76cb078bcd01d05d0859339230cb",
@@ -91,14 +91,14 @@
     "@epdoc/strava::src/root.ts": "398287830bd5b67336d8a3a859769ace98016af9"
   },
   "dependencies": {
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.18",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.3.21",
     "@epdoc/daterange": "jsr:@epdoc/daterange@^3.0.18",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.9",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.3.22",
     "@epdoc/fmt": "jsr:@epdoc/fmt@^1.0.22",
-    "@epdoc/fs": "jsr:@epdoc/fs@^1.6.10",
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.79",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^1.0.6",
+    "@epdoc/fs": "jsr:@epdoc/fs@^1.7.1",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.82",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^1.0.8",
     "@epdoc/table": "jsr:@epdoc/table@^0.1.51",
     "@epdoc/type": "jsr:@epdoc/type@^2.0.2",
     "@oak/oak": "jsr:@oak/oak@^17.2.0",
@@ -197,5 +197,5 @@
     "@epdoc/strava::src/pdf.ts": "@epdoc/strava",
     "@epdoc/strava::src/root.ts": "@epdoc/strava"
   },
-  "timestamp": "2026-09-05T15:54:42.283156006-06:00"
+  "timestamp": "2026-10-16T08:44:44.214565918-06:00"
 }

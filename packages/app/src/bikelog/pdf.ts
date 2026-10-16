@@ -22,7 +22,7 @@ const NUMERIC_TOLERANCE = 1e-6;
 const REGEX_AWAY = /^Away\s*\(([^)]+)\)$/m;
 
 const COVER_TABLE = {
-  startX: 640,
+  startX: 625,
   startY: 1100,
   labelW: 75,
   colW: 35,
